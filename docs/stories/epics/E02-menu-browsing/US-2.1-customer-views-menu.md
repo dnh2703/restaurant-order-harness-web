@@ -28,7 +28,12 @@ dimmed and labeled sold out.
 ## Design Notes
 
 - API: `GET /api/qr/{qrToken}`, `GET /api/qr/{qrToken}/menu` (consumed via `createServerFn`).
-- UI surfaces: route `/t/$qrToken`, `pages/customer-menu`, `widgets/menu-list`.
+- UI surfaces: route `t.$qrToken.tsx`, `pages/customer-menu`, `widgets/top-nav`, `widgets/menu-grid`.
+  (Renamed from `widgets/menu-list` to `widgets/menu-grid` in the Phase 1 redesign.)
+- Layout redesign (Phase 1): desktop 2-column responsive layout; dish grid uses 3 columns on ≥md
+  breakpoint; sticky `TopNav` shows restaurant name and table; `MenuGrid` replaces the old
+  `MenuList` flat list.
+- FSD entities added: `entities/menu`, `entities/table`, `shared/api/qr`.
 - Domain rules: money stored as VND integers; normalize string-serialized integers.
 
 ## Validation
@@ -37,8 +42,8 @@ Verify command: `bun run validate` (`tsc --noEmit && vitest run`).
 
 | Layer | Expected proof | Current |
 | --- | --- | --- |
-| Unit | format helpers, MenuList grouping/sold-out | ✅ vitest 8/8 |
-| Integration | server fn ↔ BE round-trip | ✅ playwright invalid-token (404 → error UI) |
+| Unit | format helpers, MenuGrid grouping/sold-out, TopNav render | ✅ vitest (35 total, covers format + MenuGrid + TopNav + CustomerMenuPage) |
+| Integration | server fn ↔ BE round-trip; invalid-token → error UI | ✅ playwright invalid-token (404 → error UI) |
 | E2E | open `/t/<token>` → menu renders grouped | ⏳ skipped (needs seeded token — backlog #2) |
 | Platform | n/a (web) | n/a |
 | Release | — | — |
@@ -53,9 +58,11 @@ because data is fetched in a server function (server-side), so Playwright's
 - Created `docs/product/menu-browsing.md`.
 - Backfilled intake + story + trace that were skipped during the initial scaffold.
 - Added Vitest + Playwright (closed backlog #1); opened backlog #2 (e2e seed/stub).
+- Phase 1 redesign: `widgets/menu-list` renamed/replaced by `widgets/menu-grid`;
+  `widgets/top-nav` added; 2-col responsive layout + 3-col dish grid applied.
 
 ## Evidence
 
-- `bun run validate` → clean (tsc + vitest 8/8).
+- `bun run validate` → clean (tsc + vitest 35/35 as of Phase 1).
 - `bun run test:e2e` → playwright 2/2 (home + invalid-token), 1 skipped.
-- Commits `99be21c` (scaffold), test infra (this change).
+- Commits `99be21c` (scaffold), test infra + Phase 1 redesign (this cycle).
