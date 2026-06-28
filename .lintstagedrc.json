@@ -1,0 +1,5 @@
+{
+  "src/**/*.{ts,tsx}": ["oxlint --fix", "prettier --write"],
+  "e2e/**/*.ts": ["oxlint --fix", "prettier --write"],
+  "*.{json,js,mjs,cjs,ts}": ["prettier --write"]
+}
