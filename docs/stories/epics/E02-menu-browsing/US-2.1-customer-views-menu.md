@@ -33,26 +33,29 @@ dimmed and labeled sold out.
 
 ## Validation
 
+Verify command: `bun run validate` (`tsc --noEmit && vitest run`).
+
 | Layer | Expected proof | Current |
 | --- | --- | --- |
-| Unit | format helpers, MenuList rendering | none |
-| Integration | server fn ↔ BE round-trip | none (manual only) |
-| E2E | open `/t/<token>` → menu renders | none |
+| Unit | format helpers, MenuList grouping/sold-out | ✅ vitest 8/8 |
+| Integration | server fn ↔ BE round-trip | ✅ playwright invalid-token (404 → error UI) |
+| E2E | open `/t/<token>` → menu renders grouped | ⏳ skipped (needs seeded token — backlog #2) |
 | Platform | n/a (web) | n/a |
 | Release | — | — |
 
-Proof flags are all 0: the behavior is implemented and verified manually (SSR
-render + `tsc` clean + invalid-token error path), but no automated tests exist
-yet. See backlog item for adding a test runner.
+Proof: unit=1, integration=1, e2e=0. The happy-path menu-render e2e is skipped
+because data is fetched in a server function (server-side), so Playwright's
+`page.route()` cannot mock the BE — it needs a seeded `qr_token` or an
+`API_BASE_URL` stub (backlog #2).
 
 ## Harness Delta
 
 - Created `docs/product/menu-browsing.md`.
 - Backfilled intake + story + trace that were skipped during the initial scaffold.
-- Backlog: no FE test runner configured yet (recorded).
+- Added Vitest + Playwright (closed backlog #1); opened backlog #2 (e2e seed/stub).
 
 ## Evidence
 
-- `bun run typecheck` → clean.
-- Manual SSR: `GET /` renders home; `GET /t/demo` (invalid) renders "Bàn không hợp lệ".
-- Commit `99be21c`.
+- `bun run validate` → clean (tsc + vitest 8/8).
+- `bun run test:e2e` → playwright 2/2 (home + invalid-token), 1 skipped.
+- Commits `99be21c` (scaffold), test infra (this change).
