@@ -38,6 +38,7 @@ function DishCard({
   const soldOut = !item.isAvailable
   return (
     <div
+      data-dish={item.id}
       className={
         'overflow-hidden rounded-card bg-white shadow-card ' + (soldOut ? 'opacity-50' : '')
       }

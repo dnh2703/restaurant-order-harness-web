@@ -22,4 +22,16 @@ test.describe('Customer menu (US-2.1)', () => {
     await page.goto(`/t/${token}`)
     await expect(page.getByRole('heading').first()).toBeVisible()
   })
+
+  test('search filters the menu (US-2.2)', async ({ page }) => {
+    const token = process.env.E2E_QR_TOKEN
+    test.skip(!token, 'needs a seeded qr_token (backlog #2)')
+    await page.goto(`/t/${token}`)
+    await expect(page.getByPlaceholder('Tìm món…')).toBeVisible()
+    const before = await page.locator('[data-dish]').count()
+    await page.getByPlaceholder('Tìm món…').fill('zzz-no-match')
+    await expect(page.getByText('Không tìm thấy món phù hợp.')).toBeVisible()
+    await page.getByPlaceholder('Tìm món…').fill('')
+    await expect(page.locator('[data-dish]')).toHaveCount(before)
+  })
 })
