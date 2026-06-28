@@ -5,11 +5,7 @@ export function toNumber(value: unknown): number {
   return Number.isFinite(n) ? n : 0
 }
 
-/** Format a VND amount (stored as an integer) for display. */
+/** Format a VND integer amount as the design's "159.000đ" style. */
 export function formatVND(amount: number): string {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-    maximumFractionDigits: 0,
-  }).format(amount)
+  return new Intl.NumberFormat('vi-VN').format(amount) + 'đ'
 }
