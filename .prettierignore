@@ -14,3 +14,6 @@ harness.db
 # Project/harness root docs — author-owned, not prettier-managed.
 /*.md
 .husky
+
+# Superpowers orchestration scratch (git-ignored ledger/briefs/reports).
+.superpowers
