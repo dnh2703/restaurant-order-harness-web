@@ -15,6 +15,7 @@ function Home() {
       <Link
         to="/t/$qrToken"
         params={{ qrToken: 'demo' }}
+        search={{ q: '', cat: 'all' }}
         className="rounded-lg bg-orange-600 px-4 py-2 font-medium text-white hover:bg-orange-700"
       >
         Mở bàn demo
