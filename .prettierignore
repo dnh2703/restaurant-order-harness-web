@@ -1,0 +1,16 @@
+node_modules
+.output
+dist
+.vite
+bun.lock
+src/routeTree.gen.ts
+
+# Harness-managed / vendored content — keep their own formatting.
+.agents
+scripts
+docs
+harness.db
+
+# Project/harness root docs — author-owned, not prettier-managed.
+/*.md
+.husky
