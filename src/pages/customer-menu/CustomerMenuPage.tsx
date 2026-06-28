@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { TableContext } from '@/entities/table/model'
 import type { Menu, MenuItem } from '@/entities/menu/model'
 import { filterMenu } from '@/entities/menu/filter'
@@ -48,6 +48,12 @@ export function CustomerMenuPage({ context, menu, search, onSearchChange, qrToke
       setSubmitting(false)
     }
   }
+
+  useEffect(() => {
+    if (!notice) return
+    const id = setTimeout(() => setNotice(null), 4000)
+    return () => clearTimeout(id)
+  }, [notice])
 
   const cartProps = { cart, onSetQty, onSubmit, submitting, error }
 

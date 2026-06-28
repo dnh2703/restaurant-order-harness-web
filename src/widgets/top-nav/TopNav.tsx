@@ -25,6 +25,7 @@ export function TopNav({ restaurant, table, query, onQueryChange }: Props) {
           </span>
           <input
             type="search"
+            aria-label="Tìm món"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder="Tìm món…"

@@ -89,5 +89,14 @@ describe('CustomerMenuPage', () => {
       data: { qrToken: 'tok', items: [{ menuItemId: 'i1', quantity: 1 }] },
     })
     expect(await screen.findByText(/Đã gửi/)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Gửi bếp/ })).toBeNull()
+  })
+  it('shows error and keeps cart when submitOrderItems rejects', async () => {
+    vi.mocked(submitOrderItems).mockRejectedValueOnce(new Error('Gửi đơn thất bại'))
+    setup()
+    fireEvent.click(screen.getByRole('button', { name: 'Thêm Phở bò' }))
+    fireEvent.click(screen.getAllByRole('button', { name: /Gửi bếp/ })[0]!)
+    expect(await screen.findByText('Gửi đơn thất bại')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Gửi bếp/ })).not.toBeNull()
   })
 })
