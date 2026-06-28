@@ -27,3 +27,6 @@ test-results/
 playwright-report/
 blob-report/
 .playwright/
+
+# Design handoff bundles (kept locally, not committed)
+*handoff*.zip
