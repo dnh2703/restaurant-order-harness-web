@@ -16,20 +16,27 @@ export function useOrderStream(qrToken: string): {
   const [order, setOrder] = useState<Order | null>(null)
   const [mode, setMode] = useState<StreamMode>('polling')
   const orderRef = useRef<Order | null>(null)
+  // Fix 2: track whether the component has unmounted to guard post-await setState
+  const disposedRef = useRef(false)
 
   const load = useCallback(async () => {
     try {
       const next = await getOrder({ data: { qrToken } })
+      if (disposedRef.current) return false
       orderRef.current = next
       setOrder(next)
       return true
     } catch {
+      if (disposedRef.current) return false
       if (!orderRef.current) setMode('error')
       return false
     }
   }, [qrToken])
 
   useEffect(() => {
+    // Fix 2: re-enable updates at the start of each effect run (re-mount with same token)
+    disposedRef.current = false
+
     let stream: EventSource | null = null
     let pollTimer: ReturnType<typeof setInterval> | undefined
     let reconnectTimer: ReturnType<typeof setInterval> | undefined
@@ -51,6 +58,8 @@ export function useOrderStream(qrToken: string): {
 
     function connect() {
       if (disposed) return
+      // Fix 1: close the previous EventSource before creating a new one
+      stream?.close()
       const es = new EventSource(`/api/qr/${encodeURIComponent(qrToken)}/stream`)
       stream = es
       es.onopen = () => {
@@ -70,10 +79,19 @@ export function useOrderStream(qrToken: string): {
 
     return () => {
       disposed = true
+      // Fix 2: mark as disposed so in-flight load() calls skip setState
+      disposedRef.current = true
       stopPolling()
       stream?.close()
     }
   }, [qrToken, load])
 
-  return { order, mode, refetch: load }
+  // Fix 4: wrap load so the public refetch: () => void doesn't leak a Promise<boolean>
+  return {
+    order,
+    mode,
+    refetch: () => {
+      void load()
+    },
+  }
 }

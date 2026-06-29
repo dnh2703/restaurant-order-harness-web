@@ -95,4 +95,29 @@ describe('useOrderStream', () => {
     const { result } = renderHook(() => useOrderStream('tok'))
     await waitFor(() => expect(result.current.mode).toBe('error'))
   })
+
+  it('returns to live after reconnect timer fires and new stream opens, then stops polling', async () => {
+    vi.useFakeTimers()
+    const { result } = renderHook(() => useOrderStream('tok'))
+    // Wait for initial load
+    await vi.waitFor(() => expect(result.current.order?.id).toBe('o1'))
+    // Trigger onerror → polling mode
+    act(() => MockEventSource.instances[0]!.onerror?.())
+    expect(result.current.mode).toBe('polling')
+    vi.mocked(getOrder).mockClear()
+    // Advance to fire the reconnect timer (5000ms)
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5000)
+    })
+    // A new EventSource should have been created; open it
+    const newEs = MockEventSource.instances[MockEventSource.instances.length - 1]!
+    act(() => newEs.onopen?.())
+    expect(result.current.mode).toBe('live')
+    // Verify polling has stopped: advancing another 2500ms must NOT trigger getOrder
+    vi.mocked(getOrder).mockClear()
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2500)
+    })
+    expect(getOrder).not.toHaveBeenCalled()
+  })
 })
