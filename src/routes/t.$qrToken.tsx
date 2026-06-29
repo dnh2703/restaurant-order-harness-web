@@ -33,6 +33,12 @@ function CustomerMenuRoute() {
   const navigate = Route.useNavigate()
   const setSearch = (next: Partial<{ q: string; cat: string }>) =>
     navigate({ search: (prev) => ({ ...prev, ...next }), replace: true })
+  const goToOrder = () =>
+    navigate({
+      to: '/t/$qrToken/order',
+      params: { qrToken: params.qrToken },
+      search: { q: '', cat: 'all' },
+    })
   return (
     <CustomerMenuPage
       context={context}
@@ -40,6 +46,8 @@ function CustomerMenuRoute() {
       search={search}
       onSearchChange={setSearch}
       qrToken={params.qrToken}
+      onViewOrder={goToOrder}
+      onSubmitted={goToOrder}
     />
   )
 }

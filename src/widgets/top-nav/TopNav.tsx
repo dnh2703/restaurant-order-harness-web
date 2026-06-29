@@ -1,4 +1,4 @@
-import { MagnifyingGlass, ShoppingCart } from '@phosphor-icons/react'
+import { MagnifyingGlass, ShoppingCart, Receipt } from '@phosphor-icons/react'
 
 import type { Restaurant, TableInfo } from '@/entities/table/model'
 import { Badge, Input } from '@/shared/ui'
@@ -10,9 +10,18 @@ interface Props {
   onQueryChange: (q: string) => void
   cartCount: number
   onOpenCart: () => void
+  onViewOrder?: () => void
 }
 
-export function TopNav({ restaurant, table, query, onQueryChange, cartCount, onOpenCart }: Props) {
+export function TopNav({
+  restaurant,
+  table,
+  query,
+  onQueryChange,
+  cartCount,
+  onOpenCart,
+  onViewOrder,
+}: Props) {
   return (
     <header className="sticky top-0 z-20 flex flex-col gap-3 border-b border-line bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-8">
       <div className="flex items-center gap-3.5">
@@ -36,6 +45,16 @@ export function TopNav({ restaurant, table, query, onQueryChange, cartCount, onO
         <Badge variant="outline" size="md" dot className="shrink-0 uppercase">
           {table.name}
         </Badge>
+        {onViewOrder && (
+          <button
+            type="button"
+            onClick={onViewOrder}
+            aria-label="Xem đơn của bạn"
+            className="flex size-10 shrink-0 items-center justify-center rounded-control border border-line-strong bg-white text-ink transition-colors hover:bg-page"
+          >
+            <Receipt size={20} weight="regular" />
+          </button>
+        )}
         <button
           type="button"
           onClick={onOpenCart}
