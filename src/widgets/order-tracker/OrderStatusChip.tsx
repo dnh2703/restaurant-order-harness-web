@@ -3,7 +3,7 @@ import { cn } from '@/shared/lib/cn'
 import type { OrderItemStatus } from '@/entities/order/model'
 import { ORDER_ITEM_STATUS_META } from '@/entities/order/status'
 
-const TONE_CLASS: Record<string, string> = {
+const TONE_CLASS: Record<'pending' | 'cooking' | 'served' | 'cancelled', string> = {
   pending: 'bg-page text-muted',
   cooking: 'bg-amber-100 text-amber-700',
   served: 'bg-ok-bg text-ok-text',

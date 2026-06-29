@@ -36,13 +36,13 @@ export function OrderTracker({ order, mode, backLink }: Props) {
               >
                 <div className="min-w-0 flex-1">
                   <div
+                    aria-label={`${item.quantity} ${item.nameSnapshot}`}
                     className={cn(
                       'truncate font-bold text-ink',
                       item.status === 'CANCELLED' && 'text-muted line-through',
                     )}
                   >
-                    <span aria-hidden="true">{item.quantity}×</span>{' '}
-                    <span>{item.nameSnapshot}</span>
+                    {item.quantity}× {item.nameSnapshot}
                   </div>
                   {item.options.length > 0 && (
                     <div className="mt-0.5 truncate text-xs text-muted">
@@ -64,21 +64,21 @@ export function OrderTracker({ order, mode, backLink }: Props) {
           </div>
 
           <div className="border-t border-line px-6 py-5">
+            <div className="flex justify-between pb-2 text-sm">
+              <span className="text-muted">Tạm tính</span>
+              <span className="font-semibold text-ink">{formatVND(order.subtotal)}</span>
+            </div>
             {order.discountAmount > 0 && (
-              <>
-                <div className="flex justify-between pb-2 text-sm">
-                  <span className="text-muted">Tạm tính</span>
-                  <span className="font-semibold text-ink">{formatVND(order.subtotal)}</span>
-                </div>
-                <div className="flex justify-between pb-2 text-sm">
-                  <span className="text-muted">Giảm giá</span>
-                  <span className="font-semibold text-ink">−{formatVND(order.discountAmount)}</span>
-                </div>
-              </>
+              <div className="flex justify-between pb-2 text-sm">
+                <span className="text-muted">Giảm giá</span>
+                <span className="font-semibold text-ink">−{formatVND(order.discountAmount)}</span>
+              </div>
             )}
             <div className="flex items-baseline justify-between border-t border-line pt-3">
               <span className="font-bold text-ink">Tổng cộng</span>
-              <span className="text-xl font-extrabold text-ink">{formatVND(order.total)}</span>
+              <span data-testid="order-total" className="text-xl font-extrabold text-ink">
+                {formatVND(order.total)}
+              </span>
             </div>
             {backLink && <div className="mt-4">{backLink}</div>}
           </div>
