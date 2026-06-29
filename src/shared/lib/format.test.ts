@@ -16,12 +16,10 @@ describe('toNumber', () => {
 })
 
 describe('formatVND', () => {
-  it('formats an integer amount as VND without decimals', () => {
-    const out = formatVND(50000)
-    expect(out).toMatch(/50[.,]000/)
-    expect(out).not.toMatch(/[.,]00\b/) // no fractional digits
+  it('groups thousands and appends đ with no space', () => {
+    expect(formatVND(159000)).toBe('159.000đ')
   })
   it('formats zero', () => {
-    expect(formatVND(0)).toMatch(/0/)
+    expect(formatVND(0)).toBe('0đ')
   })
 })

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  .scr{ -ms-overflow-style:none; scrollbar-width:none; }
+  .scr::-webkit-scrollbar{ display:none; }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
+</style>
+</helmet>
+
+<div style="position:absolute; left:48px; top:30px; width:900px; font-family:'Be Vietnam Pro',system-ui,sans-serif;">
+  <div data-drags-parent="1" style="font:800 30px 'Be Vietnam Pro'; color:#102A43; letter-spacing:-.5px;">Gọi món QR — Bản web (desktop)</div>
+  <div style="font:500 15px 'Be Vietnam Pro'; color:#757983; margin-top:6px;">Cùng quán, khách quét QR rồi mở trên trình duyệt máy tính · tận dụng chiều ngang: lưới thực đơn + giỏ cố định bên phải</div>
+</div>
+
+<!-- ========================= WEB · THỰC ĐƠN ========================= -->
+<div style="position:absolute; left:48px; top:150px; width:1280px; font-family:'Be Vietnam Pro',system-ui,sans-serif;">
+  <div data-drags-parent="1" style="position:absolute; top:-34px; left:6px; font:600 14px 'Be Vietnam Pro'; color:#4F535D;">Web · Thực đơn &amp; giỏ hàng</div>
+  <div style="border-radius:18px; overflow:hidden; box-shadow:0 40px 90px -34px rgba(16,42,67,.45); border:1px solid #E6EAF1;">
+
+    <!-- browser chrome -->
+    <div style="height:46px; background:#E9EDF3; border-bottom:1px solid #DCE2EC; display:flex; align-items:center; gap:8px; padding:0 16px;">
+      <span style="width:12px; height:12px; border-radius:50%; background:#F2655B;"></span>
+      <span style="width:12px; height:12px; border-radius:50%; background:#F5BE4F;"></span>
+      <span style="width:12px; height:12px; border-radius:50%; background:#61C554;"></span>
+      <div style="flex:1; max-width:520px; margin:0 auto; background:#fff; border:1px solid #DCE2EC; border-radius:9px; height:28px; display:flex; align-items:center; gap:8px; padding:0 12px; font:500 12.5px 'Be Vietnam Pro'; color:#8A8E99;">
+        <span style="width:11px; height:11px; border:1.5px solid #61C554; border-radius:3px; display:inline-block;"></span>
+        order.bepmoc.vn/ban-12
+      </div>
+    </div>
+
+    <!-- top nav -->
+    <div style="height:74px; background:#fff; border-bottom:1px solid #EEF1F6; display:flex; align-items:center; justify-content:space-between; padding:0 32px;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="width:42px; height:42px; border-radius:12px; background:#102A43; color:#fff; display:flex; align-items:center; justify-content:center; font:800 18px 'Be Vietnam Pro';">B</div>
+        <div>
+          <div style="font:800 19px 'Be Vietnam Pro'; color:#102A43; letter-spacing:-.3px; line-height:1;">Bếp Mộc</div>
+          <div style="font:500 11.5px 'Be Vietnam Pro'; color:#8A8E99; margin-top:3px;">Số 24 Lý Thường Kiệt · Mở cửa tới 22:00</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="display:flex; align-items:center; gap:9px; background:#F1F4F9; border-radius:11px; height:42px; padding:0 14px; width:300px;">
+          <span style="width:14px; height:14px; border:2px solid #9AA0AC; border-radius:50%; position:relative; flex-shrink:0;"><i style="position:absolute; right:-4px; bottom:-4px; width:7px; height:2px; background:#9AA0AC; transform:rotate(45deg); border-radius:1px; display:block;"></i></span>
+          <span style="font:400 13.5px 'Be Vietnam Pro'; color:#969AA5;">Tìm món…</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; background:#E8F0FE; border:1px solid #CFE0FB; border-radius:11px; height:42px; padding:0 15px; font:700 12.5px 'Be Vietnam Pro'; color:#2563EB;">
+          <span style="width:7px; height:7px; border-radius:50%; background:#2563EB;"></span>BÀN 12
+        </div>
+      </div>
+    </div>
+
+    <!-- body: content + cart -->
+    <div style="display:flex; background:#F1F4F9; height:760px;">
+
+      <!-- main content -->
+      <div class="scr" style="flex:1; overflow-y:auto; padding:26px 30px 40px;">
+
+        <!-- promo -->
+        <div style="background:#2563EB; border-radius:20px; padding:26px 30px; display:flex; align-items:center; justify-content:space-between; overflow:hidden; position:relative;">
+          <div style="position:relative; z-index:2;">
+            <div style="font:600 11px 'Be Vietnam Pro'; letter-spacing:2px; color:#C9DCFC;">ƯU ĐÃI HÔM NAY</div>
+            <div style="font:800 28px 'Be Vietnam Pro'; color:#fff; letter-spacing:-.5px; margin-top:8px; line-height:1.1;">Combo trưa giảm 20%</div>
+            <div style="font:500 13.5px 'Be Vietnam Pro'; color:#DCEAFD; margin-top:7px;">Áp dụng 11:00–14:00 các ngày trong tuần</div>
+          </div>
+          <div style="position:absolute; right:-30px; top:-40px; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,.13);"></div>
+          <div style="position:absolute; right:120px; bottom:-50px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,.10);"></div>
+          <div style="position:relative; z-index:2; background:#fff; color:#102A43; border-radius:12px; padding:12px 20px; font:700 13.5px 'Be Vietnam Pro';">Xem combo</div>
+        </div>
+
+        <!-- category chips -->
+        <div style="display:flex; gap:10px; margin-top:24px; flex-wrap:wrap;">
+          <span style="background:#102A43; color:#fff; border-radius:12px; padding:10px 18px; font:600 13.5px 'Be Vietnam Pro';">Tất cả</span>
+          <span style="background:#fff; color:#4F535D; border:1px solid #E6EAF1; border-radius:12px; padding:10px 18px; font:500 13.5px 'Be Vietnam Pro';">Khai vị</span>
+          <span style="background:#fff; color:#4F535D; border:1px solid #E6EAF1; border-radius:12px; padding:10px 18px; font:500 13.5px 'Be Vietnam Pro';">Món chính</span>
+          <span style="background:#fff; color:#4F535D; border:1px solid #E6EAF1; border-radius:12px; padding:10px 18px; font:500 13.5px 'Be Vietnam Pro';">Lẩu &amp; Nướng</span>
+          <span style="background:#fff; color:#4F535D; border:1px solid #E6EAF1; border-radius:12px; padding:10px 18px; font:500 13.5px 'Be Vietnam Pro';">Tráng miệng</span>
+          <span style="background:#fff; color:#4F535D; border:1px solid #E6EAF1; border-radius:12px; padding:10px 18px; font:500 13.5px 'Be Vietnam Pro';">Đồ uống</span>
+        </div>
+
+        <div style="display:flex; align-items:baseline; justify-content:space-between; margin-top:28px;">
+          <div style="font:800 19px 'Be Vietnam Pro'; color:#102A43;">Phổ biến</div>
+          <div style="font:500 12.5px 'Be Vietnam Pro'; color:#8A8E99;">12 món</div>
+        </div>
+
+        <!-- dish grid -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; margin-top:16px;">
+
+          <!-- card -->
+          <div style="background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 12px 30px -22px rgba(16,42,67,.4);">
+            <div style="height:150px; background:linear-gradient(150deg,#E2E7F0,#C5CEDD); position:relative;"><span style="position:absolute; left:12px; bottom:10px; font:600 9px 'Be Vietnam Pro'; color:#9AA0AC; letter-spacing:.5px;">ẢNH</span></div>
+            <div style="padding:15px 16px 16px;">
+              <div style="font:700 15.5px 'Be Vietnam Pro'; color:#102A43;">Lẩu Thái chua cay</div>
+              <div style="font:400 12px 'Be Vietnam Pro'; color:#8A8E99; margin-top:4px; line-height:1.5;">Nước lẩu chua cay, rau nấm tươi</div>
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-top:14px;">
+                <div style="font:800 16px 'Be Vietnam Pro'; color:#102A43;">159.000<span style="font-weight:600; font-size:11px; color:#8A8E99;">đ</span></div>
+                <div style="width:38px; height:38px; border-radius:12px; background:#102A43; color:#fff; font-size:21px; font-weight:300; display:flex; align-items:center; justify-content:center;">+</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 12px 30px -22px rgba(16,42,67,.4);">
+            <div style="height:150px; background:linear-gradient(150deg,#E4E9F2,#C9D2E1); position:relative;"><span style="position:absolute; left:12px; bottom:10px; font:600 9px 'Be Vietnam Pro'; color:#9AA0AC; letter-spacing:.5px;">ẢNH</span></div>
+            <div style="padding:15px 16px 16px;">
+              <div style="font:700 15.5px 'Be Vietnam Pro'; color:#102A43;">Bún chả Hà Nội</div>
+              <div style="font:400 12px 'Be Vietnam Pro'; color:#8A8E99; margin-top:4px; line-height:1.5;">Chả nướng than, nước mắm pha</div>
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-top:14px;">
+                <div style="font:800 16px 'Be Vietnam Pro'; color:#102A43;">59.000<span style="font-weight:600; font-size:11px; color:#8A8E99;">đ</span></div>
+                <div style="position:relative;">
+                  <div style="width:38px; height:38px; border-radius:12px; background:#102A43; color:#fff; font-size:21px; font-weight:300; display:flex; align-items:center; justify-content:center;">+</div>
+                  <span style="position:absolute; top:-7px; right:-7px; min-width:20px; height:20px; padding:0 5px; border-radius:10px; background:#2563EB; color:#fff; font:700 10.5px 'Be Vietnam Pro'; display:flex; align-items:center; justify-content:center; border:2px solid #fff;">2</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 12px 30px -22px rgba(16,42,67,.4);">
+            <div style="height:150px; background:linear-gradient(150deg,#E3E8F1,#C6D0DF); position:relative;"><span style="position:absolute; left:12px; bottom:10px; font:600 9px 'Be Vietnam Pro'; color:#9AA0AC; letter-spacing:.5px;">ẢNH</span></div>
+            <div style="padding:15px 16px 16px;">
+              <div style="font:700 15.5px 'Be Vietnam Pro'; color:#102A43;">Ba chỉ nướng riềng mẻ</div>
+              <div style="font:400 12px 'Be Vietnam Pro'; color:#8A8E99; margin-top:4px; line-height:1.5;">Ướp riềng mẻ, nướng than hoa</div>
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-top:14px;">
+                <div style="font:800 16px 'Be Vietnam Pro'; color:#102A43;">89.000<span style="font-weight:600; font-size:11px; color:#8A8E99;">đ</span></div>
+                <div style="width:38px; height:38px; border-radius:12px; background:#102A43; color:#fff; font-size:21px; font-weight:300; display:flex; align-items:center; justify-content:center;">+</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 12px 30px -22px rgba(16,42,67,.4);">
+            <div style="height:150px; background:linear-gradient(150deg,#E2E7F0,#C5CEDD); position:relative;"><span style="position:absolute; left:12px; bottom:10px; font:600 9px 'Be Vietnam Pro'; color:#9AA0AC; letter-spacing:.5px;">ẢNH</span></div>
+            <div style="padding:15px 16px 16px;">
+              <div style="font:700 15.5px 'Be Vietnam Pro'; color:#102A43;">Gỏi cuốn tôm thịt</div>
+              <div style="font:400 12px 'Be Vietnam Pro'; color:#8A8E99; margin-top:4px; line-height:1.5;">Bánh tráng cuốn, chấm mắm nêm</div>
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-top:14px;">
+                <div style="font:800 16px 'Be Vietnam Pro'; color:#102A43;">45.000<span style="font-weight:600; font-size:11px; color:#8A8E99;">đ</span></div>
+                <div style="width:38px; height:38px; border-radius:12px; background:#102A43; color:#fff; font-size:21px; font-weight:300; display:flex; align-items:center; justify-content:center;">+</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 12px 30px -22px rgba(16,42,67,.4);">
+            <div style="height:150px; background:linear-gradient(150deg,#E4E9F2,#C9D2E1); position:relative;"><span style="position:absolute; left:12px; bottom:10px; font:600 9px 'Be Vietnam Pro'; color:#9AA0AC; letter-spacing:.5px;">ẢNH</span></div>
+            <div style="padding:15px 16px 16px;">
+              <div style="font:700 15.5px 'Be Vietnam Pro'; color:#102A43;">Rau muống xào tỏi</div>
+              <div style="font:400 12px 'Be Vietnam Pro'; color:#8A8E99; margin-top:4px; line-height:1.5;">Xào lửa lớn, giòn xanh</div>
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-top:14px;">
+                <div style="font:800 16px 'Be Vietnam Pro'; color:#102A43;">39.000<span style="font-weight:600; font-size:11px; color:#8A8E99;">đ</span></div>
+                <div style="position:relative;">
+                  <div style="width:38px; height:38px; border-radius:12px; background:#102A43; color:#fff; font-size:21px; font-weight:300; display:flex; align-items:center; justify-content:center;">+</div>
+                  <span style="position:absolute; top:-7px; right:-7px; min-width:20px; height:20px; padding:0 5px; border-radius:10px; background:#2563EB; color:#fff; font:700 10.5px 'Be Vietnam Pro'; display:flex; align-items:center; justify-content:center; border:2px solid #fff;">1</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 12px 30px -22px rgba(16,42,67,.4);">
+            <div style="height:150px; background:linear-gradient(150deg,#E3E8F1,#C6D0DF); position:relative;"><span style="position:absolute; left:12px; bottom:10px; font:600 9px 'Be Vietnam Pro'; color:#9AA0AC; letter-spacing:.5px;">ẢNH</span></div>
+            <div style="padding:15px 16px 16px;">
+              <div style="font:700 15.5px 'Be Vietnam Pro'; color:#102A43;">Chè khúc bạch</div>
+              <div style="font:400 12px 'Be Vietnam Pro'; color:#8A8E99; margin-top:4px; line-height:1.5;">Tráng miệng mát lạnh, hạnh nhân</div>
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-top:14px;">
+                <div style="font:800 16px 'Be Vietnam Pro'; color:#102A43;">35.000<span style="font-weight:600; font-size:11px; color:#8A8E99;">đ</span></div>
+                <div style="width:38px; height:38px; border-radius:12px; background:#102A43; color:#fff; font-size:21px; font-weight:300; display:flex; align-items:center; justify-content:center;">+</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- cart sidebar -->
+      <div style="width:360px; flex-shrink:0; background:#fff; border-left:1px solid #EEF1F6; display:flex; flex-direction:column;">
+        <div style="padding:22px 24px 16px; border-bottom:1px solid #EEF1F6; display:flex; align-items:center; justify-content:space-between;">
+          <div style="font:800 18px 'Be Vietnam Pro'; color:#102A43;">Giỏ của bạn</div>
+          <div style="font:600 12px 'Be Vietnam Pro'; color:#2563EB; background:#E8F0FE; border-radius:8px; padding:5px 10px;">3 món</div>
+        </div>
+
+        <div class="scr" style="flex:1; overflow-y:auto; padding:18px 24px;">
+          <div style="display:flex; align-items:center; gap:13px; padding-bottom:16px;">
+            <div style="width:52px; height:52px; border-radius:12px; background:linear-gradient(150deg,#E2E7F0,#C5CEDD); flex-shrink:0;"></div>
+            <div style="flex:1; min-width:0;"><div style="font:700 14px 'Be Vietnam Pro'; color:#102A43;">Lẩu Thái chua cay</div><div style="font:600 12.5px 'Be Vietnam Pro'; color:#8A8E99; margin-top:3px;">159.000đ</div></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:8px; background:#F1F4F9; display:flex; align-items:center; justify-content:center; font:300 16px 'Be Vietnam Pro'; color:#102A43;">−</span><span style="font:700 13.5px 'Be Vietnam Pro'; color:#102A43;">1</span><span style="width:26px; height:26px; border-radius:8px; background:#102A43; display:flex; align-items:center; justify-content:center; font:300 16px 'Be Vietnam Pro'; color:#fff;">+</span></div>
+          </div>
+          <div style="height:1px; background:#F0EEE8; background:#EEF1F6;"></div>
+          <div style="display:flex; align-items:center; gap:13px; padding:16px 0;">
+            <div style="width:52px; height:52px; border-radius:12px; background:linear-gradient(150deg,#E4E9F2,#C9D2E1); flex-shrink:0;"></div>
+            <div style="flex:1; min-width:0;"><div style="font:700 14px 'Be Vietnam Pro'; color:#102A43;">Bún chả Hà Nội</div><div style="font:600 12.5px 'Be Vietnam Pro'; color:#8A8E99; margin-top:3px;">59.000đ</div></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:8px; background:#F1F4F9; display:flex; align-items:center; justify-content:center; font:300 16px 'Be Vietnam Pro'; color:#102A43;">−</span><span style="font:700 13.5px 'Be Vietnam Pro'; color:#102A43;">2</span><span style="width:26px; height:26px; border-radius:8px; background:#102A43; display:flex; align-items:center; justify-content:center; font:300 16px 'Be Vietnam Pro'; color:#fff;">+</span></div>
+          </div>
+          <div style="height:1px; background:#EEF1F6;"></div>
+          <div style="display:flex; align-items:center; gap:13px; padding:16px 0;">
+            <div style="width:52px; height:52px; border-radius:12px; background:linear-gradient(150deg,#E3E8F1,#C6D0DF); flex-shrink:0;"></div>
+            <div style="flex:1; min-width:0;"><div style="font:700 14px 'Be Vietnam Pro'; color:#102A43;">Rau muống xào tỏi</div><div style="font:600 12.5px 'Be Vietnam Pro'; color:#8A8E99; margin-top:3px;">39.000đ</div></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:8px; background:#F1F4F9; display:flex; align-items:center; justify-content:center; font:300 16px 'Be Vietnam Pro'; color:#102A43;">−</span><span style="font:700 13.5px 'Be Vietnam Pro'; color:#102A43;">1</span><span style="width:26px; height:26px; border-radius:8px; background:#102A43; display:flex; align-items:center; justify-content:center; font:300 16px 'Be Vietnam Pro'; color:#fff;">+</span></div>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; border:1.5px dashed #C9D2E1; border-radius:12px; padding:13px 14px; margin-top:8px;"><span style="font:500 13px 'Be Vietnam Pro'; color:#8A8E99;">Nhập mã giảm giá</span><span style="font:700 13px 'Be Vietnam Pro'; color:#2563EB;">Áp dụng</span></div>
+        </div>
+
+        <div style="padding:18px 24px 22px; border-top:1px solid #EEF1F6;">
+          <div style="display:flex; justify-content:space-between; padding-bottom:9px;"><span style="font:500 13px 'Be Vietnam Pro'; color:#8A8E99;">Tạm tính</span><span style="font:600 13px 'Be Vietnam Pro'; color:#102A43;">277.000đ</span></div>
+          <div style="display:flex; justify-content:space-between; padding-bottom:13px;"><span style="font:500 13px 'Be Vietnam Pro'; color:#8A8E99;">Giảm giá combo</span><span style="font:600 13px 'Be Vietnam Pro'; color:#2563EB;">−29.000đ</span></div>
+          <div style="display:flex; justify-content:space-between; align-items:baseline; padding:13px 0 16px; border-top:1px solid #EEF1F6;"><span style="font:700 15px 'Be Vietnam Pro'; color:#102A43;">Tổng cộng</span><span style="font:800 22px 'Be Vietnam Pro'; color:#102A43;">248.000đ</span></div>
+          <div style="background:#102A43; color:#fff; border-radius:14px; padding:16px; text-align:center; font:700 15px 'Be Vietnam Pro'; box-shadow:0 18px 36px -14px rgba(16,42,67,.5);">Gửi bếp · 248.000đ</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ========================= WEB · THEO DÕI ĐƠN ========================= -->
+<div style="position:absolute; left:1400px; top:150px; width:560px; font-family:'Be Vietnam Pro',system-ui,sans-serif;">
+  <div data-drags-parent="1" style="position:absolute; top:-34px; left:6px; font:600 14px 'Be Vietnam Pro'; color:#4F535D;">Web · Theo dõi đơn</div>
+  <div style="border-radius:18px; overflow:hidden; box-shadow:0 40px 90px -34px rgba(16,42,67,.45); border:1px solid #E6EAF1;">
+    <div style="height:46px; background:#E9EDF3; border-bottom:1px solid #DCE2EC; display:flex; align-items:center; gap:8px; padding:0 16px;">
+      <span style="width:12px; height:12px; border-radius:50%; background:#F2655B;"></span>
+      <span style="width:12px; height:12px; border-radius:50%; background:#F5BE4F;"></span>
+      <span style="width:12px; height:12px; border-radius:50%; background:#61C554;"></span>
+      <div style="flex:1; max-width:340px; margin:0 auto; background:#fff; border:1px solid #DCE2EC; border-radius:9px; height:28px; display:flex; align-items:center; gap:8px; padding:0 12px; font:500 12.5px 'Be Vietnam Pro'; color:#8A8E99;">order.bepmoc.vn/ban-12/don</div>
+    </div>
+
+    <div style="background:#F1F4F9; padding:26px 28px 30px;">
+      <div style="background:#102A43; border-radius:18px; padding:24px 26px; color:#fff;">
+        <div style="display:flex; align-items:center; gap:9px;"><span style="width:9px; height:9px; border-radius:50%; background:#2563EB; animation:pulse 1.4s ease-in-out infinite;"></span><span style="font:600 11px 'Be Vietnam Pro'; letter-spacing:1.5px; color:#7FA8F5;">ĐANG CHUẨN BỊ</span></div>
+        <div style="font:800 24px 'Be Vietnam Pro'; letter-spacing:-.3px; margin-top:11px;">Đang chuẩn bị đơn của bạn</div>
+        <div style="font:500 13.5px 'Be Vietnam Pro'; color:#9FB0C4; margin-top:6px;">Dự kiến phục vụ trong ~12 phút · Bàn 12</div>
+        <div style="display:flex; align-items:center; gap:8px; margin-top:20px;">
+          <div style="flex:1; height:5px; border-radius:3px; background:#2563EB;"></div>
+          <div style="flex:1; height:5px; border-radius:3px; background:#2563EB;"></div>
+          <div style="flex:1; height:5px; border-radius:3px; background:#2A4258;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:9px; font:500 11px 'Be Vietnam Pro'; color:#6E8298;"><span style="color:#fff;">Đã nhận</span><span style="color:#fff;">Đang chuẩn bị</span><span>Phục vụ</span></div>
+      </div>
+
+      <div style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 12px 30px -22px rgba(16,42,67,.35); margin-top:16px;">
+        <div style="padding:15px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #EEF1F6;"><span style="font:700 15px 'Be Vietnam Pro'; color:#102A43;">Lượt 2 · 19:48</span><span style="display:flex; align-items:center; gap:6px; background:#E8F0FE; color:#2563EB; border-radius:20px; padding:5px 12px; font:700 11px 'Be Vietnam Pro';"><span style="width:6px; height:6px; border-radius:50%; background:#2563EB;"></span>Đang chuẩn bị</span></div>
+        <div style="padding:8px 18px 14px;">
+          <div style="display:flex; justify-content:space-between; padding:9px 0;"><span style="font:500 14px 'Be Vietnam Pro'; color:#2E3038;">Lẩu Thái chua cay <span style="color:#A2A6B0; font-weight:700;">×1</span></span><span style="font:600 14px 'Be Vietnam Pro'; color:#102A43;">159.000đ</span></div>
+          <div style="display:flex; justify-content:space-between; padding:9px 0;"><span style="font:500 14px 'Be Vietnam Pro'; color:#2E3038;">Rau muống xào tỏi <span style="color:#A2A6B0; font-weight:700;">×1</span></span><span style="font:600 14px 'Be Vietnam Pro'; color:#102A43;">39.000đ</span></div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 12px 30px -22px rgba(16,42,67,.35); margin-top:14px;">
+        <div style="padding:15px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #EEF1F6;"><span style="font:700 15px 'Be Vietnam Pro'; color:#102A43;">Lượt 1 · 19:31</span><span style="background:#E9F0E4; color:#5B7A3E; border-radius:20px; padding:5px 12px; font:700 11px 'Be Vietnam Pro';">✓ Đã phục vụ</span></div>
+        <div style="padding:8px 18px 14px;">
+          <div style="display:flex; justify-content:space-between; padding:9px 0;"><span style="font:500 14px 'Be Vietnam Pro'; color:#2E3038;">Bún chả Hà Nội <span style="color:#A2A6B0; font-weight:700;">×2</span></span><span style="font:600 14px 'Be Vietnam Pro'; color:#102A43;">118.000đ</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:18px;">
+        <div style="flex:1; background:#fff; border:1px solid #E6EAF1; color:#102A43; border-radius:14px; padding:15px; text-align:center; font:700 14px 'Be Vietnam Pro';">Gọi phục vụ</div>
+        <div style="flex:1; background:#102A43; color:#fff; border-radius:14px; padding:15px; text-align:center; font:700 14px 'Be Vietnam Pro';">Thanh toán</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

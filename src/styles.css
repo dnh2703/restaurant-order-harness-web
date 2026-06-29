@@ -1,1 +1,40 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+
+@theme {
+  --font-sans: 'Be Vietnam Pro', system-ui, sans-serif;
+
+  --color-ink: #102a43;
+  --color-ink-soft: #2e3038;
+  --color-brand: #2563eb;
+  --color-brand-bg: #e8f0fe;
+  --color-brand-border: #cfe0fb;
+  --color-page: #f1f4f9;
+  --color-line: #eef1f6;
+  --color-line-strong: #e6eaf1;
+  --color-muted: #8a8e99;
+  --color-secondary: #4f535d;
+  --color-ok-bg: #e9f0e4;
+  --color-ok-text: #5b7a3e;
+
+  --radius-card: 18px;
+  --radius-control: 12px;
+  --radius-button: 14px;
+
+  --shadow-card: 0 12px 30px -22px rgba(16, 42, 67, 0.4);
+  --shadow-panel: 0 40px 90px -34px rgba(16, 42, 67, 0.45);
+}
+
+body {
+  background: var(--color-page);
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

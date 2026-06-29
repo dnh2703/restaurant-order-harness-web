@@ -3,6 +3,10 @@ import { getMenu, getTableContext } from '@/shared/api/qr'
 import { CustomerMenuPage } from '@/pages/customer-menu/CustomerMenuPage'
 
 export const Route = createFileRoute('/t/$qrToken')({
+  validateSearch: (search: Record<string, unknown>): { q: string; cat: string } => ({
+    q: typeof search.q === 'string' ? search.q : '',
+    cat: typeof search.cat === 'string' ? search.cat : 'all',
+  }),
   loader: async ({ params }) => {
     const [context, menu] = await Promise.all([
       getTableContext({ data: { qrToken: params.qrToken } }),
@@ -24,5 +28,18 @@ export const Route = createFileRoute('/t/$qrToken')({
 
 function CustomerMenuRoute() {
   const { context, menu } = Route.useLoaderData()
-  return <CustomerMenuPage context={context} menu={menu} />
+  const params = Route.useParams()
+  const search = Route.useSearch()
+  const navigate = Route.useNavigate()
+  const setSearch = (next: Partial<{ q: string; cat: string }>) =>
+    navigate({ search: (prev) => ({ ...prev, ...next }), replace: true })
+  return (
+    <CustomerMenuPage
+      context={context}
+      menu={menu}
+      search={search}
+      onSearchChange={setSearch}
+      qrToken={params.qrToken}
+    />
+  )
 }
