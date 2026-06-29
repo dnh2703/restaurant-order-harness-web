@@ -12,18 +12,23 @@ interface Props {
   onSelectCat: (cat: string) => void
   quantities: Record<string, number>
   onAdd: (item: MenuItem) => void
+  onOpenDetail: (item: MenuItem) => void
 }
 
 function DishCard({
   item,
   qty,
   onAdd,
+  onOpenDetail,
 }: {
   item: MenuItem
   qty: number
   onAdd: (i: MenuItem) => void
+  onOpenDetail: (i: MenuItem) => void
 }) {
   const soldOut = !item.isAvailable
+  const hasOptions = item.optionGroups.length > 0
+  const onPlus = () => (hasOptions ? onOpenDetail(item) : onAdd(item))
   return (
     <div
       data-dish={item.id}
@@ -42,18 +47,35 @@ function DishCard({
         )}
       </div>
       <div className="p-4">
-        <div className="font-bold text-ink">{item.name}</div>
-        {item.description && (
-          <p className="mt-1 line-clamp-2 text-xs text-muted">{item.description}</p>
+        {hasOptions ? (
+          <button
+            type="button"
+            aria-label={`Xem ${item.name}`}
+            disabled={soldOut}
+            onClick={() => onOpenDetail(item)}
+            className="block w-full text-left"
+          >
+            <div className="font-bold text-ink">{item.name}</div>
+            {item.description && (
+              <p className="mt-1 line-clamp-2 text-xs text-muted">{item.description}</p>
+            )}
+          </button>
+        ) : (
+          <>
+            <div className="font-bold text-ink">{item.name}</div>
+            {item.description && (
+              <p className="mt-1 line-clamp-2 text-xs text-muted">{item.description}</p>
+            )}
+          </>
         )}
         <div className="mt-3.5 flex items-center justify-between">
           <div className="text-base font-extrabold text-ink">{formatVND(item.price)}</div>
           <div className="relative">
             <button
               type="button"
-              aria-label={`Thêm ${item.name}`}
+              aria-label={`${hasOptions ? 'Chọn' : 'Thêm'} ${item.name}`}
               disabled={soldOut}
-              onClick={() => onAdd(item)}
+              onClick={onPlus}
               className="flex size-9 items-center justify-center rounded-control bg-ink text-white disabled:opacity-40"
             >
               <Plus size={18} weight="bold" />
@@ -70,7 +92,15 @@ function DishCard({
   )
 }
 
-export function MenuGrid({ menu, categories, activeCat, onSelectCat, quantities, onAdd }: Props) {
+export function MenuGrid({
+  menu,
+  categories,
+  activeCat,
+  onSelectCat,
+  quantities,
+  onAdd,
+  onOpenDetail,
+}: Props) {
   const activeName =
     activeCat === 'all' ? 'Tất cả' : (categories.find((c) => c.id === activeCat)?.name ?? 'Tất cả')
   const total = countItems(menu)
@@ -106,6 +136,7 @@ export function MenuGrid({ menu, categories, activeCat, onSelectCat, quantities,
                     item={item}
                     qty={quantities[item.id] ?? 0}
                     onAdd={onAdd}
+                    onOpenDetail={onOpenDetail}
                   />
                 ))}
               </div>
