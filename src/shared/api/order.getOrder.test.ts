@@ -40,7 +40,7 @@ describe('fetchOrder', () => {
     )
     const order = await fetchOrder('tok')
     expect(order.total).toBe(50000)
-    expect(order.items[0].nameSnapshot).toBe('Phở bò')
+    expect(order.items[0]!.nameSnapshot).toBe('Phở bò')
   })
 
   it('throws a Vietnamese message on 404', async () => {

@@ -25,9 +25,9 @@ describe('normalizeOrder', () => {
       ],
     })
     expect(order.total).toBe(50000)
-    expect(order.items[0].unitPrice).toBe(50000)
-    expect(order.items[0].options[0].priceDelta).toBe(0)
-    expect(order.items[0].status).toBe('PENDING')
+    expect(order.items[0]!.unitPrice).toBe(50000)
+    expect(order.items[0]!.options[0]!.priceDelta).toBe(0)
+    expect(order.items[0]!.status).toBe('PENDING')
   })
 
   it('defaults a missing items array to empty', () => {
