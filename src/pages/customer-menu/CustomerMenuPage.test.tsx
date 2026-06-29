@@ -43,7 +43,10 @@ const menu: Menu = {
   ],
 }
 
-function setup(search = { q: '', cat: 'all' }) {
+function setup(
+  search = { q: '', cat: 'all' },
+  extra: Partial<{ onSubmitted: () => void; onViewOrder: () => void }> = {},
+) {
   const onSearchChange = vi.fn()
   render(
     <CustomerMenuPage
@@ -52,6 +55,8 @@ function setup(search = { q: '', cat: 'all' }) {
       search={search}
       onSearchChange={onSearchChange}
       qrToken="tok"
+      onSubmitted={extra.onSubmitted}
+      onViewOrder={extra.onViewOrder}
     />,
   )
   return { onSearchChange }
@@ -107,5 +112,20 @@ describe('CustomerMenuPage', () => {
     fireEvent.click(await screen.findByRole('button', { name: /Gửi bếp/ }))
     expect(await screen.findByText('Gửi đơn thất bại')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Gửi bếp/ })).not.toBeNull()
+  })
+  it('calls onSubmitted after a successful submit', async () => {
+    const onSubmitted = vi.fn()
+    setup({ q: '', cat: 'all' }, { onSubmitted })
+    fireEvent.click(screen.getByRole('button', { name: 'Thêm Phở bò' }))
+    openCart()
+    fireEvent.click(await screen.findByRole('button', { name: /Gửi bếp/ }))
+    await screen.findByText(/Đã gửi/)
+    expect(onSubmitted).toHaveBeenCalled()
+  })
+  it('calls onViewOrder from the nav order button', () => {
+    const onViewOrder = vi.fn()
+    setup({ q: '', cat: 'all' }, { onViewOrder })
+    fireEvent.click(screen.getByRole('button', { name: 'Xem đơn của bạn' }))
+    expect(onViewOrder).toHaveBeenCalled()
   })
 })

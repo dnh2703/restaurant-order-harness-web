@@ -17,9 +17,19 @@ interface Props {
   search: { q: string; cat: string }
   onSearchChange: (next: Partial<{ q: string; cat: string }>) => void
   qrToken?: string
+  onViewOrder?: () => void
+  onSubmitted?: () => void
 }
 
-export function CustomerMenuPage({ context, menu, search, onSearchChange, qrToken }: Props) {
+export function CustomerMenuPage({
+  context,
+  menu,
+  search,
+  onSearchChange,
+  qrToken,
+  onViewOrder,
+  onSubmitted,
+}: Props) {
   const { restaurant, table } = context
   const [cart, setCart] = useState<CartLine[]>([])
   const [submitting, setSubmitting] = useState(false)
@@ -45,6 +55,7 @@ export function CustomerMenuPage({ context, menu, search, onSearchChange, qrToke
       setCart([])
       setSheetOpen(false)
       setNotice('Đã gửi đơn tới bếp!')
+      onSubmitted?.()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Gửi đơn thất bại')
     } finally {
@@ -69,6 +80,7 @@ export function CustomerMenuPage({ context, menu, search, onSearchChange, qrToke
         onQueryChange={(q) => onSearchChange({ q })}
         cartCount={cartCount(cart)}
         onOpenCart={() => setSheetOpen(true)}
+        onViewOrder={onViewOrder}
       />
       {notice && (
         <div className="bg-ok-bg px-4 py-2 text-center text-sm font-semibold text-ok-text">

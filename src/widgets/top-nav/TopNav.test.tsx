@@ -39,4 +39,10 @@ describe('TopNav', () => {
     setup({ cartCount: 3 })
     expect(screen.getByRole('button', { name: 'Mở giỏ hàng, 3 món' })).toHaveTextContent('3')
   })
+  it('calls onViewOrder when the order button is clicked', () => {
+    const onViewOrder = vi.fn()
+    setup({ onViewOrder })
+    fireEvent.click(screen.getByRole('button', { name: 'Xem đơn của bạn' }))
+    expect(onViewOrder).toHaveBeenCalled()
+  })
 })
