@@ -19,6 +19,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@tanstack/react-router": "latest",
     "@tanstack/react-start": "latest",
     "class-variance-authority": "^0.7.1",

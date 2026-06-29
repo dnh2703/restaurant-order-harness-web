@@ -1,3 +1,6 @@
+import type { ReactNode } from 'react'
+import { Minus, Plus } from '@phosphor-icons/react'
+
 import { type CartLine, cartCount, cartSubtotal } from '@/entities/cart/model'
 import { formatVND } from '@/shared/lib/format'
 import { Badge, Button } from '@/shared/ui'
@@ -8,16 +11,21 @@ interface Props {
   onSubmit: () => void
   submitting: boolean
   error: string | null
+  /** Optional action rendered in the header (e.g. drawer close button). */
+  headerAction?: ReactNode
 }
 
-export function CartPanel({ cart, onSetQty, onSubmit, submitting, error }: Props) {
+export function CartPanel({ cart, onSetQty, onSubmit, submitting, error, headerAction }: Props) {
   const count = cartCount(cart)
   const subtotal = cartSubtotal(cart)
   return (
     <div className="flex h-full flex-col bg-white">
       <div className="flex items-center justify-between border-b border-line px-6 py-5">
         <div className="text-lg font-extrabold text-ink">Giỏ của bạn</div>
-        <Badge>{count} món</Badge>
+        <div className="flex items-center gap-2">
+          <Badge>{count} món</Badge>
+          {headerAction}
+        </div>
       </div>
 
       {cart.length === 0 ? (
@@ -52,18 +60,18 @@ export function CartPanel({ cart, onSetQty, onSubmit, submitting, error }: Props
                     type="button"
                     aria-label={`Giảm ${line.name}`}
                     onClick={() => onSetQty(line.id, line.quantity - 1)}
-                    className="flex size-6.5 items-center justify-center rounded-lg bg-page text-base text-ink"
+                    className="flex size-6.5 items-center justify-center rounded-lg bg-page text-ink"
                   >
-                    −
+                    <Minus size={14} weight="bold" />
                   </button>
                   <span className="text-sm font-bold text-ink">{line.quantity}</span>
                   <button
                     type="button"
                     aria-label={`Tăng ${line.name}`}
                     onClick={() => onSetQty(line.id, line.quantity + 1)}
-                    className="flex size-6.5 items-center justify-center rounded-lg bg-ink text-base text-white"
+                    className="flex size-6.5 items-center justify-center rounded-lg bg-ink text-white"
                   >
-                    +
+                    <Plus size={14} weight="bold" />
                   </button>
                 </div>
               </div>
