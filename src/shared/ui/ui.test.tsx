@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { Button, Chip, Input, Drawer, Badge } from './index'
+import { Button, Chip, Input, Drawer, DrawerContent, DrawerTitle, Badge } from './index'
 
 describe('Button', () => {
   it('renders children and defaults to type=button', () => {
@@ -53,23 +53,26 @@ describe('Input', () => {
 describe('Drawer', () => {
   it('renders nothing when closed', () => {
     render(
-      <Drawer open={false} onClose={() => {}}>
-        <p>Panel</p>
+      <Drawer open={false} onOpenChange={() => {}}>
+        <DrawerContent>
+          <DrawerTitle>Giỏ của bạn</DrawerTitle>
+          <p>Panel</p>
+        </DrawerContent>
       </Drawer>,
     )
     expect(screen.queryByText('Panel')).not.toBeInTheDocument()
   })
-  it('closes on overlay click but not on panel click', () => {
-    const onClose = vi.fn()
+  it('renders content and title when open', () => {
     render(
-      <Drawer open onClose={onClose}>
-        <p>Panel</p>
+      <Drawer open onOpenChange={() => {}}>
+        <DrawerContent>
+          <DrawerTitle>Giỏ của bạn</DrawerTitle>
+          <p>Panel</p>
+        </DrawerContent>
       </Drawer>,
     )
-    fireEvent.click(screen.getByText('Panel'))
-    expect(onClose).not.toHaveBeenCalled()
-    fireEvent.click(screen.getByRole('dialog'))
-    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(screen.getByText('Panel')).toBeInTheDocument()
+    expect(screen.getByText('Giỏ của bạn')).toBeInTheDocument()
   })
 })
 

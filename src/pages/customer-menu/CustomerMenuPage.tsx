@@ -6,7 +6,7 @@ import { type CartLine, addItem, setQuantity, cartCount } from '@/entities/cart/
 import { TopNav } from '@/widgets/top-nav/TopNav'
 import { MenuGrid } from '@/widgets/menu-grid/MenuGrid'
 import { CartPanel } from '@/widgets/cart-panel/CartPanel'
-import { Drawer } from '@/shared/ui'
+import { Drawer, DrawerContent, DrawerTitle } from '@/shared/ui'
 import { submitOrderItems } from '@/shared/api/order'
 
 interface Props {
@@ -105,8 +105,11 @@ export function CustomerMenuPage({ context, menu, search, onSearchChange, qrToke
       )}
 
       {/* Mobile cart sheet */}
-      <Drawer open={sheetOpen} onClose={() => setSheetOpen(false)} overlayClassName="lg:hidden">
-        <CartPanel {...cartProps} />
+      <Drawer open={sheetOpen} onOpenChange={setSheetOpen}>
+        <DrawerContent className="lg:hidden">
+          <DrawerTitle className="sr-only">Giỏ của bạn</DrawerTitle>
+          <CartPanel {...cartProps} />
+        </DrawerContent>
       </Drawer>
     </div>
   )
