@@ -42,7 +42,7 @@ export function OrderTracker({ order, mode, backLink }: Props) {
                       item.status === 'CANCELLED' && 'text-muted line-through',
                     )}
                   >
-                    {item.quantity}× {item.nameSnapshot}
+                    {item.quantity}× <span>{item.nameSnapshot}</span>
                   </div>
                   {item.options.length > 0 && (
                     <div className="mt-0.5 truncate text-xs text-muted">
