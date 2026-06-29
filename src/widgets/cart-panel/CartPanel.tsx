@@ -7,7 +7,7 @@ import { Badge, Button } from '@/shared/ui'
 
 interface Props {
   cart: CartLine[]
-  onSetQty: (id: string, qty: number) => void
+  onSetQty: (lineId: string, qty: number) => void
   onSubmit: () => void
   submitting: boolean
   error: string | null
@@ -37,7 +37,7 @@ export function CartPanel({ cart, onSetQty, onSubmit, submitting, error, headerA
           <div className="scrollbar-none flex-1 overflow-y-auto px-6 py-4">
             {cart.map((line) => (
               <div
-                key={line.id}
+                key={line.lineId}
                 className="flex items-center gap-3 border-b border-line py-4 last:border-0"
               >
                 <div className="size-13 shrink-0 rounded-[12px] bg-gradient-to-br from-line-strong to-[#c5cedd]">
@@ -51,15 +51,23 @@ export function CartPanel({ cart, onSetQty, onSubmit, submitting, error, headerA
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-bold text-ink">{line.name}</div>
+                  {line.options.length > 0 && (
+                    <div className="mt-0.5 truncate text-xs text-muted">
+                      {line.options.map((o) => o.name).join(', ')}
+                    </div>
+                  )}
+                  {line.note && (
+                    <div className="mt-0.5 truncate text-xs text-muted">{line.note}</div>
+                  )}
                   <div className="mt-0.5 text-xs font-semibold text-muted">
-                    {formatVND(line.price)}
+                    {formatVND(line.unitPrice)}
                   </div>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <button
                     type="button"
                     aria-label={`Giảm ${line.name}`}
-                    onClick={() => onSetQty(line.id, line.quantity - 1)}
+                    onClick={() => onSetQty(line.lineId, line.quantity - 1)}
                     className="flex size-6.5 items-center justify-center rounded-lg bg-page text-ink"
                   >
                     <Minus size={14} weight="bold" />
@@ -68,7 +76,7 @@ export function CartPanel({ cart, onSetQty, onSubmit, submitting, error, headerA
                   <button
                     type="button"
                     aria-label={`Tăng ${line.name}`}
-                    onClick={() => onSetQty(line.id, line.quantity + 1)}
+                    onClick={() => onSetQty(line.lineId, line.quantity + 1)}
                     className="flex size-6.5 items-center justify-center rounded-lg bg-ink text-white"
                   >
                     <Plus size={14} weight="bold" />

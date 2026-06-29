@@ -3,7 +3,18 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { CartPanel } from './CartPanel'
 import type { CartLine } from '@/entities/cart/model'
 
-const cart: CartLine[] = [{ id: 'i1', name: 'Phở bò', price: 50000, imageUrl: null, quantity: 2 }]
+const cart: CartLine[] = [
+  {
+    lineId: 'L1',
+    menuItemId: 'i1',
+    name: 'Phở bò',
+    imageUrl: null,
+    unitPrice: 50000,
+    options: [{ id: 'l', name: 'Lớn', priceDelta: 10000 }],
+    note: 'ít hành',
+    quantity: 2,
+  },
+]
 
 function setup(over = {}) {
   const props = {
@@ -27,9 +38,14 @@ describe('CartPanel', () => {
   it('increments and decrements via stepper', () => {
     const { onSetQty } = setup()
     fireEvent.click(screen.getByRole('button', { name: 'Tăng Phở bò' }))
-    expect(onSetQty).toHaveBeenCalledWith('i1', 3)
+    expect(onSetQty).toHaveBeenCalledWith('L1', 3)
     fireEvent.click(screen.getByRole('button', { name: 'Giảm Phở bò' }))
-    expect(onSetQty).toHaveBeenCalledWith('i1', 1)
+    expect(onSetQty).toHaveBeenCalledWith('L1', 1)
+  })
+  it('shows selected options and the note under the dish name', () => {
+    setup()
+    expect(screen.getByText('Lớn')).toBeInTheDocument()
+    expect(screen.getByText('ít hành')).toBeInTheDocument()
   })
   it('submits the order', () => {
     const { onSubmit } = setup()
