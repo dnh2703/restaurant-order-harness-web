@@ -6,6 +6,7 @@ import { type CartLine, addItem, setQuantity, cartCount } from '@/entities/cart/
 import { TopNav } from '@/widgets/top-nav/TopNav'
 import { MenuGrid } from '@/widgets/menu-grid/MenuGrid'
 import { CartPanel } from '@/widgets/cart-panel/CartPanel'
+import { Drawer } from '@/shared/ui'
 import { submitOrderItems } from '@/shared/api/order'
 
 interface Props {
@@ -104,19 +105,9 @@ export function CustomerMenuPage({ context, menu, search, onSearchChange, qrToke
       )}
 
       {/* Mobile cart sheet */}
-      {sheetOpen && (
-        <div
-          className="fixed inset-0 z-40 flex flex-col justify-end bg-black/40 lg:hidden"
-          onClick={() => setSheetOpen(false)}
-        >
-          <div
-            className="max-h-[85vh] overflow-hidden rounded-t-card bg-white"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <CartPanel {...cartProps} />
-          </div>
-        </div>
-      )}
+      <Drawer open={sheetOpen} onClose={() => setSheetOpen(false)} overlayClassName="lg:hidden">
+        <CartPanel {...cartProps} />
+      </Drawer>
     </div>
   )
 }

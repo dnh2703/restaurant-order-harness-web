@@ -1,6 +1,7 @@
 import type { Menu, MenuItem } from '@/entities/menu/model'
 import { countItems } from '@/entities/menu/filter'
 import { formatVND } from '@/shared/lib/format'
+import { Chip } from '@/shared/ui'
 
 interface Props {
   menu: Menu
@@ -9,21 +10,6 @@ interface Props {
   onSelectCat: (cat: string) => void
   quantities: Record<string, number>
   onAdd: (item: MenuItem) => void
-}
-
-function Chip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={
-        'rounded-[12px] px-4 py-2.5 text-sm font-semibold whitespace-nowrap ' +
-        (active ? 'bg-ink text-white' : 'border border-line-strong bg-white text-secondary')
-      }
-    >
-      {label}
-    </button>
-  )
 }
 
 function DishCard({
@@ -89,14 +75,13 @@ export function MenuGrid({ menu, categories, activeCat, onSelectCat, quantities,
   return (
     <div>
       <div className="scrollbar-none flex gap-2.5 overflow-x-auto pb-1">
-        <Chip label="Tất cả" active={activeCat === 'all'} onClick={() => onSelectCat('all')} />
+        <Chip active={activeCat === 'all'} onClick={() => onSelectCat('all')}>
+          Tất cả
+        </Chip>
         {categories.map((c) => (
-          <Chip
-            key={c.id}
-            label={c.name}
-            active={activeCat === c.id}
-            onClick={() => onSelectCat(c.id)}
-          />
+          <Chip key={c.id} active={activeCat === c.id} onClick={() => onSelectCat(c.id)}>
+            {c.name}
+          </Chip>
         ))}
       </div>
       <div className="mt-7 flex items-baseline justify-between">

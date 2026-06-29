@@ -1,4 +1,5 @@
 import type { Restaurant, TableInfo } from '@/entities/table/model'
+import { Badge, Input } from '@/shared/ui'
 
 interface Props {
   restaurant: Restaurant
@@ -19,23 +20,18 @@ export function TopNav({ restaurant, table, query, onQueryChange }: Props) {
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <label className="flex h-10 flex-1 items-center gap-2 rounded-[11px] bg-page px-3.5 sm:w-72">
-          <span aria-hidden className="text-muted">
-            ⌕
-          </span>
-          <input
-            type="search"
-            aria-label="Tìm món"
-            value={query}
-            onChange={(e) => onQueryChange(e.target.value)}
-            placeholder="Tìm món…"
-            className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted"
-          />
-        </label>
-        <span className="flex h-10 shrink-0 items-center gap-2 rounded-[11px] border border-brand-border bg-brand-bg px-3.5 text-xs font-bold uppercase text-brand">
-          <span className="size-1.5 rounded-full bg-brand" />
+        <Input
+          type="search"
+          aria-label="Tìm món"
+          value={query}
+          onChange={(e) => onQueryChange(e.target.value)}
+          placeholder="Tìm món…"
+          leadingIcon="⌕"
+          containerClassName="h-10 flex-1 sm:w-72"
+        />
+        <Badge variant="outline" size="md" dot className="shrink-0 uppercase">
           {table.name}
-        </span>
+        </Badge>
       </div>
     </header>
   )

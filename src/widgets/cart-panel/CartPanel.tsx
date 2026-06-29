@@ -1,5 +1,6 @@
 import { type CartLine, cartCount, cartSubtotal } from '@/entities/cart/model'
 import { formatVND } from '@/shared/lib/format'
+import { Badge, Button } from '@/shared/ui'
 
 interface Props {
   cart: CartLine[]
@@ -16,9 +17,7 @@ export function CartPanel({ cart, onSetQty, onSubmit, submitting, error }: Props
     <div className="flex h-full flex-col bg-white">
       <div className="flex items-center justify-between border-b border-line px-6 py-5">
         <div className="text-lg font-extrabold text-ink">Giỏ của bạn</div>
-        <div className="rounded-lg bg-brand-bg px-2.5 py-1 text-xs font-semibold text-brand">
-          {count} món
-        </div>
+        <Badge>{count} món</Badge>
       </div>
 
       {cart.length === 0 ? (
@@ -89,14 +88,9 @@ export function CartPanel({ cart, onSetQty, onSubmit, submitting, error }: Props
               <span className="text-xl font-extrabold text-ink">{formatVND(subtotal)}</span>
             </div>
             {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
-            <button
-              type="button"
-              onClick={onSubmit}
-              disabled={submitting}
-              className="mt-4 w-full rounded-button bg-ink py-4 text-center font-bold text-white disabled:opacity-50"
-            >
+            <Button size="lg" fullWidth onClick={onSubmit} disabled={submitting} className="mt-4">
               {submitting ? 'Đang gửi…' : `Gửi bếp · ${formatVND(subtotal)}`}
-            </button>
+            </Button>
           </div>
         </>
       )}
