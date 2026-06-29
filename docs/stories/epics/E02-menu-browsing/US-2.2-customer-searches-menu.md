@@ -52,13 +52,15 @@ Verify command: `bun run validate` (`tsc --noEmit && vitest run`).
 | --- | --- | --- |
 | Unit | `shared/lib/diacritics` normalize, `entities/menu/filter` filterMenu + countItems, TopNav search input, MenuGrid category chips | ✅ vitest — diacritics + filter + menu-grid tests green |
 | Integration | CustomerMenuPage filter-from-props test (props drive widget output) | ✅ vitest page filter test passes |
-| E2E | type "pho" in search → filtered dishes shown; tap category chip → filtered | ⏳ skipped — needs seeded `qr_token` (backlog #2) |
+| E2E | search "no-match" → empty state; clear → full list restored | ✅ playwright passes with `E2E_QR_TOKEN=qr-table-01` |
 | Platform | n/a (web) | n/a |
 | Release | — | — |
 
-Proof: unit=1, integration=1, e2e=0. E2E skipped for the same reason as US-2.1:
-data is loaded server-side via `createServerFn`; Playwright cannot intercept it
-without a seeded token or API stub (backlog #2).
+Proof: unit=1, integration=1, e2e=1. The search e2e runs against the seeded BE
+(`bun run db:seed` → `qr-table-01`): it fills the search box with a no-match
+query, asserts the "Không tìm thấy món phù hợp." empty state, then clears and
+re-asserts the original dish count. Skips cleanly without `E2E_QR_TOKEN`.
+**Backlog #2 closed.**
 
 ## Harness Delta
 
@@ -66,7 +68,7 @@ without a seeded token or API stub (backlog #2).
 
 ## Evidence
 
-- `bun run validate` → clean (tsc + vitest 35/35).
-- `bun run test:e2e` → playwright 2/2, 1 skipped (unchanged).
+- `bun run validate` → clean (tsc + vitest 36/36).
+- `E2E_QR_TOKEN=qr-table-01 bun run test:e2e` → playwright 4/4 (incl. search filter).
 - vitest covers: `diacritics`, `menu/filter`, `TopNav` (search), `MenuGrid`
   (chips), `CustomerMenuPage` (filter-from-props).

@@ -50,12 +50,14 @@ Verify command: `bun run validate` (`tsc --noEmit && vitest run`).
 | --- | --- | --- |
 | Unit | `widgets/cart-panel` submit button wires to `submitOrderItems`; confirmation state renders after mock success | ✅ vitest — cart-panel submit test green |
 | Integration | `pages/customer-menu` submit flow: add item → submit → mock order server fn called → cart cleared | ✅ vitest page submit flow (mocks order server fn) |
-| E2E | add dish → tap "Gửi bếp" → order created on real BE | ⏳ skipped — needs seeded `qr_token` (backlog #2) |
+| E2E | add dish → tap "Gửi bếp" → order created on real BE | ⏳ not yet authored (seed available; test would mutate the seeded order) |
 | Platform | n/a (web) | n/a |
 | Release | — | — |
 
-Proof: unit=1, integration=1, e2e=0. E2E skipped: the submit flow requires a
-live BE with a seeded `qr_token` and open order; see backlog #2.
+Proof: unit=1, integration=1, e2e=0. Backlog #2 (e2e seed) is closed — a submit
+e2e is writable against `qr-table-01` — but it would POST a real order to the BE
+(mutating the seeded open order on each run), so it is left unauthored pending a
+reset/isolation decision. e2e proof stays 0 here.
 
 ## Harness Delta
 

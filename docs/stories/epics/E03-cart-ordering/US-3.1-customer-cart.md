@@ -51,12 +51,13 @@ Verify command: `bun run validate` (`tsc --noEmit && vitest run`).
 | --- | --- | --- |
 | Unit | `entities/cart/model` — addItem, setQuantity, cartCount, cartSubtotal; `widgets/cart-panel` renders lines + subtotal | ✅ vitest — cart/model + cart-panel tests green |
 | Integration | `pages/customer-menu` test: add dish → cart panel shows updated total | ✅ vitest page add-to-cart updates total |
-| E2E | click "Add" on a dish → CartPanel shows item and subtotal | ⏳ skipped — needs seeded `qr_token` (backlog #2) |
+| E2E | click "Add" on a dish → CartPanel shows item and subtotal | ⏳ not yet authored (seed now available via `qr-table-01`; test pending) |
 | Platform | n/a (web) | n/a |
 | Release | — | — |
 
-Proof: unit=1, integration=1, e2e=0. E2E skipped: cart interactions depend on
-menu data loaded via server function; seeded token required (backlog #2).
+Proof: unit=1, integration=1, e2e=0. Backlog #2 (e2e seed) is now closed — a
+cart-add e2e is writable against `qr-table-01` — but that test has not been
+authored yet, so e2e proof stays 0 here until it is.
 
 ## Harness Delta
 
