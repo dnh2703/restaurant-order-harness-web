@@ -38,6 +38,26 @@ const menu: Menu = {
           isAvailable: true,
           optionGroups: [],
         },
+        {
+          id: 'i3',
+          name: 'Trà sữa',
+          description: null,
+          price: 35000,
+          imageUrl: null,
+          isAvailable: true,
+          optionGroups: [
+            {
+              id: 'g1',
+              name: 'Size',
+              type: 'SINGLE',
+              isRequired: true,
+              options: [
+                { id: 'o-m', name: 'M', priceDelta: 0 },
+                { id: 'o-l', name: 'L', priceDelta: 6000 },
+              ],
+            },
+          ],
+        },
       ],
     },
   ],
@@ -99,7 +119,10 @@ describe('CustomerMenuPage', () => {
     openCart()
     fireEvent.click(await screen.findByRole('button', { name: /Gửi bếp/ }))
     expect(submitOrderItems).toHaveBeenCalledWith({
-      data: { qrToken: 'tok', items: [{ menuItemId: 'i1', quantity: 1 }] },
+      data: {
+        qrToken: 'tok',
+        items: [{ menuItemId: 'i1', quantity: 1, note: null, optionIds: [] }],
+      },
     })
     expect(await screen.findByText(/Đã gửi/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Gửi bếp/ })).toBeNull()
@@ -127,5 +150,23 @@ describe('CustomerMenuPage', () => {
     setup({ q: '', cat: 'all' }, { onViewOrder })
     fireEvent.click(screen.getByRole('button', { name: 'Xem đơn của bạn' }))
     expect(onViewOrder).toHaveBeenCalled()
+  })
+  it('adds a dish with options via the detail sheet and submits its optionIds + note', async () => {
+    setup()
+    fireEvent.click(screen.getByRole('button', { name: 'Chọn Trà sữa' }))
+    fireEvent.click(await screen.findByRole('radio', { name: /^L/ }))
+    fireEvent.change(screen.getByPlaceholderText(/Ghi chú/), { target: { value: 'ít đá' } })
+    fireEvent.click(screen.getByRole('button', { name: /Thêm vào giỏ/ }))
+    // The sheet closes on add. happy-dom doesn't clear vaul's background
+    // aria-hidden synchronously after a portal closes (it does in a real
+    // browser), so reach the cart button and submit button including hidden.
+    fireEvent.click(screen.getByRole('button', { name: /Mở giỏ hàng/, hidden: true }))
+    fireEvent.click(await screen.findByRole('button', { name: /Gửi bếp/, hidden: true }))
+    expect(submitOrderItems).toHaveBeenCalledWith({
+      data: {
+        qrToken: 'tok',
+        items: [{ menuItemId: 'i3', quantity: 1, note: 'ít đá', optionIds: ['o-l'] }],
+      },
+    })
   })
 })

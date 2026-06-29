@@ -3,11 +3,20 @@ import { X } from '@phosphor-icons/react'
 
 import type { TableContext } from '@/entities/table/model'
 import type { Menu, MenuItem } from '@/entities/menu/model'
+import { defaultSelection, selectedOptions } from '@/entities/menu/dish-selection'
 import { filterMenu } from '@/entities/menu/filter'
-import { type CartLine, addItem, setQuantity, cartCount } from '@/entities/cart/model'
+import {
+  type CartLine,
+  buildCartLine,
+  addLine,
+  setQuantity,
+  cartCount,
+  quantityByMenuItem,
+} from '@/entities/cart/model'
 import { TopNav } from '@/widgets/top-nav/TopNav'
 import { MenuGrid } from '@/widgets/menu-grid/MenuGrid'
 import { CartPanel } from '@/widgets/cart-panel/CartPanel'
+import { DishDetailSheet } from '@/widgets/dish-detail/DishDetailSheet'
 import { Drawer, DrawerContent, DrawerTitle, DrawerClose } from '@/shared/ui'
 import { submitOrderItems } from '@/shared/api/order'
 
@@ -32,6 +41,7 @@ export function CustomerMenuPage({
 }: Props) {
   const { restaurant, table } = context
   const [cart, setCart] = useState<CartLine[]>([])
+  const [detailItem, setDetailItem] = useState<MenuItem | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -39,10 +49,15 @@ export function CustomerMenuPage({
 
   const categories = menu.categories.map((c) => ({ id: c.id, name: c.name }))
   const filtered = filterMenu(menu, search)
-  const quantities = Object.fromEntries(cart.map((l) => [l.id, l.quantity]))
+  const quantities = quantityByMenuItem(cart)
 
-  const onAdd = (item: MenuItem) => setCart((c) => addItem(c, item))
-  const onSetQty = (id: string, qty: number) => setCart((c) => setQuantity(c, id, qty))
+  // Option-less dishes quick-add with their default (empty) selection.
+  const onAdd = (item: MenuItem) =>
+    setCart((c) =>
+      addLine(c, buildCartLine(item, selectedOptions(item, defaultSelection(item)), null, 1)),
+    )
+  const onAddLine = (line: CartLine) => setCart((c) => addLine(c, line))
+  const onSetQty = (lineId: string, qty: number) => setCart((c) => setQuantity(c, lineId, qty))
 
   const onSubmit = async () => {
     if (cart.length === 0 || !qrToken) return
@@ -50,7 +65,15 @@ export function CustomerMenuPage({
     setError(null)
     try {
       await submitOrderItems({
-        data: { qrToken, items: cart.map((l) => ({ menuItemId: l.id, quantity: l.quantity })) },
+        data: {
+          qrToken,
+          items: cart.map((l) => ({
+            menuItemId: l.menuItemId,
+            quantity: l.quantity,
+            note: l.note,
+            optionIds: l.options.map((o) => o.id),
+          })),
+        },
       })
       setCart([])
       setSheetOpen(false)
@@ -97,6 +120,7 @@ export function CustomerMenuPage({
             onSelectCat={(cat) => onSearchChange({ cat })}
             quantities={quantities}
             onAdd={onAdd}
+            onOpenDetail={setDetailItem}
           />
         </main>
       </div>
@@ -118,6 +142,15 @@ export function CustomerMenuPage({
           />
         </DrawerContent>
       </Drawer>
+
+      <DishDetailSheet
+        item={detailItem}
+        open={detailItem !== null}
+        onOpenChange={(open) => {
+          if (!open) setDetailItem(null)
+        }}
+        onAdd={onAddLine}
+      />
     </div>
   )
 }

@@ -6,7 +6,7 @@ import type { Order } from '@/entities/order/model'
 
 interface SubmitInput {
   qrToken: string
-  items: { menuItemId: string; quantity: number }[]
+  items: { menuItemId: string; quantity: number; note?: string | null; optionIds?: string[] }[]
 }
 
 export const submitOrderItems = createServerFn({ method: 'POST' })
