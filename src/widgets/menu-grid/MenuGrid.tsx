@@ -1,3 +1,5 @@
+import { Plus } from '@phosphor-icons/react'
+
 import type { Menu, MenuItem } from '@/entities/menu/model'
 import { countItems } from '@/entities/menu/filter'
 import { formatVND } from '@/shared/lib/format'
@@ -52,9 +54,9 @@ function DishCard({
               aria-label={`Thêm ${item.name}`}
               disabled={soldOut}
               onClick={() => onAdd(item)}
-              className="flex size-9 items-center justify-center rounded-[12px] bg-ink text-xl font-light text-white disabled:opacity-40"
+              className="flex size-9 items-center justify-center rounded-control bg-ink text-white disabled:opacity-40"
             >
-              +
+              <Plus size={18} weight="bold" />
             </button>
             {qty > 0 && (
               <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-brand px-1 text-[10px] font-bold text-white">

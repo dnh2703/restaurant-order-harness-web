@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { X } from '@phosphor-icons/react'
+
 import type { TableContext } from '@/entities/table/model'
 import type { Menu, MenuItem } from '@/entities/menu/model'
 import { filterMenu } from '@/entities/menu/filter'
@@ -6,7 +8,7 @@ import { type CartLine, addItem, setQuantity, cartCount } from '@/entities/cart/
 import { TopNav } from '@/widgets/top-nav/TopNav'
 import { MenuGrid } from '@/widgets/menu-grid/MenuGrid'
 import { CartPanel } from '@/widgets/cart-panel/CartPanel'
-import { Drawer, DrawerContent, DrawerTitle } from '@/shared/ui'
+import { Drawer, DrawerContent, DrawerTitle, DrawerClose } from '@/shared/ui'
 import { submitOrderItems } from '@/shared/api/order'
 
 interface Props {
@@ -65,6 +67,8 @@ export function CustomerMenuPage({ context, menu, search, onSearchChange, qrToke
         table={table}
         query={search.q}
         onQueryChange={(q) => onSearchChange({ q })}
+        cartCount={cartCount(cart)}
+        onOpenCart={() => setSheetOpen(true)}
       />
       {notice && (
         <div className="bg-ok-bg px-4 py-2 text-center text-sm font-semibold text-ok-text">
@@ -72,8 +76,8 @@ export function CustomerMenuPage({ context, menu, search, onSearchChange, qrToke
         </div>
       )}
 
-      <div className="mx-auto flex w-full max-w-[1360px] flex-1 gap-0 lg:gap-6 lg:px-6 lg:py-6">
-        <main className="flex-1 px-4 py-5 pb-28 lg:px-0 lg:pb-0">
+      <div className="mx-auto w-full max-w-[1360px] flex-1 lg:px-6 lg:py-6">
+        <main className="px-4 py-5 lg:px-0">
           <MenuGrid
             menu={filtered}
             categories={categories}
@@ -83,32 +87,23 @@ export function CustomerMenuPage({ context, menu, search, onSearchChange, qrToke
             onAdd={onAdd}
           />
         </main>
-
-        {/* Desktop cart */}
-        <aside className="hidden w-[360px] shrink-0 lg:block">
-          <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-hidden rounded-card border border-line-strong shadow-panel">
-            <CartPanel {...cartProps} />
-          </div>
-        </aside>
       </div>
 
-      {/* Mobile cart bottom bar */}
-      {cartCount(cart) > 0 && (
-        <button
-          type="button"
-          onClick={() => setSheetOpen(true)}
-          className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-between bg-ink px-5 py-4 text-white lg:hidden"
-        >
-          <span className="font-semibold">{cartCount(cart)} món · Xem giỏ</span>
-          <span className="font-extrabold">Giỏ của bạn</span>
-        </button>
-      )}
-
-      {/* Mobile cart sheet */}
-      <Drawer open={sheetOpen} onOpenChange={setSheetOpen}>
-        <DrawerContent className="lg:hidden">
+      {/* Cart drawer (opens from the right, all breakpoints) */}
+      <Drawer open={sheetOpen} onOpenChange={setSheetOpen} direction="right">
+        <DrawerContent>
           <DrawerTitle className="sr-only">Giỏ của bạn</DrawerTitle>
-          <CartPanel {...cartProps} />
+          <CartPanel
+            {...cartProps}
+            headerAction={
+              <DrawerClose
+                aria-label="Đóng giỏ hàng"
+                className="flex size-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-page"
+              >
+                <X size={18} weight="bold" />
+              </DrawerClose>
+            }
+          />
         </DrawerContent>
       </Drawer>
     </div>

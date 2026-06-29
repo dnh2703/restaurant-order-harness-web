@@ -59,12 +59,18 @@ function setup(search = { q: '', cat: 'all' }) {
 
 beforeEach(() => vi.clearAllMocks())
 
+const openCart = () => fireEvent.click(screen.getByRole('button', { name: /Mở giỏ hàng/ }))
+
 describe('CustomerMenuPage', () => {
-  it('renders nav, menu and cart', () => {
+  it('renders nav and menu', () => {
     setup()
     expect(screen.getByText('Bếp Mộc')).toBeInTheDocument()
     expect(screen.getByText('Phở bò')).toBeInTheDocument()
-    expect(screen.getAllByText('Giỏ của bạn').length).toBeGreaterThan(0)
+  })
+  it('opens the cart drawer from the cart icon', async () => {
+    setup()
+    openCart()
+    expect((await screen.findAllByText('Giỏ của bạn')).length).toBeGreaterThan(0)
   })
   it('typing in search calls onSearchChange', () => {
     const { onSearchChange } = setup()
@@ -76,15 +82,17 @@ describe('CustomerMenuPage', () => {
     expect(screen.getByText('Phở bò')).toBeInTheDocument()
     expect(screen.queryByText('Bún chả')).not.toBeInTheDocument()
   })
-  it('adding a dish updates the cart total', () => {
+  it('adding a dish updates the cart total', async () => {
     setup()
     fireEvent.click(screen.getByRole('button', { name: 'Thêm Phở bò' }))
-    expect(screen.getAllByRole('button', { name: /Gửi bếp/ })[0]!).toHaveTextContent(/50[.,]000đ/)
+    openCart()
+    expect(await screen.findByRole('button', { name: /Gửi bếp/ })).toHaveTextContent(/50[.,]000đ/)
   })
   it('submits the cart and shows a confirmation, then clears', async () => {
     setup()
     fireEvent.click(screen.getByRole('button', { name: 'Thêm Phở bò' }))
-    fireEvent.click(screen.getAllByRole('button', { name: /Gửi bếp/ })[0]!)
+    openCart()
+    fireEvent.click(await screen.findByRole('button', { name: /Gửi bếp/ }))
     expect(submitOrderItems).toHaveBeenCalledWith({
       data: { qrToken: 'tok', items: [{ menuItemId: 'i1', quantity: 1 }] },
     })
@@ -95,7 +103,8 @@ describe('CustomerMenuPage', () => {
     vi.mocked(submitOrderItems).mockRejectedValueOnce(new Error('Gửi đơn thất bại'))
     setup()
     fireEvent.click(screen.getByRole('button', { name: 'Thêm Phở bò' }))
-    fireEvent.click(screen.getAllByRole('button', { name: /Gửi bếp/ })[0]!)
+    openCart()
+    fireEvent.click(await screen.findByRole('button', { name: /Gửi bếp/ }))
     expect(await screen.findByText('Gửi đơn thất bại')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Gửi bếp/ })).not.toBeNull()
   })
