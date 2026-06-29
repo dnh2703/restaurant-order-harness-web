@@ -1,23 +1,31 @@
-import type { ReactNode } from 'react'
+import type { ComponentProps } from 'react'
+import { cva, type VariantProps } from 'class-variance-authority'
 
-interface Props {
-  active?: boolean
-  onClick?: () => void
-  children: ReactNode
-}
+import { cn } from '@/shared/lib/cn'
+
+export const chipVariants = cva(
+  'rounded-control px-4 py-2.5 text-sm font-semibold whitespace-nowrap',
+  {
+    variants: {
+      active: {
+        true: 'bg-ink text-white',
+        false: 'border border-line-strong bg-white text-secondary',
+      },
+    },
+    defaultVariants: { active: false },
+  },
+)
+
+interface Props extends ComponentProps<'button'>, VariantProps<typeof chipVariants> {}
 
 /** Single-select pill toggle (e.g. category filters). */
-export function Chip({ active = false, onClick, children }: Props) {
+export function Chip({ className, active, type = 'button', ...props }: Props) {
   return (
     <button
-      type="button"
-      onClick={onClick}
-      className={
-        'rounded-control px-4 py-2.5 text-sm font-semibold whitespace-nowrap ' +
-        (active ? 'bg-ink text-white' : 'border border-line-strong bg-white text-secondary')
-      }
-    >
-      {children}
-    </button>
+      data-slot="chip"
+      type={type}
+      className={cn(chipVariants({ active }), className)}
+      {...props}
+    />
   )
 }

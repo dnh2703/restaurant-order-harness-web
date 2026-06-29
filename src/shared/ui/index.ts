@@ -1,6 +1,6 @@
 // Shared UI kit — generic, domain-free presentational primitives.
-export { Button, type ButtonVariant, type ButtonSize } from './Button'
-export { Chip } from './Chip'
+export { Button, buttonVariants, type ButtonVariant, type ButtonSize } from './Button'
+export { Chip, chipVariants } from './Chip'
 export { Input } from './Input'
 export {
   Drawer,
@@ -14,4 +14,4 @@ export {
   DrawerTitle,
   DrawerDescription,
 } from './Drawer'
-export { Badge, type BadgeVariant, type BadgeSize } from './Badge'
+export { Badge, badgeVariants, type BadgeVariant, type BadgeSize } from './Badge'

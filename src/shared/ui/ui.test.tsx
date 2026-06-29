@@ -3,10 +3,22 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { Button, Chip, Input, Drawer, DrawerContent, DrawerTitle, Badge } from './index'
 
 describe('Button', () => {
-  it('renders children and defaults to type=button', () => {
+  it('renders children, defaults to type=button, and tags data-slot', () => {
     render(<Button>Gửi</Button>)
     const btn = screen.getByRole('button', { name: 'Gửi' })
     expect(btn).toHaveAttribute('type', 'button')
+    expect(btn).toHaveAttribute('data-slot', 'button')
+  })
+  it('lets className override base utilities via cn (tailwind-merge)', () => {
+    render(
+      <Button size="md" className="py-8">
+        X
+      </Button>,
+    )
+    // base size md is py-2.5; the override wins and the base is dropped.
+    const cls = screen.getByRole('button', { name: 'X' }).className
+    expect(cls).toContain('py-8')
+    expect(cls).not.toContain('py-2.5')
   })
   it('applies the primary variant and fires onClick', () => {
     const onClick = vi.fn()

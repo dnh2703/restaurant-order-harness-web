@@ -1,48 +1,38 @@
-import type { ButtonHTMLAttributes } from 'react'
+import type { ComponentProps } from 'react'
+import { cva, type VariantProps } from 'class-variance-authority'
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost'
-export type ButtonSize = 'sm' | 'md' | 'lg'
+import { cn } from '@/shared/lib/cn'
 
-const variants: Record<ButtonVariant, string> = {
-  primary: 'bg-ink text-white',
-  secondary: 'border border-line-strong bg-white text-secondary',
-  ghost: 'bg-transparent text-brand',
-}
+export const buttonVariants = cva('rounded-button text-center font-bold disabled:opacity-50', {
+  variants: {
+    variant: {
+      primary: 'bg-ink text-white',
+      secondary: 'border border-line-strong bg-white text-secondary',
+      ghost: 'bg-transparent text-brand',
+    },
+    size: {
+      sm: 'px-3 py-2 text-xs',
+      md: 'px-4 py-2.5 text-sm',
+      lg: 'px-4 py-4 text-base',
+    },
+    fullWidth: { true: 'w-full' },
+  },
+  defaultVariants: { variant: 'primary', size: 'md' },
+})
 
-const sizes: Record<ButtonSize, string> = {
-  sm: 'px-3 py-2 text-xs',
-  md: 'px-4 py-2.5 text-sm',
-  lg: 'px-4 py-4 text-base',
-}
+export type ButtonVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
+export type ButtonSize = NonNullable<VariantProps<typeof buttonVariants>['size']>
 
-interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant
-  size?: ButtonSize
-  fullWidth?: boolean
-}
+interface Props extends ComponentProps<'button'>, VariantProps<typeof buttonVariants> {}
 
 /** Styled button primitive. Defaults to a non-submitting primary button. */
-export function Button({
-  variant = 'primary',
-  size = 'md',
-  fullWidth = false,
-  className = '',
-  type = 'button',
-  ...rest
-}: Props) {
+export function Button({ className, variant, size, fullWidth, type = 'button', ...props }: Props) {
   return (
     <button
+      data-slot="button"
       type={type}
-      className={[
-        'rounded-button text-center font-bold disabled:opacity-50',
-        variants[variant],
-        sizes[size],
-        fullWidth ? 'w-full' : '',
-        className,
-      ]
-        .filter(Boolean)
-        .join(' ')}
-      {...rest}
+      className={cn(buttonVariants({ variant, size, fullWidth }), className)}
+      {...props}
     />
   )
 }
