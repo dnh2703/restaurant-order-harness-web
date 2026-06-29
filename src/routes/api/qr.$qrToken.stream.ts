@@ -6,10 +6,15 @@ export const Route = createFileRoute('/api/qr/$qrToken/stream')({
   server: {
     handlers: {
       GET: async ({ params }) => {
-        const upstream = await fetch(
-          `${API_BASE_URL}/api/qr/${encodeURIComponent(params.qrToken)}/stream`,
-          { headers: { accept: 'text/event-stream' } },
-        )
+        let upstream: Response
+        try {
+          upstream = await fetch(
+            `${API_BASE_URL}/api/qr/${encodeURIComponent(params.qrToken)}/stream`,
+            { headers: { accept: 'text/event-stream' } },
+          )
+        } catch {
+          return new Response('stream unavailable', { status: 502 })
+        }
         if (!upstream.ok || !upstream.body) {
           return new Response('stream unavailable', { status: upstream.status || 502 })
         }
@@ -19,7 +24,7 @@ export const Route = createFileRoute('/api/qr/$qrToken/stream')({
           headers: {
             'content-type': 'text/event-stream',
             'cache-control': 'no-cache, no-transform',
-            connection: 'keep-alive',
+            'x-accel-buffering': 'no',
           },
         })
       },
