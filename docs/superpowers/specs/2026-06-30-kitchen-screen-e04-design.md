@@ -66,6 +66,14 @@ handed to the BE team**; the full standalone contract lives in
 Until the endpoint ships, the FE degrades gracefully: the `Đã xong` column shows items served
 in the current session and the served-recent fetch failure is swallowed (see §5).
 
+**Status (2026-06-30):** the BE working tree already implements this contract (uncommitted):
+`served_at` column + migration `0003`, `advance-item-status` stamps it, `get-served-recent.ts`,
+the `/api/kitchen/served-recent` route, and a test. The running dev server returns `401`
+(route mounted, auth required) — so the FE can integrate against the real endpoint now. The
+degradation path is kept only as a safety net. The verified staff SSE event name is
+`order_item.updated` with data `{ orderItemId, orderId, status }` (plus `keep-alive`); the
+stream requires the path `:id` to equal the token's `restaurantId`.
+
 ## 4. Frontend changes (`restaurant-order-harness-web`)
 
 Follows FSD layers and the existing server-fn proxy + SSE-proxy patterns.
