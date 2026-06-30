@@ -10,7 +10,7 @@ test.describe('Kitchen screen', () => {
       'Set E2E_KITCHEN_EMAIL/E2E_KITCHEN_PASSWORD (seeded kitchen@demo.test / kitchen-password)',
     )
     await page.goto('/kitchen/login')
-    await page.getByPlaceholder(/Email/).fill(email!)
+    await page.getByPlaceholder('admin@gmail.com').fill(email!)
     await page.getByPlaceholder(/Mật khẩu/).fill(password!)
     await page.getByRole('button', { name: /Đăng nhập/ }).click()
     await expect(page.getByText('Màn hình bếp')).toBeVisible()
@@ -29,7 +29,7 @@ test.describe('Kitchen screen', () => {
       'Set E2E_KITCHEN_EMAIL/E2E_KITCHEN_PASSWORD (seeded kitchen@demo.test / kitchen-password)',
     )
     await page.goto('/kitchen/login')
-    await page.getByPlaceholder(/Email/).fill(email!)
+    await page.getByPlaceholder('admin@gmail.com').fill(email!)
     await page.getByPlaceholder(/Mật khẩu/).fill(password!)
     await page.getByRole('button', { name: /Đăng nhập/ }).click()
     await expect(page.getByText('Màn hình bếp')).toBeVisible()
