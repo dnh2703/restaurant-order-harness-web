@@ -41,7 +41,7 @@ describe('fetchQueue', () => {
     )
     const items = await fetchQueue(fakeStore())
     expect(items).toHaveLength(1)
-    expect(items[0].quantity).toBe(2)
+    expect(items[0]!.quantity).toBe(2)
   })
 })
 
@@ -58,7 +58,7 @@ describe('advanceItem', () => {
       .spyOn(globalThis, 'fetch')
       .mockResolvedValue(jsonResponse({ data: { item: { id: 'oi1', status: 'COOKING' } } }))
     await advanceItem(fakeStore(), { id: 'oi1', status: 'COOKING' })
-    const init = fetchMock.mock.calls[0][1] as RequestInit
+    const init = fetchMock.mock.calls[0]![1] as RequestInit
     expect(init.method).toBe('PATCH')
     expect(JSON.parse(init.body as string)).toEqual({ status: 'COOKING' })
   })
@@ -75,7 +75,7 @@ describe('setAvailability', () => {
       .spyOn(globalThis, 'fetch')
       .mockResolvedValue(jsonResponse({ data: { item: { id: 'm1', isAvailable: false } } }))
     await setAvailability(fakeStore(), { id: 'm1', isAvailable: false })
-    const init = fetchMock.mock.calls[0][1] as RequestInit
+    const init = fetchMock.mock.calls[0]![1] as RequestInit
     expect(JSON.parse(init.body as string)).toEqual({ isAvailable: false })
   })
 })

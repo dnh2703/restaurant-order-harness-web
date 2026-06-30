@@ -48,7 +48,7 @@ describe('authedFetch', () => {
       .mockResolvedValue(jsonResponse({ data: { ok: true } }))
     const res = await authedFetch(store, '/api/kitchen/queue')
     expect(res.status).toBe(200)
-    const headers = (fetchMock.mock.calls[0][1] as RequestInit).headers as Record<string, string>
+    const headers = (fetchMock.mock.calls[0]![1] as RequestInit).headers as Record<string, string>
     expect(headers.authorization).toBe('Bearer A1')
   })
 
@@ -62,7 +62,7 @@ describe('authedFetch', () => {
     const res = await authedFetch(store, '/api/kitchen/queue')
     expect(res.status).toBe(200)
     expect(store.saved).toContain('NEW')
-    const retryHeaders = (fetchMock.mock.calls[2][1] as RequestInit).headers as Record<
+    const retryHeaders = (fetchMock.mock.calls[2]![1] as RequestInit).headers as Record<
       string,
       string
     >

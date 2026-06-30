@@ -45,6 +45,6 @@ describe('useKitchenStream', () => {
     const { result } = renderHook(() => useKitchenStream('r1'))
     await waitFor(() => expect(result.current.queue).toHaveLength(1))
     expect(fetchKitchenQueue).toHaveBeenCalled()
-    expect(result.current.queue[0].nameSnapshot).toBe('Phở')
+    expect(result.current.queue[0]!.nameSnapshot).toBe('Phở')
   })
 })
