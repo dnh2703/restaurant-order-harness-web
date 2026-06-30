@@ -22,4 +22,20 @@ test.describe('Kitchen screen', () => {
     await expect(page).toHaveURL(/\/kitchen\/login/)
     await expect(page.getByRole('button', { name: /Đăng nhập/ })).toBeVisible()
   })
+
+  test('redirects an already-logged-in user away from the login page', async ({ page }) => {
+    test.skip(
+      !email || !password,
+      'Set E2E_KITCHEN_EMAIL/E2E_KITCHEN_PASSWORD (seeded kitchen@demo.test / kitchen-password)',
+    )
+    await page.goto('/kitchen/login')
+    await page.getByPlaceholder(/Email/).fill(email!)
+    await page.getByPlaceholder(/Mật khẩu/).fill(password!)
+    await page.getByRole('button', { name: /Đăng nhập/ }).click()
+    await expect(page.getByText('Màn hình bếp')).toBeVisible()
+    // Revisiting the login route while signed in should bounce back to the board.
+    await page.goto('/kitchen/login')
+    await expect(page).toHaveURL(/\/kitchen\/?$/)
+    await expect(page.getByText('Màn hình bếp')).toBeVisible()
+  })
 })
