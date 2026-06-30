@@ -38,6 +38,7 @@ export function KitchenScreenPage({ user, onLogout }: Props) {
 
   const openPanel = useCallback(async () => {
     setPanelOpen(true)
+    setMenuItems([])
     try {
       setMenuItems(await listMenuItemsForKitchen())
     } catch {

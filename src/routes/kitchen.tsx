@@ -5,7 +5,12 @@ export const Route = createFileRoute('/kitchen')({
   beforeLoad: async ({ location }) => {
     // The login route is public; everything else under /kitchen requires a session.
     if (location.pathname.startsWith('/kitchen/login')) return {}
-    const session = await getStaffSession()
+    let session
+    try {
+      session = await getStaffSession()
+    } catch {
+      throw redirect({ to: '/kitchen/login' })
+    }
     if (!session || (session.role !== 'KITCHEN' && session.role !== 'ADMIN')) {
       throw redirect({ to: '/kitchen/login' })
     }
