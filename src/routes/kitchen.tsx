@@ -1,0 +1,19 @@
+import { createFileRoute, redirect, Outlet } from '@tanstack/react-router'
+import { getStaffSession } from '@/shared/api/auth'
+
+export const Route = createFileRoute('/kitchen')({
+  beforeLoad: async ({ location }) => {
+    // The login route is public; everything else under /kitchen requires a session.
+    if (location.pathname.startsWith('/kitchen/login')) return {}
+    const session = await getStaffSession()
+    if (!session || (session.role !== 'KITCHEN' && session.role !== 'ADMIN')) {
+      throw redirect({ to: '/kitchen/login' })
+    }
+    return { session }
+  },
+  component: KitchenLayout,
+})
+
+function KitchenLayout() {
+  return <Outlet />
+}
