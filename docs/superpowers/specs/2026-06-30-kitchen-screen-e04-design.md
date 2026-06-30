@@ -2,7 +2,9 @@
 
 Date: 2026-06-30
 Status: approved-pending-review
-Repos touched: `restaurant-order-harness-web` (FE), `restaurant-order-harness-server` (BE)
+Repo touched: `restaurant-order-harness-web` (FE only)
+BE: not implemented here — a contract is handed to the BE team (see §3 and
+`2026-06-30-kitchen-served-recent-BE-contract.md`).
 
 ## 1. Goal & scope
 
@@ -24,10 +26,12 @@ screen. Full RBAC for Cashier/Admin and staff-account management (US-8.4) are ou
 - Kitchen board: 3 columns `Chờ làm` / `Đang làm` / `Đã xong`, realtime via staff SSE
   with polling fallback.
 - Sold-out panel on the kitchen screen (US-4.3).
-- **New BE endpoint** `GET /api/kitchen/served-recent` + a `served_at` column on
-  `order_items`, so the `Đã xong` column is durable across reloads.
+- FE coded against a **BE contract** — `GET /api/kitchen/served-recent` plus a `served_at`
+  column — that the BE team implements separately, so the `Đã xong` column is durable.
 
 ### Out of scope
+- **All BE implementation.** The new endpoint is specified as a contract (§3) and handed to
+  the BE team; this effort does not modify `restaurant-order-harness-server`.
 - Cashier and Admin screens, staff-account management (US-8.4), menu administration (EPIC 6).
 - Customer-facing changes.
 
@@ -40,46 +44,27 @@ screen. Full RBAC for Cashier/Admin and staff-account management (US-8.4) are ou
 | Kitchen layout | 3-column board per wireframe (`Chờ làm` / `Đang làm` / `Đã xong`) |
 | US-4.3 sold-out | A "Hết món" panel on the kitchen screen (SPEC puts US-4.3 under Kitchen) |
 | `Đã xong` column | Durable, backed by a new BE endpoint (not session-only) |
-| BE work | Implemented in this effort (separate branch/PR in the BE repo) |
+| BE work | **Not done here** — contract handed to the BE team; FE codes against it |
 | `Bắt đầu` action | Added to `Chờ làm` cards (wireframe omits it but US-4.2 needs PENDING→COOKING) |
 | Elapsed timer | Kept, with color escalation when an item waits too long |
 
-## 3. Backend changes (`restaurant-order-harness-server`)
+## 3. Backend contract (handed to the BE team — not implemented here)
 
-Conventions to follow (verified): Clean Architecture (domain / application / infrastructure /
-presentation), `{ data }` success envelope, `{ error: { code, message } }` errors, Elysia
-`t` (TypeBox) schemas, Drizzle ORM on Postgres, Bun test runner (`bun test`), auth via the
-`authGuard` macro + `.guard({ auth: ['KITCHEN','ADMIN'] })` which exposes
-`auth.restaurantId`.
+The FE needs one new endpoint so the `Đã xong` column is durable. This is a **requirement
+handed to the BE team**; the full standalone contract lives in
+`2026-06-30-kitchen-served-recent-BE-contract.md`. Summary:
 
-### 3.1 Schema: `served_at` on `order_items`
-`order_items` currently has only a `status` enum and `createdAt` (order time). There is no
-serve timestamp, so "recently served, newest first" cannot be expressed.
-
-- Add nullable column `servedAt timestamp({ withTimezone: true })` to `order_items` in
-  `src/infrastructure/database/schema.ts`.
-- Add a Drizzle migration for the new column.
-- In `advanceItemStatus`, when the target status is `SERVED`, set `servedAt = now()` in the
-  same conditional `UPDATE`. (Other transitions leave it untouched.)
-- Add an index supporting the served-recent query, e.g. on `(status, servedAt)`.
-
-### 3.2 Endpoint: `GET /api/kitchen/served-recent`
-- Mounted in `src/presentation/http/routes/kitchen.ts`, guarded `{ auth: ['KITCHEN','ADMIN'] }`.
-- Service `src/application/kitchen/get-served-recent.ts`, mirroring `get-queue.ts`:
-  join `order_items → orders → tables`, filter `orders.restaurantId = auth.restaurantId`
-  AND `order_items.status = 'SERVED'` AND `servedAt >= now() - interval '30 minutes'`,
-  order by `servedAt DESC, id`, `LIMIT 50`; stitch options in a second query like the queue does.
-- Response: `{ data: { items: ServedItem[] } }` where `ServedItem` mirrors the queue item
+- **Schema:** `order_items` has only `status` + `createdAt` (order time) and no serve
+  timestamp. Add a `served_at` timestamp, set it when an item transitions to `SERVED`.
+- **Endpoint:** `GET /api/kitchen/served-recent`, same auth guard as the other kitchen
+  routes (`KITCHEN`/`ADMIN`), scoped to the caller's restaurant. Returns `SERVED` items from
+  the last 30 minutes, newest first, limited to ~50.
+- **Response:** `{ data: { items: ServedItem[] } }` where `ServedItem` mirrors the queue item
   shape — `{ id, tableName, nameSnapshot, quantity, note, options[] }` — plus
   `servedAt: string` (ISO) and `status: 'SERVED'`.
-- TypeBox response schema added next to the existing `queueItem` schema.
 
-### 3.3 Tests (BE)
-Mirror `test/kitchen/kitchen-routes.integration.test.ts` and `kitchen-queue.integration.test.ts`:
-- served-recent returns SERVED items newest-first, scoped to the caller's restaurant,
-  excludes items served > 30 min ago, respects the limit.
-- 401 without token, 403 for a `CASHIER` token.
-- `advanceItemStatus` sets `servedAt` when transitioning to SERVED and leaves it null otherwise.
+Until the endpoint ships, the FE degrades gracefully: the `Đã xong` column shows items served
+in the current session and the served-recent fetch failure is swallowed (see §5).
 
 ## 4. Frontend changes (`restaurant-order-harness-web`)
 
@@ -128,6 +113,11 @@ Follows FSD layers and the existing server-fn proxy + SSE-proxy patterns.
   event it refetches the queue and served-recent (simple and robust regardless of the exact
   event name). On error it falls back to polling every 2.5s and reconnects every 5s. Exposes a
   `connection` status (`live` | `polling`).
+- **`Đã xong` source with graceful degradation:** the column prefers `fetchServedRecent()`.
+  Because the BE endpoint may not exist yet, a failed/404 served-recent fetch is swallowed and
+  the column falls back to an in-session list of items this device just marked `SERVED`
+  (capped ~20, cleared on reload). When the endpoint ships, no FE change is needed — it simply
+  starts returning data.
 
 ### 4.4 UI
 - `src/pages/staff-login/StaffLoginPage.tsx` — email + password form (reuses `shared/ui`
@@ -168,6 +158,8 @@ Follows FSD layers and the existing server-fn proxy + SSE-proxy patterns.
 - Advance race (item already advanced elsewhere) → BE returns NOT_FOUND/INVALID_TRANSITION;
   FE rolls back the optimistic move and refetches.
 - `served-recent` empty after a fresh deploy is expected (only items served in the last 30 min).
+- `served-recent` endpoint not yet deployed → fetch fails → `Đã xong` silently falls back to
+  the in-session served list; no error surfaced to the kitchen.
 
 ## 6. Data flow summary
 1. Staff logs in → FE server-fn stores tokens in httpOnly cookies.
@@ -178,12 +170,12 @@ Follows FSD layers and the existing server-fn proxy + SSE-proxy patterns.
    and the item appears in `Đã xong`.
 6. `Hết món` toggles menu-item availability, immediately hiding the dish from the customer menu.
 
-## 7. Sequencing
-1. **BE first** — `served_at` column + migration, `advanceItemStatus` stamps it,
-   `GET /api/kitchen/served-recent`, tests. Merge (no squash).
-2. **FE auth slice** — entities, cookie helpers, auth server-fns, login page, `/kitchen` guard.
-3. **FE kitchen** — kitchen server-fns, SSE proxy + hook, board/card/sold-out UI, page wiring.
-4. **Tests** — unit + component + e2e; verify against the seeded BE.
+## 7. Sequencing (FE only)
+1. **Auth slice** — entities, cookie helpers, auth server-fns, login page, `/kitchen` guard.
+2. **Kitchen** — kitchen server-fns, SSE proxy + hook, board/card/sold-out UI, page wiring,
+   with `Đã xong` degrading to the in-session list until the BE endpoint exists.
+3. **Tests** — unit + component + e2e; verify against the seeded BE
+   (`kitchen@demo.test` / `kitchen-password`).
 
-Each repo gets its own branch and PR; the FE depends on the BE endpoint being available
-(merged or running locally) for its e2e to pass.
+The BE `served-recent` endpoint is delivered separately by the BE team from the handoff
+contract; the FE works without it (degraded `Đã xong`) and lights up fully once it ships.
