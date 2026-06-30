@@ -75,6 +75,12 @@ describe('doGetSession', () => {
     const store = fakeStore({})
     expect(await doGetSession(store)).toBeNull()
   })
+
+  it('re-throws non-Unauthenticated errors', async () => {
+    const store = fakeStore({ access: 'A', refresh: 'R' })
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('network down'))
+    await expect(doGetSession(store)).rejects.toThrow('network down')
+  })
 })
 
 describe('doLogout', () => {

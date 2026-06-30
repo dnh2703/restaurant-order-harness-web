@@ -1,6 +1,11 @@
 import { createServerFn } from '@tanstack/react-start'
 import { API_BASE_URL } from '@/shared/config'
-import { authedFetch, cookieTokenStore, type TokenStore } from '@/shared/lib/staff-auth.server'
+import {
+  authedFetch,
+  cookieTokenStore,
+  type TokenStore,
+  Unauthenticated,
+} from '@/shared/lib/staff-auth.server'
 import type { StaffUser } from '@/entities/staff/model'
 
 interface Credentials {
@@ -34,8 +39,9 @@ export async function doGetSession(store: TokenStore): Promise<StaffUser | null>
     if (!res.ok) return null
     const json = (await res.json()) as { data: { user: StaffUser } }
     return json.data.user
-  } catch {
-    return null
+  } catch (err) {
+    if (err instanceof Unauthenticated) return null
+    throw err
   }
 }
 
