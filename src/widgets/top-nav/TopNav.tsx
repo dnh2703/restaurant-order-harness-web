@@ -1,4 +1,4 @@
-import { MagnifyingGlass, ShoppingCart, Receipt } from '@phosphor-icons/react'
+import { MagnifyingGlassIcon, ReceiptIcon, ShoppingCartIcon } from '@phosphor-icons/react'
 
 import type { Restaurant, TableInfo } from '@/entities/table/model'
 import { Badge, Input } from '@/shared/ui'
@@ -39,7 +39,7 @@ export function TopNav({
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder="Tìm món…"
-          leadingIcon={<MagnifyingGlass size={18} weight="bold" />}
+          leadingIcon={<MagnifyingGlassIcon size={18} weight="bold" />}
           containerClassName="h-10 flex-1 sm:w-72"
         />
         <Badge variant="outline" size="md" dot className="shrink-0 uppercase">
@@ -52,7 +52,7 @@ export function TopNav({
             aria-label="Xem đơn của bạn"
             className="flex size-10 shrink-0 items-center justify-center rounded-control border border-line-strong bg-white text-ink transition-colors hover:bg-page"
           >
-            <Receipt size={20} weight="regular" />
+            <ReceiptIcon size={20} weight="regular" />
           </button>
         )}
         <button
@@ -61,7 +61,7 @@ export function TopNav({
           aria-label={cartCount > 0 ? `Mở giỏ hàng, ${cartCount} món` : 'Mở giỏ hàng'}
           className="relative flex size-10 shrink-0 items-center justify-center rounded-control border border-line-strong bg-white text-ink transition-colors hover:bg-page"
         >
-          <ShoppingCart size={20} weight="regular" />
+          <ShoppingCartIcon size={20} weight="regular" />
           {cartCount > 0 && (
             <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-[11px] font-extrabold leading-none text-white">
               {cartCount}

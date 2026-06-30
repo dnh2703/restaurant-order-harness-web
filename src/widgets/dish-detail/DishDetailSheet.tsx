@@ -1,6 +1,6 @@
 // src/widgets/dish-detail/DishDetailSheet.tsx
 import { useState } from 'react'
-import { Minus, Plus } from '@phosphor-icons/react'
+import { MinusIcon, PlusIcon } from '@phosphor-icons/react'
 
 import type { MenuItem } from '@/entities/menu/model'
 import {
@@ -116,7 +116,7 @@ function DishDetailBody({ item, onAdd }: { item: MenuItem; onAdd: (line: CartLin
             onClick={() => setQuantity((q) => Math.max(1, q - 1))}
             className="flex size-9 items-center justify-center rounded-control bg-page text-ink"
           >
-            <Minus size={16} weight="bold" />
+            <MinusIcon size={16} weight="bold" />
           </button>
           <span className="w-5 text-center text-sm font-bold text-ink">{quantity}</span>
           <button
@@ -125,7 +125,7 @@ function DishDetailBody({ item, onAdd }: { item: MenuItem; onAdd: (line: CartLin
             onClick={() => setQuantity((q) => q + 1)}
             className="flex size-9 items-center justify-center rounded-control bg-ink text-white"
           >
-            <Plus size={16} weight="bold" />
+            <PlusIcon size={16} weight="bold" />
           </button>
         </div>
         <Button size="lg" fullWidth disabled={!valid} onClick={submit} className="flex-1">

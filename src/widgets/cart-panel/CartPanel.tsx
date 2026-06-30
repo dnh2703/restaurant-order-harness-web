@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Minus, Plus } from '@phosphor-icons/react'
+import { MinusIcon, PlusIcon } from '@phosphor-icons/react'
 
 import { type CartLine, cartCount, cartSubtotal } from '@/entities/cart/model'
 import { formatVND } from '@/shared/lib/format'
@@ -70,7 +70,7 @@ export function CartPanel({ cart, onSetQty, onSubmit, submitting, error, headerA
                     onClick={() => onSetQty(line.lineId, line.quantity - 1)}
                     className="flex size-6.5 items-center justify-center rounded-lg bg-page text-ink"
                   >
-                    <Minus size={14} weight="bold" />
+                    <MinusIcon size={14} weight="bold" />
                   </button>
                   <span className="text-sm font-bold text-ink">{line.quantity}</span>
                   <button
@@ -79,7 +79,7 @@ export function CartPanel({ cart, onSetQty, onSubmit, submitting, error, headerA
                     onClick={() => onSetQty(line.lineId, line.quantity + 1)}
                     className="flex size-6.5 items-center justify-center rounded-lg bg-ink text-white"
                   >
-                    <Plus size={14} weight="bold" />
+                    <PlusIcon size={14} weight="bold" />
                   </button>
                 </div>
               </div>

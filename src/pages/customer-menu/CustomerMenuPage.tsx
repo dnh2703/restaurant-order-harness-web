@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X } from '@phosphor-icons/react'
+import { XIcon } from '@phosphor-icons/react'
 
 import type { TableContext } from '@/entities/table/model'
 import type { Menu, MenuItem } from '@/entities/menu/model'
@@ -136,7 +136,7 @@ export function CustomerMenuPage({
                 aria-label="Đóng giỏ hàng"
                 className="flex size-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-page"
               >
-                <X size={18} weight="bold" />
+                <XIcon size={18} weight="bold" />
               </DrawerClose>
             }
           />
