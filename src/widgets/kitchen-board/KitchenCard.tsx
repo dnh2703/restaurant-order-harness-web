@@ -1,16 +1,16 @@
+import { ClockIcon, CheckCircleIcon } from '@phosphor-icons/react'
 import type { KitchenQueueItem, ServedItem } from '@/entities/kitchen'
 import { Button } from '@/shared/ui'
+import { cn } from '@/shared/lib/cn'
 
 interface QueueProps {
   item: KitchenQueueItem
   onAdvance: (id: string, status: 'COOKING' | 'SERVED') => void
 }
-
 interface ServedProps {
   item: ServedItem
   served: true
 }
-
 type Props = QueueProps | ServedProps
 
 /** Minutes elapsed since an ISO timestamp, clamped to >= 0. */
@@ -32,12 +32,33 @@ export function KitchenCard(props: Props) {
   const minutes = minutesSince(timestamp)
 
   return (
-    <article className="rounded-control border border-line-strong bg-white p-3">
-      <header className="flex items-center justify-between">
-        <span className="font-bold text-ink">{item.tableName}</span>
-        <span className={elapsedClass(minutes)}>{minutes}′</span>
-      </header>
-      <p className="mt-1 text-sm text-ink">
+    <article
+      className={cn(
+        'rounded-control border bg-white p-3',
+        isServed ? 'border-line opacity-70' : 'border-line-strong shadow-sm',
+      )}
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-bold uppercase tracking-wide text-brand">Tại bàn</span>
+        <span
+          className={cn(
+            'inline-flex items-center gap-1 text-xs font-semibold',
+            isServed ? 'text-green-700' : elapsedClass(minutes),
+          )}
+        >
+          {isServed ? (
+            <CheckCircleIcon size={14} weight="fill" />
+          ) : (
+            <ClockIcon size={14} weight="bold" />
+          )}
+          {isServed ? `${minutes} phút trước` : `${minutes}′`}
+        </span>
+      </div>
+
+      <p className={cn('mt-0.5 font-bold text-ink', isServed && 'line-through')}>
+        {item.tableName}
+      </p>
+      <p className={cn('mt-1 text-sm text-ink', isServed && 'text-muted line-through')}>
         {item.nameSnapshot} <span className="font-semibold">× {item.quantity}</span>
       </p>
       {item.options.length > 0 && (
@@ -46,6 +67,7 @@ export function KitchenCard(props: Props) {
         </p>
       )}
       {item.note && <p className="text-xs italic text-secondary">"{item.note}"</p>}
+
       {!isServed && (
         <div className="mt-2">
           {(item as KitchenQueueItem).status === 'PENDING' ? (
@@ -62,12 +84,11 @@ export function KitchenCard(props: Props) {
               fullWidth
               onClick={() => (props as QueueProps).onAdvance(item.id, 'SERVED')}
             >
-              Xong →
+              Hoàn thành
             </Button>
           )}
         </div>
       )}
-      {isServed && <p className="mt-2 text-xs font-semibold text-green-700">✓ Đã phục vụ</p>}
     </article>
   )
 }

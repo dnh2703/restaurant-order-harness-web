@@ -31,10 +31,30 @@ describe('KitchenCard', () => {
     expect(onAdvance).toHaveBeenCalledWith('oi1', 'COOKING')
   })
 
-  it('a cooking card calls onAdvance with SERVED via "Xong"', () => {
+  it('a cooking card calls onAdvance with SERVED via "Hoàn thành"', () => {
     const onAdvance = vi.fn()
     render(<KitchenCard item={{ ...pending, status: 'COOKING' }} onAdvance={onAdvance} />)
-    fireEvent.click(screen.getByRole('button', { name: /Xong/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Hoàn thành/ }))
     expect(onAdvance).toHaveBeenCalledWith('oi1', 'SERVED')
+  })
+
+  it('renders a served card as completed with elapsed minutes', () => {
+    render(
+      <KitchenCard
+        item={{
+          id: 's1',
+          tableName: 'Bàn 9',
+          nameSnapshot: 'Gỏi',
+          quantity: 2,
+          note: null,
+          options: [],
+          servedAt: new Date(Date.now() - 2 * 60000).toISOString(),
+        }}
+        served
+      />,
+    )
+    expect(screen.getByText('Bàn 9')).toBeInTheDocument()
+    expect(screen.getByText(/2 phút trước/)).toBeInTheDocument()
+    expect(screen.queryByRole('button')).toBeNull()
   })
 })
