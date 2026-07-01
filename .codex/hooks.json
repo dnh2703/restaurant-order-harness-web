@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|shell|exec_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$(git rev-parse --show-toplevel)/.agent-hooks/pre-tool-use-enforce-bun-package-manager.sh\"",
+            "timeout": 10,
+            "statusMessage": "Agent Hook: pre-tool-use-enforce-bun-package-manager"
+          }
+        ]
+      }
+    ]
+  }
+}
