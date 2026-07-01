@@ -62,7 +62,7 @@ function Column({
   title: string
   icon: ReactNode
   count: number
-  accent: string
+  accent?: string
   children: ReactNode
 }) {
   const { setNodeRef, isOver } = useDroppable({ id })
@@ -71,13 +71,13 @@ function Column({
       ref={setNodeRef}
       aria-label={title}
       className={cn(
-        'flex min-w-0 flex-1 flex-col gap-2 rounded-xl border border-line bg-page/60 p-3',
+        'flex min-w-0 flex-1 flex-col gap-2 rounded-xl border border-line bg-gray-200/80 p-3',
         accent,
-        isOver && 'ring-2 ring-brand/40',
+        isOver && 'ring-2 ring-gray-300/60',
       )}
     >
       <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
-        <span className="text-brand">{icon}</span>
+        <span className="text-secondary">{icon}</span>
         {title}
         <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-secondary">
           {count}
@@ -115,7 +115,6 @@ export function KitchenBoard({ pending, cooking, served, onAdvance }: Props) {
           title="Chờ làm"
           icon={<ForkKnifeIcon size={18} weight="bold" />}
           count={pending.length}
-          accent="border-t-2 border-t-line-strong"
         >
           {pending.map((item) => (
             <DraggableCard key={item.id} item={item} onAdvance={onAdvance} />
@@ -127,7 +126,6 @@ export function KitchenBoard({ pending, cooking, served, onAdvance }: Props) {
           title="Đang làm"
           icon={<CookingPotIcon size={18} weight="bold" />}
           count={cooking.length}
-          accent="border-t-2 border-t-brand"
         >
           {cooking.map((item) => (
             <DraggableCard key={item.id} item={item} onAdvance={onAdvance} />
@@ -139,7 +137,6 @@ export function KitchenBoard({ pending, cooking, served, onAdvance }: Props) {
           title="Đã xong"
           icon={<CheckCircleIcon size={18} weight="bold" />}
           count={served.length}
-          accent="border-t-2 border-t-green-500/60"
         >
           {served.map((item) => (
             <KitchenCard key={item.id} item={item} served />

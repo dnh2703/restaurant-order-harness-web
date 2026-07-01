@@ -25,7 +25,7 @@ export function KitchenScreenPage({ user, onLogout }: Props) {
     async (id: string, status: 'COOKING' | 'SERVED') => {
       try {
         await advance(id, status)
-        toast.success('Đã chuyển trạng thái')
+        toast.success('Cập nhật trạng thái thành công')
       } catch {
         toast.error('Không cập nhật được món, đã hoàn tác')
       }
