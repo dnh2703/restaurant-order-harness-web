@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { fetchQueue, fetchServed, advanceItem, setAvailability } from './kitchen'
+import { fetchQueue, fetchServed, advanceItem, setAvailability } from './kitchen.server'
 import type { TokenStore } from '@/shared/lib/staff-auth.server'
 
 function fakeStore(): TokenStore {

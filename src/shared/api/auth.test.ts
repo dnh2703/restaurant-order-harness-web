@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { doLogin, doGetSession, doLogout } from './auth'
-import type { TokenStore } from '@/shared/lib/staff-auth.server'
+import { doLogin, doGetSession, doLogout, type TokenStore } from '@/shared/lib/staff-auth.server'
 
 function fakeStore(
   initial: { access?: string; refresh?: string } = {},
