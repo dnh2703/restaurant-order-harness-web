@@ -91,6 +91,30 @@ describe('useKitchenQueue', () => {
     expect(result.current.cooking).toHaveLength(1)
   })
 
+  it('prunes served override when item leaves queue without appearing in servedServer', async () => {
+    mockStream([c1])
+    const { result, rerender } = renderHook(() => useKitchenQueue('r1'))
+
+    // Optimistically advance c1 to SERVED — it should appear in served.
+    await act(async () => {
+      await result.current.advance('c1', 'SERVED')
+    })
+    expect(result.current.served.map((s) => s.id)).toContain('c1')
+
+    // Server catches up: c1 left the queue but is NOT yet in served-recent.
+    mockStream([], [])
+    rerender()
+    await waitFor(() => expect(result.current.served.filter((s) => s.id === 'c1')).toHaveLength(0))
+
+    // Prove the override was pruned (not merely hidden): c1 returns to the
+    // queue as COOKING. With a stale SERVED override it would be mis-rendered
+    // as served instead of appearing in cooking.
+    mockStream([{ ...c1, status: 'COOKING' }])
+    rerender()
+    await waitFor(() => expect(result.current.cooking.map((i) => i.id)).toContain('c1'))
+    expect(result.current.served.map((s) => s.id)).not.toContain('c1')
+  })
+
   it('dedupes optimistic served against the server served list by id', async () => {
     const served: ServedItem = {
       id: 'c1',

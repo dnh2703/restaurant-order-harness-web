@@ -34,7 +34,7 @@ export function useKitchenQueue(restaurantId: string): {
             delete next[id]
             changed = true
           }
-        } else if (servedServer.some((s) => s.id === id)) {
+        } else if (!qItem || servedServer.some((s) => s.id === id)) {
           delete next[id]
           changed = true
         }
