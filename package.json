@@ -14,7 +14,7 @@
     "validate": "tsc --noEmit && vitest run",
     "lint": "oxlint src e2e",
     "lint:fix": "oxlint --fix src e2e",
-    "lint:fsd": "oxlint src --quiet --rules=f/forbidden-imports --rules=f/no-cross-slice-dependency --rules=f/no-ui-in-business-logic --rules=f/no-global-store-imports",
+    "lint:fsd": "oxlint src --quiet -D fsd/forbidden-imports -D fsd/no-cross-slice-dependency -D fsd/no-ui-in-business-logic -D fsd/no-global-store-imports -D fsd/no-public-api-sidestep",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"
