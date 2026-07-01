@@ -7,7 +7,7 @@ export const chipVariants = cva(
   {
     variants: {
       active: {
-        true: 'bg-ink text-white',
+        true: 'bg-brand text-white',
         false: 'border border-line-strong bg-white text-secondary',
       },
     },
