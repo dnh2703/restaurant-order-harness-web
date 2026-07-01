@@ -14,6 +14,7 @@
     "validate": "tsc --noEmit && vitest run",
     "lint": "oxlint src e2e",
     "lint:fix": "oxlint --fix src e2e",
+    "lint:fsd": "oxlint src --quiet --rules=f/forbidden-imports --rules=f/no-cross-slice-dependency --rules=f/no-ui-in-business-logic --rules=f/no-global-store-imports",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.1.0",
     "@commitlint/config-conventional": "^21.1.0",
+    "@mandujs/oxlint-plugin-fsd": "^0.1.2",
     "@playwright/test": "^1.61.1",
     "@tailwindcss/vite": "^4.0.0",
     "@testing-library/dom": "^10.4.1",
