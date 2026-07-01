@@ -21,7 +21,7 @@ describe('KitchenCard', () => {
     render(<KitchenCard item={pending} onAdvance={vi.fn()} />)
     expect(screen.getByText('Bàn 5')).toBeInTheDocument()
     expect(screen.getByText(/Phở bò/)).toBeInTheDocument()
-    expect(screen.getByText(/× 2/)).toBeInTheDocument()
+    expect(screen.getByText(/×\s*2/)).toBeInTheDocument()
     expect(screen.getByText(/ít hành/)).toBeInTheDocument()
     expect(screen.getByText(/Thêm trứng/)).toBeInTheDocument()
     expect(screen.getByText('09:05')).toBeInTheDocument()

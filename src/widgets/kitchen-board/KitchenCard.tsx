@@ -65,15 +65,36 @@ export function KitchenCard(props: Props) {
       <p className={cn('mt-0.5 font-bold text-ink', isServed && 'line-through')}>
         {item.tableName}
       </p>
-      <p className={cn('mt-1 text-sm text-ink', isServed && 'text-muted line-through')}>
-        {item.nameSnapshot} <span className="font-semibold">× {item.quantity}</span>
-      </p>
+      <div className="mt-1 flex items-start justify-between gap-2">
+        <p className={cn('text-sm font-medium text-ink', isServed && 'text-muted line-through')}>
+          {item.nameSnapshot}
+        </p>
+        <span
+          className={cn(
+            'shrink-0 rounded-md px-1.5 py-0.5 text-xs font-bold tabular-nums',
+            isServed ? 'bg-line text-muted' : 'bg-brand-bg text-brand',
+          )}
+        >
+          ×{item.quantity}
+        </span>
+      </div>
       {item.options.length > 0 && (
-        <p className="text-xs text-secondary">
-          {item.options.map((o) => `+${o.optionName}`).join(', ')}
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          {item.options.map((o, i) => (
+            <span
+              key={`${o.optionName}-${i}`}
+              className="rounded-md bg-page px-1.5 py-0.5 text-[11px] font-medium text-secondary"
+            >
+              {o.optionName}
+            </span>
+          ))}
+        </div>
+      )}
+      {item.note && (
+        <p className="mt-1.5 rounded-md border-l-2 border-line-strong bg-page px-2 py-1 text-xs italic text-secondary">
+          {item.note}
         </p>
       )}
-      {item.note && <p className="text-xs italic text-secondary">"{item.note}"</p>}
 
       {!isServed && (
         <div className="mt-2">
