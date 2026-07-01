@@ -32,8 +32,9 @@ export function StaffLoginPage({ onSubmit }: Props) {
     <main className="flex min-h-screen items-center justify-center px-6 py-10">
       <div className="w-full max-w-md rounded-card bg-white px-8 py-10 shadow-card">
         <header className="mb-8 flex flex-col items-center gap-3 text-center">
-          <BrandMark size="lg" label="Nhà bếp" />
+          <BrandMark size="lg" />
           <h1 className="text-2xl font-bold tracking-tight text-brand">Đăng nhập</h1>
+          <p className="text-sm text-muted">Đăng nhập để tiếp tục</p>
         </header>
 
         <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>

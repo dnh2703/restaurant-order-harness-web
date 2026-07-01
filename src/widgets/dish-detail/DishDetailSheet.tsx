@@ -79,7 +79,7 @@ function DishDetailBody({ item, onAdd }: { item: MenuItem; onAdd: (line: CartLin
                         name={group.id}
                         checked={chosen.includes(option.id)}
                         onChange={() => setSelection((s) => toggleOption(s, group, option.id))}
-                        className="size-4 accent-ink"
+                        className="size-4 accent-brand"
                       />
                       {option.name}
                     </span>
@@ -122,7 +122,7 @@ function DishDetailBody({ item, onAdd }: { item: MenuItem; onAdd: (line: CartLin
             type="button"
             aria-label="Tăng số lượng"
             onClick={() => setQuantity((q) => q + 1)}
-            className="flex size-9 items-center justify-center rounded-control bg-ink text-white"
+            className="flex size-9 items-center justify-center rounded-control bg-brand text-white"
           >
             <PlusIcon size={16} weight="bold" />
           </button>

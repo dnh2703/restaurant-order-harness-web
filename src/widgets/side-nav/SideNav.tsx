@@ -19,7 +19,7 @@ const ROLE_LABEL: Record<StaffRole, string> = {
 export function SideNav({ userName, userRole, onLogout }: Props) {
   return (
     <aside className="hidden w-60 shrink-0 flex-col border-r border-line bg-white px-4 py-5 md:flex">
-      <BrandMark size="sm" label="Nhà bếp" className="px-1" />
+      <BrandMark size="sm" label="Bếp Minh Châu" className="px-1" />
 
       <nav className="mt-6 flex flex-col gap-1">
         <a
