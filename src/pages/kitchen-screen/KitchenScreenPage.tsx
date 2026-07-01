@@ -79,7 +79,12 @@ export function KitchenScreenPage({ user, onLogout }: Props) {
 
       {toast && <p className="rounded-control bg-red-50 px-3 py-2 text-sm text-red-700">{toast}</p>}
 
-      <KitchenBoard queue={queue} served={served} onAdvance={onAdvance} />
+      <KitchenBoard
+        pending={queue.filter((i) => i.status === 'PENDING')}
+        cooking={queue.filter((i) => i.status === 'COOKING')}
+        served={served}
+        onAdvance={onAdvance}
+      />
 
       <SoldOutPanel
         open={panelOpen}
