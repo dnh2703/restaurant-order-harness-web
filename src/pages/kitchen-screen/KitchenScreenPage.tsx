@@ -89,7 +89,7 @@ export function KitchenScreenPage({ user, onLogout }: Props) {
         items={menuItems}
         onToggle={onToggleAvailability}
       />
-      <Toaster richColors position="top-center" />
+      <Toaster richColors position="top-right" />
     </div>
   )
 }
