@@ -1,6 +1,6 @@
 import { LockIcon, UserIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
-import { Button, Input } from '@/shared/ui'
+import { BrandMark, Button, Input } from '@/shared/ui'
 
 interface Props {
   onSubmit: (email: string, password: string) => Promise<void>
@@ -31,7 +31,8 @@ export function StaffLoginPage({ onSubmit }: Props) {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-10">
       <div className="w-full max-w-md rounded-card bg-white px-8 py-10 shadow-card">
-        <header className="mb-8 text-center">
+        <header className="mb-8 flex flex-col items-center gap-3 text-center">
+          <BrandMark size="lg" label="Nhà bếp" />
           <h1 className="text-2xl font-bold tracking-tight text-brand">Đăng nhập</h1>
         </header>
 

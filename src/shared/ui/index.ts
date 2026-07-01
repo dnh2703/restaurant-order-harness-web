@@ -15,4 +15,5 @@ export {
   DrawerDescription,
 } from './Drawer'
 export { Badge, badgeVariants, type BadgeVariant, type BadgeSize } from './Badge'
+export { BrandMark } from './BrandMark'
 export { Toaster, toast } from './Toast'

@@ -1,6 +1,6 @@
-import { ChefHatIcon, CookingPotIcon, SignOutIcon } from '@phosphor-icons/react'
+import { CookingPotIcon, SignOutIcon } from '@phosphor-icons/react'
 import type { StaffRole } from '@/entities/staff'
-import { Button } from '@/shared/ui'
+import { BrandMark, Button } from '@/shared/ui'
 import { cn } from '@/shared/lib/cn'
 
 interface Props {
@@ -19,12 +19,7 @@ const ROLE_LABEL: Record<StaffRole, string> = {
 export function SideNav({ userName, userRole, onLogout }: Props) {
   return (
     <aside className="hidden w-60 shrink-0 flex-col border-r border-line bg-white px-4 py-5 md:flex">
-      <div className="flex items-center gap-2.5 px-1">
-        <div className="flex size-9 items-center justify-center rounded-control bg-brand text-white">
-          <ChefHatIcon size={20} weight="fill" />
-        </div>
-        <span className="text-base font-extrabold tracking-tight text-ink">Nhà bếp</span>
-      </div>
+      <BrandMark size="sm" label="Nhà bếp" className="px-1" />
 
       <nav className="mt-6 flex flex-col gap-1">
         <a

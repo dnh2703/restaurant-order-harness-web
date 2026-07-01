@@ -1,6 +1,6 @@
 import { MagnifyingGlassIcon, ReceiptIcon, ShoppingCartIcon } from '@phosphor-icons/react'
 import type { Restaurant, TableInfo } from '@/entities/table'
-import { Badge, Input } from '@/shared/ui'
+import { Badge, BrandMark, Input } from '@/shared/ui'
 
 interface Props {
   restaurant: Restaurant
@@ -24,9 +24,7 @@ export function TopNav({
   return (
     <header className="sticky top-0 z-20 flex flex-col gap-3 border-b border-line bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-8">
       <div className="flex items-center gap-3.5">
-        <div className="flex size-10 items-center justify-center rounded-[12px] bg-ink text-lg font-extrabold text-white">
-          {restaurant.name.charAt(0).toUpperCase()}
-        </div>
+        <BrandMark size="md" />
         <div className="text-lg font-extrabold leading-none tracking-tight text-ink">
           {restaurant.name}
         </div>
