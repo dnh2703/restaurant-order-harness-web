@@ -25,6 +25,14 @@ function elapsedClass(minutes: number): string {
   return 'text-muted'
 }
 
+/** Local clock time (HH:mm) for an ISO timestamp — e.g. when the customer ordered. */
+function formatTime(iso: string): string {
+  const d = new Date(iso)
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mm = String(d.getMinutes()).padStart(2, '0')
+  return `${hh}:${mm}`
+}
+
 export function KitchenCard(props: Props) {
   const { item } = props
   const isServed = 'served' in props
@@ -39,7 +47,6 @@ export function KitchenCard(props: Props) {
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-bold uppercase tracking-wide text-brand">Tại bàn</span>
         <span
           className={cn(
             'inline-flex items-center gap-1 text-xs font-semibold',
@@ -51,7 +58,7 @@ export function KitchenCard(props: Props) {
           ) : (
             <ClockIcon size={14} weight="bold" />
           )}
-          {isServed ? `${minutes} phút trước` : `${minutes}′`}
+          {formatTime(timestamp)}
         </span>
       </div>
 

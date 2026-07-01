@@ -3,6 +3,8 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { KitchenCard } from './KitchenCard'
 import type { KitchenQueueItem } from '@/entities/kitchen'
 
+// Timezone-safe: a bare date-time string is parsed as LOCAL time, and the card
+// also formats in local time, so the expected "HH:mm" holds in any timezone.
 const pending: KitchenQueueItem = {
   id: 'oi1',
   tableName: 'Bàn 5',
@@ -10,18 +12,19 @@ const pending: KitchenQueueItem = {
   quantity: 2,
   note: 'ít hành',
   status: 'PENDING',
-  createdAt: new Date().toISOString(),
+  createdAt: new Date('2026-07-01T09:05:00').toISOString(),
   options: [{ optionName: 'Thêm trứng', priceDelta: 5000 }],
 }
 
 describe('KitchenCard', () => {
-  it('shows table, qty, name, note and options for a pending item', () => {
+  it('shows table, qty, name, note, options and the order time for a pending item', () => {
     render(<KitchenCard item={pending} onAdvance={vi.fn()} />)
     expect(screen.getByText('Bàn 5')).toBeInTheDocument()
     expect(screen.getByText(/Phở bò/)).toBeInTheDocument()
     expect(screen.getByText(/× 2/)).toBeInTheDocument()
     expect(screen.getByText(/ít hành/)).toBeInTheDocument()
     expect(screen.getByText(/Thêm trứng/)).toBeInTheDocument()
+    expect(screen.getByText('09:05')).toBeInTheDocument()
   })
 
   it('a pending card calls onAdvance with COOKING via "Bắt đầu"', () => {
@@ -38,7 +41,7 @@ describe('KitchenCard', () => {
     expect(onAdvance).toHaveBeenCalledWith('oi1', 'SERVED')
   })
 
-  it('renders a served card as completed with elapsed minutes', () => {
+  it('renders a served card as completed showing the clock time', () => {
     render(
       <KitchenCard
         item={{
@@ -48,13 +51,13 @@ describe('KitchenCard', () => {
           quantity: 2,
           note: null,
           options: [],
-          servedAt: new Date(Date.now() - 2 * 60000).toISOString(),
+          servedAt: new Date('2026-07-01T14:32:00').toISOString(),
         }}
         served
       />,
     )
     expect(screen.getByText('Bàn 9')).toBeInTheDocument()
-    expect(screen.getByText(/2 phút trước/)).toBeInTheDocument()
+    expect(screen.getByText('14:32')).toBeInTheDocument()
     expect(screen.queryByRole('button')).toBeNull()
   })
 })
