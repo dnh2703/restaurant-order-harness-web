@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
 import { XIcon } from '@phosphor-icons/react'
-
-import type { TableContext } from '@/entities/table/model'
-import type { Menu, MenuItem } from '@/entities/menu/model'
-import { defaultSelection, selectedOptions } from '@/entities/menu/dish-selection'
-import { filterMenu } from '@/entities/menu/filter'
+import { TopNav } from '@/widgets/top-nav'
+import { MenuGrid } from '@/widgets/menu-grid'
+import { CartPanel } from '@/widgets/cart-panel'
+import { DishDetailSheet } from '@/widgets/dish-detail'
+import type { TableContext } from '@/entities/table'
+import type { Menu, MenuItem } from '@/entities/menu'
+import { defaultSelection, selectedOptions } from '@/entities/menu'
+import { filterMenu } from '@/entities/menu'
 import {
   type CartLine,
   buildCartLine,
@@ -12,11 +15,7 @@ import {
   setQuantity,
   cartCount,
   quantityByMenuItem,
-} from '@/entities/cart/model'
-import { TopNav } from '@/widgets/top-nav/TopNav'
-import { MenuGrid } from '@/widgets/menu-grid/MenuGrid'
-import { CartPanel } from '@/widgets/cart-panel/CartPanel'
-import { DishDetailSheet } from '@/widgets/dish-detail/DishDetailSheet'
+} from '@/entities/cart'
 import { Drawer, DrawerContent, DrawerTitle, DrawerClose } from '@/shared/ui'
 import { submitOrderItems } from '@/shared/api/order'
 

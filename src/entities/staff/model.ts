@@ -1,9 +1,1 @@
-export type StaffRole = 'ADMIN' | 'KITCHEN' | 'CASHIER'
-
-export interface StaffUser {
-  id: string
-  email: string
-  name: string
-  role: StaffRole
-  restaurantId: string
-}
+export type { StaffRole, StaffUser } from '@/shared/api/types/staff'

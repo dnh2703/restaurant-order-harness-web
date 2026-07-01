@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { KitchenBoard } from './KitchenBoard'
-import type { KitchenQueueItem, ServedItem } from '@/entities/kitchen/model'
+import type { KitchenQueueItem, ServedItem } from '@/entities/kitchen'
 
 const base = {
   tableName: 'Bàn 1',

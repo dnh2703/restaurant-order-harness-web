@@ -1,4 +1,9 @@
-import type { MenuItem } from '@/entities/menu/model'
+export interface CartMenuItemInput {
+  id: string
+  name: string
+  price: number
+  imageUrl: string | null
+}
 
 export interface CartOption {
   id: string
@@ -27,7 +32,7 @@ export function lineSignature(
 }
 
 export function buildCartLine(
-  item: MenuItem,
+  item: CartMenuItemInput,
   options: CartOption[],
   note: string | null,
   quantity: number,

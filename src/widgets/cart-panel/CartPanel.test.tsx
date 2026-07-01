@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { CartPanel } from './CartPanel'
-import type { CartLine } from '@/entities/cart/model'
+import type { CartLine } from '@/entities/cart'
 
 const cart: CartLine[] = [
   {

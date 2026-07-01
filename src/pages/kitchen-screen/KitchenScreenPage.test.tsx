@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 
-vi.mock('@/entities/kitchen/useKitchenStream', () => ({
+vi.mock('@/entities/kitchen', () => ({
   useKitchenStream: vi.fn(() => ({
     queue: [
       {

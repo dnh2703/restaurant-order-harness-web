@@ -1,6 +1,5 @@
 import type { ComponentProps } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
-
 import { cn } from '@/shared/lib/cn'
 
 export const buttonVariants = cva('rounded-button text-center font-bold disabled:opacity-50', {

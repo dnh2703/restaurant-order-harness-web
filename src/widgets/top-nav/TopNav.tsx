@@ -1,6 +1,5 @@
 import { MagnifyingGlassIcon, ReceiptIcon, ShoppingCartIcon } from '@phosphor-icons/react'
-
-import type { Restaurant, TableInfo } from '@/entities/table/model'
+import type { Restaurant, TableInfo } from '@/entities/table'
 import { Badge, Input } from '@/shared/ui'
 
 interface Props {

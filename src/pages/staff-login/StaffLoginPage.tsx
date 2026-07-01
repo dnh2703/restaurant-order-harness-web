@@ -1,6 +1,5 @@
 import { LockIcon, UserIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
-
 import { Button, Input } from '@/shared/ui'
 
 interface Props {

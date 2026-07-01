@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { KitchenCard } from './KitchenCard'
-import type { KitchenQueueItem } from '@/entities/kitchen/model'
+import type { KitchenQueueItem } from '@/entities/kitchen'
 
 const pending: KitchenQueueItem = {
   id: 'oi1',

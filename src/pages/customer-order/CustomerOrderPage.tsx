@@ -1,7 +1,7 @@
 // src/pages/customer-order/CustomerOrderPage.tsx
 import type { ReactNode } from 'react'
-import { useOrderStream } from '@/entities/order/useOrderStream'
-import { OrderTracker } from '@/widgets/order-tracker/OrderTracker'
+import { OrderTracker } from '@/widgets/order-tracker'
+import { useOrderStream } from '@/entities/order'
 import { Button } from '@/shared/ui'
 
 interface Props {

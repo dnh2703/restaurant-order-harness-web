@@ -1,8 +1,7 @@
 // src/widgets/dish-detail/DishDetailSheet.tsx
 import { useState } from 'react'
 import { MinusIcon, PlusIcon } from '@phosphor-icons/react'
-
-import type { MenuItem } from '@/entities/menu/model'
+import type { MenuItem } from '@/entities/menu'
 import {
   type Selection,
   defaultSelection,
@@ -10,8 +9,8 @@ import {
   selectedOptions,
   selectionPrice,
   isSelectionValid,
-} from '@/entities/menu/dish-selection'
-import { type CartLine, buildCartLine } from '@/entities/cart/model'
+} from '@/entities/menu'
+import { type CartLine, buildCartLine } from '@/entities/cart'
 import { formatVND } from '@/shared/lib/format'
 import { Drawer, DrawerContent, DrawerTitle, Button } from '@/shared/ui'
 

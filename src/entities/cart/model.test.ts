@@ -9,7 +9,7 @@ import {
   quantityByMenuItem,
   type CartOption,
 } from './model'
-import type { MenuItem } from '@/entities/menu/model'
+import type { MenuItem } from '@/entities/menu'
 
 const dish = (id: string, price: number): MenuItem => ({
   id,

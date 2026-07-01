@@ -1,6 +1,6 @@
 // src/routes/t.$qrToken.order.tsx
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { CustomerOrderPage } from '@/pages/customer-order/CustomerOrderPage'
+import { CustomerOrderPage } from '@/pages/customer-order'
 import { Button } from '@/shared/ui'
 
 export const Route = createFileRoute('/t/$qrToken/order')({

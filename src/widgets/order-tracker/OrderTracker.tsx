@@ -1,9 +1,9 @@
 // src/widgets/order-tracker/OrderTracker.tsx
 import type { ReactNode } from 'react'
+import type { Order } from '@/entities/order'
+import type { StreamMode } from '@/entities/order'
 import { cn } from '@/shared/lib/cn'
 import { formatVND } from '@/shared/lib/format'
-import type { Order } from '@/entities/order/model'
-import type { StreamMode } from '@/entities/order/useOrderStream'
 import { OrderStatusChip } from './OrderStatusChip'
 
 interface Props {

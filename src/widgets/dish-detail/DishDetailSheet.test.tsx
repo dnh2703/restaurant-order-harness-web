@@ -2,7 +2,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { DishDetailSheet } from './DishDetailSheet'
-import type { MenuItem } from '@/entities/menu/model'
+import type { MenuItem } from '@/entities/menu'
 
 const item: MenuItem = {
   id: 'm1',

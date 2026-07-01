@@ -1,0 +1,1 @@
+export { CustomerMenuPage } from './CustomerMenuPage'

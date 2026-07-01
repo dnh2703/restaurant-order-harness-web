@@ -1,6 +1,5 @@
 import type { ComponentProps, ReactNode } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
-
 import { cn } from '@/shared/lib/cn'
 
 export const badgeVariants = cva('inline-flex items-center gap-2 text-xs', {

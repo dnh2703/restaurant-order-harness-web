@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { KitchenScreenPage } from '@/pages/kitchen-screen/KitchenScreenPage'
+import { KitchenScreenPage } from '@/pages/kitchen-screen'
+import type { StaffUser } from '@/entities/staff'
 import { getStaffSession, logoutStaff } from '@/shared/api/auth'
-import type { StaffUser } from '@/entities/staff/model'
 
 export const Route = createFileRoute('/kitchen/')({
   loader: async (): Promise<{ user: StaffUser }> => {
