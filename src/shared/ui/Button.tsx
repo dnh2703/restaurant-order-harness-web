@@ -5,7 +5,7 @@ import { cn } from '@/shared/lib/cn'
 export const buttonVariants = cva('rounded-button text-center font-bold disabled:opacity-50', {
   variants: {
     variant: {
-      primary: 'bg-ink text-white',
+      primary: 'bg-brand text-white',
       secondary: 'border border-line-strong bg-white text-secondary',
       ghost: 'bg-transparent text-brand',
     },

@@ -28,7 +28,7 @@ describe('Button', () => {
       </Button>,
     )
     const btn = screen.getByRole('button', { name: 'Go' })
-    expect(btn.className).toContain('bg-ink')
+    expect(btn.className).toContain('bg-brand')
     fireEvent.click(btn)
     expect(onClick).toHaveBeenCalled()
   })
@@ -45,9 +45,9 @@ describe('Chip', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Khai vị' }))
     expect(onClick).toHaveBeenCalled()
   })
-  it('styles the active state as ink/white', () => {
+  it('styles the active state as brand/white', () => {
     render(<Chip active>Tất cả</Chip>)
-    expect(screen.getByRole('button', { name: 'Tất cả' }).className).toContain('bg-ink')
+    expect(screen.getByRole('button', { name: 'Tất cả' }).className).toContain('bg-brand')
   })
 })
 

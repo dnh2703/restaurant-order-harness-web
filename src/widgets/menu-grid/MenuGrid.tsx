@@ -75,7 +75,7 @@ function DishCard({
               aria-label={`${hasOptions ? 'Chọn' : 'Thêm'} ${item.name}`}
               disabled={soldOut}
               onClick={onPlus}
-              className="flex size-9 items-center justify-center rounded-control bg-ink text-white disabled:opacity-40"
+              className="flex size-9 items-center justify-center rounded-control bg-brand text-white disabled:opacity-40"
             >
               <PlusIcon size={18} weight="bold" />
             </button>

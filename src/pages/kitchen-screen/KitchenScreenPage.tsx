@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react'
 import { KitchenBoard } from '@/widgets/kitchen-board'
+import { SideNav } from '@/widgets/side-nav'
 import { SoldOutPanel } from '@/widgets/sold-out-panel'
-import { useKitchenStream } from '@/entities/kitchen'
+import { useKitchenQueue } from '@/entities/kitchen'
 import type { StaffUser } from '@/entities/staff'
-import { Badge, Button } from '@/shared/ui'
+import { Badge, Button, Toaster, toast } from '@/shared/ui'
 import {
-  advanceOrderItemStatus,
   listMenuItemsForKitchen,
   setMenuItemAvailability,
   type KitchenMenuItem,
@@ -17,23 +17,20 @@ interface Props {
 }
 
 export function KitchenScreenPage({ user, onLogout }: Props) {
-  const { queue, served, mode, refetch } = useKitchenStream(user.restaurantId)
-  const [toast, setToast] = useState<string | null>(null)
+  const { pending, cooking, served, mode, advance } = useKitchenQueue(user.restaurantId)
   const [panelOpen, setPanelOpen] = useState(false)
   const [menuItems, setMenuItems] = useState<KitchenMenuItem[]>([])
 
   const onAdvance = useCallback(
     async (id: string, status: 'COOKING' | 'SERVED') => {
-      setToast(null)
       try {
-        await advanceOrderItemStatus({ data: { id, status } })
-        refetch()
+        await advance(id, status)
+        toast.success('Cập nhật trạng thái thành công')
       } catch {
-        setToast('Không cập nhật được món, thử lại.')
-        refetch()
+        toast.error('Không cập nhật được món, đã hoàn tác')
       }
     },
-    [refetch],
+    [advance],
   )
 
   const openPanel = useCallback(async () => {
@@ -42,7 +39,7 @@ export function KitchenScreenPage({ user, onLogout }: Props) {
     try {
       setMenuItems(await listMenuItemsForKitchen())
     } catch {
-      setToast('Không tải được danh sách món.')
+      toast.error('Không tải được danh sách món.')
     }
   }, [])
 
@@ -56,30 +53,35 @@ export function KitchenScreenPage({ user, onLogout }: Props) {
       setMenuItems((prev) =>
         prev.map((m) => (m.id === id ? { ...m, isAvailable: !nextIsAvailable } : m)),
       )
-      setToast('Không cập nhật được trạng thái món.')
+      toast.error('Không cập nhật được trạng thái món.')
     }
   }, [])
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 px-4 py-4">
-      <header className="flex items-center justify-between gap-3">
-        <h1 className="text-lg font-bold text-ink">Màn hình bếp</h1>
-        <div className="flex items-center gap-2">
-          <Badge variant={mode === 'live' ? 'brand' : 'outline'} dot>
-            {mode === 'live' ? 'Trực tiếp' : 'Đang dò'}
-          </Badge>
-          <Button size="sm" variant="secondary" onClick={openPanel}>
-            Hết món
-          </Button>
-          <Button size="sm" variant="ghost" onClick={onLogout}>
-            Đăng xuất
-          </Button>
-        </div>
-      </header>
+    <div className="flex min-h-screen bg-page">
+      <SideNav userName={user.name} userRole={user.role} onLogout={onLogout} />
 
-      {toast && <p className="rounded-control bg-red-50 px-3 py-2 text-sm text-red-700">{toast}</p>}
+      <main className="flex min-w-0 flex-1 flex-col gap-4 px-4 py-4 sm:px-6">
+        <header className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-extrabold text-ink">Màn hình bếp</h1>
+            <p className="text-sm text-muted">Đồng bộ đơn theo thời gian thực.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant={mode === 'live' ? 'brand' : 'outline'} dot>
+              {mode === 'live' ? 'Trực tiếp' : 'Đang dò'}
+            </Badge>
+            <Button size="sm" variant="secondary" onClick={openPanel}>
+              Hết món
+            </Button>
+            <Button size="sm" variant="ghost" onClick={onLogout} className="md:hidden">
+              Đăng xuất
+            </Button>
+          </div>
+        </header>
 
-      <KitchenBoard queue={queue} served={served} onAdvance={onAdvance} />
+        <KitchenBoard pending={pending} cooking={cooking} served={served} onAdvance={onAdvance} />
+      </main>
 
       <SoldOutPanel
         open={panelOpen}
@@ -87,6 +89,7 @@ export function KitchenScreenPage({ user, onLogout }: Props) {
         items={menuItems}
         onToggle={onToggleAvailability}
       />
-    </main>
+      <Toaster richColors position="top-right" />
+    </div>
   )
 }
