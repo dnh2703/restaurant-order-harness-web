@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { cookieTokenStore, doGetSession, doLogin, doLogout } from '@/shared/lib/staff-auth.server'
-import type { StaffUser } from '@/entities/staff/model'
+import type { StaffUser } from '@/shared/api/types/staff'
 
 interface Credentials {
   email: string

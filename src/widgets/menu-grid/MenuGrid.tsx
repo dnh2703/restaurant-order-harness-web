@@ -1,7 +1,6 @@
 import { PlusIcon } from '@phosphor-icons/react'
-
-import type { Menu, MenuItem } from '@/entities/menu/model'
-import { countItems } from '@/entities/menu/filter'
+import type { Menu, MenuItem } from '@/entities/menu'
+import { countItems } from '@/entities/menu'
 import { formatVND } from '@/shared/lib/format'
 import { Chip } from '@/shared/ui'
 

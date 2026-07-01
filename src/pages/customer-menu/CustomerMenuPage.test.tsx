@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { CustomerMenuPage } from './CustomerMenuPage'
-import type { Menu } from '@/entities/menu/model'
-import type { TableContext } from '@/entities/table/model'
+import type { Menu } from '@/entities/menu'
+import type { TableContext } from '@/entities/table'
 
 vi.mock('@/shared/api/order', () => ({
   submitOrderItems: vi.fn(() => Promise.resolve({ id: 'o1', total: 50000 })),

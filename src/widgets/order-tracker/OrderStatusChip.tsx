@@ -1,7 +1,7 @@
 // src/widgets/order-tracker/OrderStatusChip.tsx
+import type { OrderItemStatus } from '@/entities/order'
+import { ORDER_ITEM_STATUS_META } from '@/entities/order'
 import { cn } from '@/shared/lib/cn'
-import type { OrderItemStatus } from '@/entities/order/model'
-import { ORDER_ITEM_STATUS_META } from '@/entities/order/status'
 
 const TONE_CLASS: Record<'pending' | 'cooking' | 'served' | 'cancelled', string> = {
   pending: 'bg-page text-muted',

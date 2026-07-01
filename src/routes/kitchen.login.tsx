@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { StaffLoginPage } from '@/pages/staff-login/StaffLoginPage'
+import { StaffLoginPage } from '@/pages/staff-login'
 import { getStaffSession, loginStaff } from '@/shared/api/auth'
 
 export const Route = createFileRoute('/kitchen/login')({

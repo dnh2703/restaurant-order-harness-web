@@ -1,5 +1,5 @@
+import type { KitchenQueueItem, ServedItem } from '@/entities/kitchen'
 import { Button } from '@/shared/ui'
-import type { KitchenQueueItem, ServedItem } from '@/entities/kitchen/model'
 
 interface QueueProps {
   item: KitchenQueueItem

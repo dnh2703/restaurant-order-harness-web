@@ -7,10 +7,11 @@ import {
   fetchServed,
   setAvailability,
   type KitchenMenuItem,
+  type KitchenQueueItem,
+  type ServedItem,
 } from '@/shared/api/kitchen.server'
-import type { KitchenQueueItem, ServedItem } from '@/entities/kitchen/model'
 
-export type { KitchenMenuItem }
+export type { KitchenMenuItem, KitchenQueueItem, ServedItem }
 
 export const fetchKitchenQueue = createServerFn({ method: 'GET' }).handler(
   (): Promise<KitchenQueueItem[]> => fetchQueue(cookieTokenStore),

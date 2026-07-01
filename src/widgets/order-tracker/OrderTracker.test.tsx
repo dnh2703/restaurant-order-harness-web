@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { OrderTracker } from './OrderTracker'
-import type { Order } from '@/entities/order/model'
+import type { Order } from '@/entities/order'
 
 function makeOrder(over: Partial<Order> = {}): Order {
   return {

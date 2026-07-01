@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { CustomerMenuPage } from '@/pages/customer-menu/CustomerMenuPage'
+import { CustomerMenuPage } from '@/pages/customer-menu'
 import { getMenu } from '@/shared/api/qr'
 import { Route as QrTokenRoute } from './t.$qrToken'
 

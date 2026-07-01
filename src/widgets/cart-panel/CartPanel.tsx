@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { MinusIcon, PlusIcon } from '@phosphor-icons/react'
-
-import { type CartLine, cartCount, cartSubtotal } from '@/entities/cart/model'
+import { type CartLine, cartCount, cartSubtotal } from '@/entities/cart'
 import { formatVND } from '@/shared/lib/format'
 import { Badge, Button } from '@/shared/ui'
 

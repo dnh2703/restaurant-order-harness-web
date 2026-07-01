@@ -1,5 +1,11 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "jsPlugins": [
+    {
+      "name": "fsd",
+      "specifier": "@mandujs/oxlint-plugin-fsd"
+    }
+  ],
   "plugins": ["react", "typescript", "import"],
   "env": {
     "browser": true,
@@ -12,10 +18,83 @@
   },
   "rules": {
     "react/react-in-jsx-scope": "off",
-    "react/no-unknown-property": "error"
+    "react/no-unknown-property": "error",
+
+    "fsd/forbidden-imports": [
+      "error",
+      {
+        "alias": { "value": "@", "withSlash": true },
+        "layers": {
+          "routes": {
+            "pattern": "routes",
+            "priority": 0,
+            "allowedToImport": ["routes", "pages", "widgets", "features", "entities", "shared"]
+          }
+        }
+      }
+    ],
+    "fsd/no-cross-slice-dependency": [
+      "error",
+      {
+        "alias": { "value": "@", "withSlash": true },
+        "layers": {
+          "routes": {
+            "pattern": "routes",
+            "priority": 0,
+            "allowedToImport": ["routes", "pages", "widgets", "features", "entities", "shared"]
+          }
+        },
+        "excludeLayers": ["routes", "shared"]
+      }
+    ],
+    "fsd/no-public-api-sidestep": [
+      "error",
+      {
+        "alias": { "value": "@", "withSlash": true },
+        "layers": ["pages", "widgets", "features", "entities"],
+        "sharedPublicApiSegments": ["ui", "lib", "api", "config"]
+      }
+    ],
+    "fsd/no-ui-in-business-logic": [
+      "error",
+      {
+        "alias": { "value": "@", "withSlash": true },
+        "layers": {
+          "routes": {
+            "pattern": "routes",
+            "priority": 0,
+            "allowedToImport": ["routes", "pages", "widgets", "features", "entities", "shared"]
+          }
+        }
+      }
+    ],
+    "fsd/no-global-store-imports": "error",
+    "fsd/ordered-imports": [
+      "warn",
+      {
+        "alias": { "value": "@", "withSlash": true },
+        "customOrder": [
+          "routes",
+          "app",
+          "processes",
+          "pages",
+          "widgets",
+          "features",
+          "entities",
+          "shared"
+        ]
+      }
+    ],
+    "fsd/no-relative-imports": [
+      "warn",
+      {
+        "allowSameSlice": true
+      }
+    ]
   },
   "ignorePatterns": [
     "src/routeTree.gen.ts",
+    "src/router.tsx",
     ".agents/**",
     ".output/**",
     "dist/**",

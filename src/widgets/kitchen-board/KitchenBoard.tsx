@@ -1,5 +1,5 @@
+import type { KitchenQueueItem, ServedItem } from '@/entities/kitchen'
 import { KitchenCard } from './KitchenCard'
-import type { KitchenQueueItem, ServedItem } from '@/entities/kitchen/model'
 
 interface Props {
   queue: KitchenQueueItem[]

@@ -2,15 +2,10 @@ import { authedFetch, type TokenStore } from '@/shared/lib/staff-auth.server'
 import {
   normalizeQueueItem,
   normalizeServedItem,
+  type KitchenMenuItem,
   type KitchenQueueItem,
   type ServedItem,
-} from '@/entities/kitchen/model'
-
-export interface KitchenMenuItem {
-  id: string
-  name: string
-  isAvailable: boolean
-}
+} from '@/shared/api/kitchen-normalize'
 
 async function readJson<T>(res: Response): Promise<T> {
   if (!res.ok) throw new Error(`Backend error (${res.status})`)
@@ -77,3 +72,5 @@ export async function setAvailability(
   )
   if (!res.ok) throw new Error(`Không cập nhật được trạng thái món (${res.status})`)
 }
+
+export type { KitchenMenuItem, KitchenQueueItem, ServedItem }

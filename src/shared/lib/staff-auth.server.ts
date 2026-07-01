@@ -1,6 +1,6 @@
 import { getCookie, setCookie, deleteCookie } from '@tanstack/react-start/server'
 import { API_BASE_URL } from '@/shared/config'
-import type { StaffUser } from '@/entities/staff/model'
+import type { StaffUser } from '@/shared/api/types/staff'
 
 const ACCESS_COOKIE = 'staff_at'
 const REFRESH_COOKIE = 'staff_rt'

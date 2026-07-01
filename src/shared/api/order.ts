@@ -1,8 +1,8 @@
 import { createServerFn } from '@tanstack/react-start'
 import { API_BASE_URL } from '@/shared/config'
 import { toNumber } from '@/shared/lib/format'
-import { normalizeOrder } from '@/entities/order/normalize'
-import type { Order } from '@/entities/order/model'
+import { normalizeOrder } from '@/shared/api/order-normalize'
+import type { Order } from '@/shared/api/types/order'
 
 interface SubmitInput {
   qrToken: string

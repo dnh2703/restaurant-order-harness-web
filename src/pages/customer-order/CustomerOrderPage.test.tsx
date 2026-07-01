@@ -3,10 +3,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { CustomerOrderPage } from './CustomerOrderPage'
 
-vi.mock('@/entities/order/useOrderStream', () => ({
-  useOrderStream: vi.fn(),
-}))
-import { useOrderStream } from '@/entities/order/useOrderStream'
+vi.mock('@/entities/order', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/entities/order')>()
+  return {
+    ...actual,
+    useOrderStream: vi.fn(),
+  }
+})
+import { useOrderStream } from '@/entities/order'
 
 const ORDER = {
   id: 'o1',

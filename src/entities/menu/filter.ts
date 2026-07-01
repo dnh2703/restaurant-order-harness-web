@@ -1,5 +1,5 @@
-import type { Menu } from './model'
 import { matchesQuery } from '@/shared/lib/diacritics'
+import type { Menu } from './model'
 
 export function countItems(menu: Menu): number {
   return menu.categories.reduce((n, c) => n + c.items.length, 0)

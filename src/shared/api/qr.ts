@@ -1,8 +1,8 @@
 import { createServerFn } from '@tanstack/react-start'
 import { API_BASE_URL } from '@/shared/config'
 import { toNumber } from '@/shared/lib/format'
-import type { TableContext } from '@/entities/table/model'
-import type { Menu } from '@/entities/menu/model'
+import type { Menu } from '@/shared/api/types/menu'
+import type { TableContext } from '@/shared/api/types/table'
 
 /**
  * Server-only fetch to the Elysia backend. Runs inside server functions so the

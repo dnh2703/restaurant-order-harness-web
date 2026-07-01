@@ -13,6 +13,7 @@ scripts/bin/harness-cli.exe
 
 # Frontend (TanStack Start) — dependencies, build output, generated files.
 node_modules/
+package-lock.json
 .output/
 .nitro/
 .tanstack/

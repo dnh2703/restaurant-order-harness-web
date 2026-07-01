@@ -1,15 +1,15 @@
 import { useCallback, useState } from 'react'
+import { KitchenBoard } from '@/widgets/kitchen-board'
+import { SoldOutPanel } from '@/widgets/sold-out-panel'
+import { useKitchenStream } from '@/entities/kitchen'
+import type { StaffUser } from '@/entities/staff'
 import { Badge, Button } from '@/shared/ui'
-import { KitchenBoard } from '@/widgets/kitchen-board/KitchenBoard'
-import { SoldOutPanel } from '@/widgets/sold-out-panel/SoldOutPanel'
-import { useKitchenStream } from '@/entities/kitchen/useKitchenStream'
 import {
   advanceOrderItemStatus,
   listMenuItemsForKitchen,
   setMenuItemAvailability,
   type KitchenMenuItem,
 } from '@/shared/api/kitchen'
-import type { StaffUser } from '@/entities/staff/model'
 
 interface Props {
   user: StaffUser
