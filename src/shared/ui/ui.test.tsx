@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { Button, Chip, Input, Drawer, DrawerContent, DrawerTitle, Badge } from './index'
+import { Button, Chip, Input, Drawer, DrawerContent, DrawerTitle, Badge, DataTable } from './index'
 
 describe('Button', () => {
   it('renders children, defaults to type=button, and tags data-slot', () => {
@@ -100,5 +100,57 @@ describe('Badge', () => {
       </Badge>,
     )
     expect(container.querySelector('.rounded-full')).not.toBeNull()
+  })
+})
+
+describe('DataTable', () => {
+  it('renders headers and row cells from column definitions', () => {
+    render(
+      <DataTable
+        columns={[
+          { id: 'name', header: 'Tên', cell: (row: { name: string; seats: number }) => row.name },
+          { id: 'seats', header: 'Ghế', cell: (row) => row.seats },
+        ]}
+        data={[
+          { id: '1', name: 'Bàn 1', seats: 4 },
+          { id: '2', name: 'Bàn 2', seats: 2 },
+        ]}
+        getRowKey={(row) => row.id}
+      />,
+    )
+
+    expect(screen.getByRole('columnheader', { name: 'Tên' })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Ghế' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: 'Bàn 1' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '4' })).toBeInTheDocument()
+  })
+
+  it('renders an empty state across all columns', () => {
+    render(
+      <DataTable
+        columns={[{ id: 'name', header: 'Tên', cell: (row: { name: string }) => row.name }]}
+        data={[]}
+        getRowKey={(row) => row.name}
+        emptyMessage="Chưa có dữ liệu"
+      />,
+    )
+
+    expect(screen.getByText('Chưa có dữ liệu')).toHaveAttribute('colspan', '1')
+  })
+
+  it('uses stronger table contrast classes', () => {
+    const { container } = render(
+      <DataTable
+        columns={[{ id: 'name', header: 'Tên', cell: (row: { name: string }) => row.name }]}
+        data={[{ name: 'Bàn 1' }]}
+        getRowKey={(row) => row.name}
+      />,
+    )
+
+    expect(container.querySelector('[data-slot="data-table"]')?.className).toContain(
+      'border-line-strong',
+    )
+    expect(screen.getByRole('columnheader', { name: 'Tên' }).className).toContain('text-secondary')
+    expect(screen.getByRole('row', { name: 'Bàn 1' }).className).toContain('hover:bg-page')
   })
 })

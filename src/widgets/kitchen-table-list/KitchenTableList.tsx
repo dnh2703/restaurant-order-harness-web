@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { AdminTableView } from '@/shared/api/types/admin-table'
 import { TABLE_STATUS_LABEL } from '@/shared/api/tables-normalize'
-import { Badge, Button } from '@/shared/ui'
+import { Badge, Button, DataTable, type DataTableColumn } from '@/shared/ui'
 import { CreateTableForm } from './CreateTableForm'
 import { DeleteTableAlertDialog } from './DeleteTableAlertDialog'
 import { EditTableModal } from './EditTableModal'
@@ -14,27 +14,41 @@ interface Props {
   onOpenQr: (table: AdminTableView) => void
 }
 
-function TableRow({
-  table,
+function createKitchenTableColumns({
   onEdit,
   onDelete,
   onOpenQr,
 }: {
-  table: AdminTableView
   onEdit: (table: AdminTableView) => void
   onDelete: (table: AdminTableView) => void
   onOpenQr: (table: AdminTableView) => void
-}) {
-  return (
-    <tr className="border-t border-line">
-      <td className="px-3 py-3 font-semibold text-ink">{table.name}</td>
-      <td className="px-3 py-3 text-muted">{table.capacity ?? '—'}</td>
-      <td className="px-3 py-3">
+}): Array<DataTableColumn<AdminTableView>> {
+  return [
+    {
+      id: 'name',
+      header: 'Tên bàn',
+      className: 'font-semibold text-ink',
+      cell: (table) => table.name,
+    },
+    {
+      id: 'capacity',
+      header: 'Sức chứa',
+      className: 'text-muted',
+      cell: (table) => table.capacity ?? '—',
+    },
+    {
+      id: 'status',
+      header: 'Trạng thái',
+      cell: (table) => (
         <Badge variant={table.status === 'OCCUPIED' ? 'brand' : 'outline'}>
           {TABLE_STATUS_LABEL[table.status]}
         </Badge>
-      </td>
-      <td className="px-3 py-3">
+      ),
+    },
+    {
+      id: 'actions',
+      header: 'Thao tác',
+      cell: (table) => (
         <div className="flex flex-wrap gap-2">
           <Button type="button" size="sm" variant="secondary" onClick={() => onOpenQr(table)}>
             Mã QR
@@ -46,9 +60,9 @@ function TableRow({
             Xóa
           </Button>
         </div>
-      </td>
-    </tr>
-  )
+      ),
+    },
+  ]
 }
 
 export function KitchenTableList({ tables, onCreate, onUpdate, onDelete, onOpenQr }: Props) {
@@ -67,41 +81,22 @@ export function KitchenTableList({ tables, onCreate, onUpdate, onDelete, onOpenQ
     setDeleteOpen(true)
   }
 
+  const columns = createKitchenTableColumns({
+    onEdit: openEdit,
+    onDelete: openDelete,
+    onOpenQr,
+  })
+
   return (
     <div className="flex flex-col gap-4">
       <CreateTableForm onCreate={onCreate} />
 
-      <div className="overflow-x-auto rounded-card border border-line bg-white">
-        <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="bg-page text-xs font-bold uppercase tracking-wide text-muted">
-            <tr>
-              <th className="px-3 py-3">Tên bàn</th>
-              <th className="px-3 py-3">Sức chứa</th>
-              <th className="px-3 py-3">Trạng thái</th>
-              <th className="px-3 py-3">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tables.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-3 py-8 text-center text-muted">
-                  Chưa có bàn nào. Thêm bàn đầu tiên ở trên.
-                </td>
-              </tr>
-            ) : (
-              tables.map((table) => (
-                <TableRow
-                  key={table.id}
-                  table={table}
-                  onEdit={openEdit}
-                  onDelete={openDelete}
-                  onOpenQr={onOpenQr}
-                />
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        columns={columns}
+        data={tables}
+        getRowKey={(table) => table.id}
+        emptyMessage="Chưa có bàn nào. Thêm bàn đầu tiên ở trên."
+      />
 
       <EditTableModal
         table={editTable}

@@ -41,4 +41,5 @@ export {
 } from './AlertDialog'
 export { Badge, badgeVariants, type BadgeVariant, type BadgeSize } from './Badge'
 export { BrandMark } from './BrandMark'
+export { DataTable, type DataTableColumn } from './DataTable'
 export { Toaster, toast } from './Toast'
