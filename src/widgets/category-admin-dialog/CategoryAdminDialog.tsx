@@ -97,6 +97,29 @@ function createCategoryColumns({
   ]
 }
 
+function resetDraftState({
+  setNewName,
+  setNewSortOrder,
+  setEditing,
+  setEditName,
+  setEditSortOrder,
+  setDeleting,
+}: {
+  setNewName: (value: string) => void
+  setNewSortOrder: (value: string) => void
+  setEditing: (value: AdminCategoryView | null) => void
+  setEditName: (value: string) => void
+  setEditSortOrder: (value: string) => void
+  setDeleting: (value: AdminCategoryView | null) => void
+}) {
+  setNewName('')
+  setNewSortOrder('')
+  setEditing(null)
+  setEditName('')
+  setEditSortOrder('')
+  setDeleting(null)
+}
+
 export function CategoryAdminDialog({
   open,
   onOpenChange,
@@ -121,6 +144,20 @@ export function CategoryAdminDialog({
   }, [editing])
 
   const isBusy = busy !== null
+  const resetState = () =>
+    resetDraftState({
+      setNewName,
+      setNewSortOrder,
+      setEditing,
+      setEditName,
+      setEditSortOrder,
+      setDeleting,
+    })
+
+  useEffect(() => {
+    if (!open) resetState()
+  }, [open])
+
   const columns = useMemo(
     () =>
       createCategoryColumns({
@@ -142,6 +179,8 @@ export function CategoryAdminDialog({
       await onCreate({ name, sortOrder: parseSortOrder(newSortOrder) })
       setNewName('')
       setNewSortOrder('')
+    } catch {
+      // Parent handlers own the toast; keep the draft visible for correction.
     } finally {
       setBusy(null)
     }
@@ -157,6 +196,8 @@ export function CategoryAdminDialog({
     try {
       await onUpdate({ id: editing.id, name, sortOrder: parseSortOrder(editSortOrder) })
       setEditing(null)
+    } catch {
+      // Parent handlers own the toast; keep the edit form open for correction.
     } finally {
       setBusy(null)
     }
@@ -170,6 +211,8 @@ export function CategoryAdminDialog({
       await onDelete(deleting.id)
       setDeleting(null)
       setEditing((current) => (current?.id === deleting.id ? null : current))
+    } catch {
+      // Parent handlers own the toast; keep confirmation state for retry/cancel.
     } finally {
       setBusy(null)
     }
@@ -196,6 +239,8 @@ export function CategoryAdminDialog({
               </label>
               <Input
                 id="new-category-name"
+                name="newCategoryName"
+                autoComplete="off"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="Tráng miệng"
@@ -209,6 +254,8 @@ export function CategoryAdminDialog({
               </label>
               <Input
                 id="new-category-sort"
+                name="newCategorySortOrder"
+                autoComplete="off"
                 type="number"
                 value={newSortOrder}
                 onChange={(e) => setNewSortOrder(e.target.value)}
@@ -239,6 +286,8 @@ export function CategoryAdminDialog({
                 </label>
                 <Input
                   id="edit-category-name"
+                  name="editCategoryName"
+                  autoComplete="off"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   containerClassName={fieldClass}
@@ -251,6 +300,8 @@ export function CategoryAdminDialog({
                 </label>
                 <Input
                   id="edit-category-sort"
+                  name="editCategorySortOrder"
+                  autoComplete="off"
                   type="number"
                   value={editSortOrder}
                   onChange={(e) => setEditSortOrder(e.target.value)}

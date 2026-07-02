@@ -27,9 +27,9 @@ function setup(overrides: Partial<React.ComponentProps<typeof CategoryAdminDialo
     ...overrides,
   }
 
-  render(<CategoryAdminDialog {...props} />)
+  const view = render(<CategoryAdminDialog {...props} />)
 
-  return props
+  return { props, ...view }
 }
 
 describe('CategoryAdminDialog', () => {
@@ -54,7 +54,7 @@ describe('CategoryAdminDialog', () => {
   })
 
   it('create form trims name and calls onCreate with name and sortOrder', async () => {
-    const props = setup()
+    const { props } = setup()
 
     fireEvent.change(screen.getByLabelText('Tên danh mục mới'), {
       target: { value: '  Tráng miệng  ' },
@@ -67,8 +67,26 @@ describe('CategoryAdminDialog', () => {
     })
   })
 
+  it('adds stable form names and disables browser autocomplete', () => {
+    setup()
+
+    expect(screen.getByLabelText('Tên danh mục mới')).toHaveAttribute('name', 'newCategoryName')
+    expect(screen.getByLabelText('Tên danh mục mới')).toHaveAttribute('autocomplete', 'off')
+    expect(screen.getByLabelText('Thứ tự mới')).toHaveAttribute('name', 'newCategorySortOrder')
+    expect(screen.getByLabelText('Thứ tự mới')).toHaveAttribute('autocomplete', 'off')
+
+    fireEvent.click(
+      within(screen.getByRole('row', { name: /Món chính/ })).getByRole('button', { name: 'Sửa' }),
+    )
+
+    expect(screen.getByLabelText('Tên danh mục')).toHaveAttribute('name', 'editCategoryName')
+    expect(screen.getByLabelText('Tên danh mục')).toHaveAttribute('autocomplete', 'off')
+    expect(screen.getByLabelText('Thứ tự')).toHaveAttribute('name', 'editCategorySortOrder')
+    expect(screen.getByLabelText('Thứ tự')).toHaveAttribute('autocomplete', 'off')
+  })
+
   it('edit flow updates name and sortOrder and calls onUpdate', async () => {
-    const props = setup()
+    const { props } = setup()
 
     fireEvent.click(
       within(screen.getByRole('row', { name: /Món chính/ })).getByRole('button', { name: 'Sửa' }),
@@ -83,7 +101,7 @@ describe('CategoryAdminDialog', () => {
   })
 
   it('delete flow asks confirmation and calls onDelete with id', async () => {
-    const props = setup()
+    const { props } = setup()
 
     fireEvent.click(
       within(screen.getByRole('row', { name: /Đồ uống/ })).getByRole('button', { name: 'Xóa' }),
@@ -121,5 +139,29 @@ describe('CategoryAdminDialog', () => {
       expect(screen.queryByRole('button', { name: 'Đang thêm…' })).not.toBeInTheDocument()
     })
     expect(screen.getByLabelText('Tên danh mục mới')).toHaveValue('')
+  })
+
+  it('resets draft, edit, and delete state after closing', () => {
+    const { props, rerender } = setup()
+
+    fireEvent.change(screen.getByLabelText('Tên danh mục mới'), {
+      target: { value: 'Tráng miệng' },
+    })
+    fireEvent.change(screen.getByLabelText('Thứ tự mới'), { target: { value: '3' } })
+    fireEvent.click(
+      within(screen.getByRole('row', { name: /Món chính/ })).getByRole('button', { name: 'Sửa' }),
+    )
+    fireEvent.change(screen.getByLabelText('Tên danh mục'), { target: { value: 'Món nóng' } })
+    fireEvent.click(
+      within(screen.getByRole('row', { name: /Đồ uống/ })).getByRole('button', { name: 'Xóa' }),
+    )
+
+    rerender(<CategoryAdminDialog {...props} open={false} />)
+    rerender(<CategoryAdminDialog {...props} open />)
+
+    expect(screen.getByLabelText('Tên danh mục mới')).toHaveValue('')
+    expect(screen.getByLabelText('Thứ tự mới')).toHaveValue(null)
+    expect(screen.queryByLabelText('Tên danh mục')).not.toBeInTheDocument()
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
   })
 })
