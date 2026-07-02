@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { SideNav } from '@/widgets/side-nav'
+import { MenuAdminList } from '@/widgets/menu-admin-list'
 import type { StaffUser } from '@/entities/staff'
 import type { AdminCategoryView, AdminMenuItemView } from '@/shared/api/menu-admin'
 import { Button, Toaster } from '@/shared/ui'
@@ -11,6 +13,13 @@ interface Props {
 }
 
 export function KitchenMenuPage({ user, initialCategories, initialMenuItems, onLogout }: Props) {
+  const [categories] = useState(initialCategories)
+  const [menuItems] = useState(initialMenuItems)
+  const [, setCreateItemOpen] = useState(false)
+  const [, setCategoriesOpen] = useState(false)
+  const [, setEditingItem] = useState<AdminMenuItemView | null>(null)
+  const [, setDeletingItem] = useState<AdminMenuItemView | null>(null)
+
   return (
     <div className="flex min-h-screen bg-page">
       <SideNav userName={user.name} userRole={user.role} onLogout={onLogout} activeSection="menu" />
@@ -27,10 +36,17 @@ export function KitchenMenuPage({ user, initialCategories, initialMenuItems, onL
 
         <section
           aria-label="Quản lý thực đơn"
-          data-category-count={initialCategories.length}
-          data-menu-item-count={initialMenuItems.length}
-          className="min-h-64 rounded-panel border border-dashed border-line bg-white"
-        />
+          className="rounded-panel border border-line-strong bg-white p-4 shadow-card"
+        >
+          <MenuAdminList
+            categories={categories}
+            menuItems={menuItems}
+            onCreateItem={() => setCreateItemOpen(true)}
+            onOpenCategories={() => setCategoriesOpen(true)}
+            onEditItem={(item) => setEditingItem(item)}
+            onDeleteItem={(item) => setDeletingItem(item)}
+          />
+        </section>
       </main>
       <Toaster />
     </div>
