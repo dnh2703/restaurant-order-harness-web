@@ -1,9 +1,17 @@
-import { useState } from 'react'
-import { SideNav } from '@/widgets/side-nav'
+import { useCallback, useState } from 'react'
+import { CategoryAdminDialog } from '@/widgets/category-admin-dialog'
 import { MenuAdminList } from '@/widgets/menu-admin-list'
+import { SideNav } from '@/widgets/side-nav'
 import type { StaffUser } from '@/entities/staff'
-import type { AdminCategoryView, AdminMenuItemView } from '@/shared/api/menu-admin'
-import { Button, Toaster } from '@/shared/ui'
+import {
+  createCategory,
+  deleteCategory,
+  updateCategory,
+  type AdminCategoryView,
+  type AdminMenuItemView,
+  type SaveCategoryInput,
+} from '@/shared/api/menu-admin'
+import { Button, Toaster, toast } from '@/shared/ui'
 
 interface Props {
   user: StaffUser
@@ -12,13 +20,58 @@ interface Props {
   onLogout: () => void
 }
 
+function sortCategories(categories: AdminCategoryView[]) {
+  return [...categories].sort(
+    (a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, 'vi'),
+  )
+}
+
+function toastApiError(err: unknown, fallback: string) {
+  toast.error(err instanceof Error ? err.message : fallback)
+}
+
 export function KitchenMenuPage({ user, initialCategories, initialMenuItems, onLogout }: Props) {
-  const [categories] = useState(initialCategories)
+  const [categories, setCategories] = useState(() => sortCategories(initialCategories))
   const [menuItems] = useState(initialMenuItems)
   const [, setCreateItemOpen] = useState(false)
-  const [, setCategoriesOpen] = useState(false)
+  const [categoriesOpen, setCategoriesOpen] = useState(false)
   const [, setEditingItem] = useState<AdminMenuItemView | null>(null)
   const [, setDeletingItem] = useState<AdminMenuItemView | null>(null)
+
+  const onCreateCategory = useCallback(async (input: SaveCategoryInput) => {
+    try {
+      const category = await createCategory({ data: input })
+      setCategories((prev) => sortCategories([...prev, category]))
+      toast.success(`Đã thêm ${category.name}`)
+    } catch (err) {
+      toastApiError(err, 'Không thêm được danh mục')
+      throw err
+    }
+  }, [])
+
+  const onUpdateCategory = useCallback(async (input: { id: string } & SaveCategoryInput) => {
+    try {
+      const category = await updateCategory({ data: input })
+      setCategories((prev) =>
+        sortCategories(prev.map((current) => (current.id === category.id ? category : current))),
+      )
+      toast.success('Đã cập nhật danh mục')
+    } catch (err) {
+      toastApiError(err, 'Không cập nhật được danh mục')
+      throw err
+    }
+  }, [])
+
+  const onDeleteCategory = useCallback(async (id: string) => {
+    try {
+      await deleteCategory({ data: { id } })
+      setCategories((prev) => prev.filter((category) => category.id !== id))
+      toast.success('Đã xóa danh mục')
+    } catch (err) {
+      toastApiError(err, 'Không xóa được danh mục')
+      throw err
+    }
+  }, [])
 
   return (
     <div className="flex min-h-screen bg-page">
@@ -48,6 +101,14 @@ export function KitchenMenuPage({ user, initialCategories, initialMenuItems, onL
           />
         </section>
       </main>
+      <CategoryAdminDialog
+        open={categoriesOpen}
+        onOpenChange={setCategoriesOpen}
+        categories={categories}
+        onCreate={onCreateCategory}
+        onUpdate={onUpdateCategory}
+        onDelete={onDeleteCategory}
+      />
       <Toaster />
     </div>
   )
