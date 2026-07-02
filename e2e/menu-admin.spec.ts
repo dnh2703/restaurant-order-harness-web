@@ -12,7 +12,7 @@ test.describe('Menu admin (Epic 6)', () => {
 
     await page.goto('/kitchen/login')
     await page.getByPlaceholder('admin@gmail.com').fill(email!)
-    await page.getByPlaceholder(/Mật khẩu/).fill(password!)
+    await page.getByLabel('Mật khẩu').fill(password!)
     await page.getByRole('button', { name: /Đăng nhập/ }).click()
     await expect(page.getByText('Màn hình bếp')).toBeVisible()
 
@@ -24,9 +24,13 @@ test.describe('Menu admin (Epic 6)', () => {
     const categoryName = `Danh mục E2E ${stamp}`
     const dishName = `Món E2E ${stamp}`
 
-    // Create a category.
-    await page.getByRole('button', { name: 'Danh mục' }).click()
+    // Create a category. The freshly SSR'd page needs a beat to hydrate before
+    // its onClick handlers attach, so retry opening the dialog until it sticks.
     const categoryDialog = page.getByRole('dialog', { name: 'Quản lý danh mục' })
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Danh mục' }).click()
+      await expect(categoryDialog).toBeVisible({ timeout: 1000 })
+    }).toPass()
     await categoryDialog.getByLabel('Tên danh mục mới').fill(categoryName)
     await categoryDialog.getByLabel('Thứ tự mới').fill('999')
     await categoryDialog.getByRole('button', { name: 'Thêm danh mục' }).click()
