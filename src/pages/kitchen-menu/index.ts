@@ -1,0 +1,1 @@
+export { KitchenMenuPage } from './KitchenMenuPage'

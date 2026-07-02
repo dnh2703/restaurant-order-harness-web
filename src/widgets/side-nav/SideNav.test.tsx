@@ -25,4 +25,24 @@ describe('SideNav', () => {
     expect(screen.getByRole('link', { name: /Bếp/ })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Bàn ăn/ })).toHaveAttribute('aria-current', 'page')
   })
+
+  it('shows Thực đơn for admin', () => {
+    render(<SideNav userName="Quản Lý" userRole="ADMIN" onLogout={vi.fn()} activeSection="board" />)
+
+    expect(screen.getByRole('link', { name: /Thực đơn/ })).toHaveAttribute('href', '/kitchen/menu')
+  })
+
+  it('hides Thực đơn for kitchen staff', () => {
+    render(
+      <SideNav userName="Đầu Bếp" userRole="KITCHEN" onLogout={vi.fn()} activeSection="board" />,
+    )
+
+    expect(screen.queryByRole('link', { name: /Thực đơn/ })).not.toBeInTheDocument()
+  })
+
+  it('marks Thực đơn as current when menu is active', () => {
+    render(<SideNav userName="Quản Lý" userRole="ADMIN" onLogout={vi.fn()} activeSection="menu" />)
+
+    expect(screen.getByRole('link', { name: /Thực đơn/ })).toHaveAttribute('aria-current', 'page')
+  })
 })

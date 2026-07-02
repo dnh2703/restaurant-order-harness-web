@@ -14,7 +14,10 @@ export const Route = createFileRoute('/kitchen')({
     if (!session || (session.role !== 'KITCHEN' && session.role !== 'ADMIN')) {
       throw redirect({ to: '/kitchen/login' })
     }
-    if (location.pathname.startsWith('/kitchen/tables') && session.role !== 'ADMIN') {
+    const adminOnlyRoute =
+      location.pathname.startsWith('/kitchen/tables') ||
+      location.pathname.startsWith('/kitchen/menu')
+    if (adminOnlyRoute && session.role !== 'ADMIN') {
       throw redirect({ to: '/kitchen' })
     }
     return { session }
