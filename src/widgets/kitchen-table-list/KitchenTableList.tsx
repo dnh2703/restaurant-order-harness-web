@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { AdminTableView } from '@/shared/api/types/admin-table'
 import { TABLE_STATUS_LABEL } from '@/shared/api/tables-normalize'
-import { Badge, Button, DataTable, Input, type DataTableColumn } from '@/shared/ui'
+import { Badge, Button, DataTable, Input, Pagination, type DataTableColumn } from '@/shared/ui'
 import { CreateTableDialog } from './CreateTableForm'
 import { DeleteTableAlertDialog } from './DeleteTableAlertDialog'
 import { EditTableModal } from './EditTableModal'
+
+const TABLE_PAGE_SIZE = 10
 
 interface Props {
   tables: AdminTableView[]
@@ -56,7 +58,13 @@ function createKitchenTableColumns({
           <Button type="button" size="sm" variant="ghost" onClick={() => onEdit(table)}>
             Sửa
           </Button>
-          <Button type="button" size="sm" variant="ghost" onClick={() => onDelete(table)}>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="text-red-600 hover:text-red-700"
+            onClick={() => onDelete(table)}
+          >
             Xóa
           </Button>
         </div>
@@ -67,6 +75,8 @@ function createKitchenTableColumns({
 
 export function KitchenTableList({ tables, onCreate, onUpdate, onDelete, onOpenQr }: Props) {
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(TABLE_PAGE_SIZE)
   const [createOpen, setCreateOpen] = useState(false)
   const [editTable, setEditTable] = useState<AdminTableView | null>(null)
   const [editOpen, setEditOpen] = useState(false)
@@ -93,6 +103,13 @@ export function KitchenTableList({ tables, onCreate, onUpdate, onDelete, onOpenQ
     searchQuery.length === 0
       ? tables
       : tables.filter((table) => table.name.toLocaleLowerCase('vi').includes(searchQuery))
+  const pageCount = Math.max(1, Math.ceil(filteredTables.length / pageSize))
+  const currentPage = Math.min(page, pageCount)
+  const paginatedTables = filteredTables.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+
+  useEffect(() => {
+    setPage(1)
+  }, [searchQuery])
 
   return (
     <div className="flex flex-col gap-4">
@@ -111,13 +128,24 @@ export function KitchenTableList({ tables, onCreate, onUpdate, onDelete, onOpenQ
 
       <DataTable
         columns={columns}
-        data={filteredTables}
+        data={paginatedTables}
         getRowKey={(table) => table.id}
         emptyMessage={
           searchQuery.length > 0
             ? 'Không tìm thấy bàn phù hợp.'
             : 'Chưa có bàn nào. Thêm bàn đầu tiên ở trên.'
         }
+      />
+      <Pagination
+        page={currentPage}
+        pageCount={pageCount}
+        pageSize={pageSize}
+        totalItems={filteredTables.length}
+        onPageChange={setPage}
+        onPageSizeChange={(nextPageSize) => {
+          setPageSize(nextPageSize)
+          setPage(1)
+        }}
       />
 
       <CreateTableDialog open={createOpen} onOpenChange={setCreateOpen} onCreate={onCreate} />

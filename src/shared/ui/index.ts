@@ -42,4 +42,5 @@ export {
 export { Badge, badgeVariants, type BadgeVariant, type BadgeSize } from './Badge'
 export { BrandMark } from './BrandMark'
 export { DataTable, type DataTableColumn } from './DataTable'
+export { Pagination } from './Pagination'
 export { Toaster, toast } from './Toast'

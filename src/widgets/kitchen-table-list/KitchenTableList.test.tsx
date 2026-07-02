@@ -7,6 +7,13 @@ const tables: AdminTableView[] = [
   { id: 't1', name: 'Bàn 1', capacity: 4, qrToken: 'qr-1', status: 'EMPTY' },
   { id: 't2', name: 'Bàn VIP', capacity: 8, qrToken: 'qr-2', status: 'OCCUPIED' },
 ]
+const manyTables: AdminTableView[] = Array.from({ length: 12 }, (_, index) => ({
+  id: `t${index + 1}`,
+  name: `Bàn ${index + 1}`,
+  capacity: 4,
+  qrToken: `qr-${index + 1}`,
+  status: 'EMPTY',
+}))
 
 describe('KitchenTableList', () => {
   it('opens the create dialog from a button and submits a new table', async () => {
@@ -70,5 +77,39 @@ describe('KitchenTableList', () => {
       screen.getByPlaceholderText('Tìm bàn...').closest('[data-slot="input-wrapper"]'),
     ).toHaveClass('h-11')
     expect(screen.getByRole('button', { name: 'Thêm bàn ăn' })).toHaveClass('h-11')
+  })
+
+  it('renders delete table actions in red', () => {
+    render(
+      <KitchenTableList
+        tables={tables}
+        onCreate={vi.fn()}
+        onUpdate={vi.fn()}
+        onDelete={vi.fn()}
+        onOpenQr={vi.fn()}
+      />,
+    )
+
+    expect(screen.getAllByRole('button', { name: 'Xóa' })[0]).toHaveClass('text-red-600')
+  })
+
+  it('paginates tables', () => {
+    render(
+      <KitchenTableList
+        tables={manyTables}
+        onCreate={vi.fn()}
+        onUpdate={vi.fn()}
+        onDelete={vi.fn()}
+        onOpenQr={vi.fn()}
+      />,
+    )
+
+    expect(screen.getByText('Trang 1 / 2')).toBeInTheDocument()
+    expect(screen.queryByRole('cell', { name: 'Bàn 11' })).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trang sau' }))
+
+    expect(screen.getByText('Trang 2 / 2')).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: 'Bàn 11' })).toBeInTheDocument()
   })
 })

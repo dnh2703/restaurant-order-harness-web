@@ -1,6 +1,16 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { Button, Chip, Input, Drawer, DrawerContent, DrawerTitle, Badge, DataTable } from './index'
+import {
+  Button,
+  Chip,
+  Input,
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  Badge,
+  DataTable,
+  Pagination,
+} from './index'
 
 describe('Button', () => {
   it('renders children, defaults to type=button, and tags data-slot', () => {
@@ -31,6 +41,10 @@ describe('Button', () => {
     expect(btn.className).toContain('bg-brand')
     fireEvent.click(btn)
     expect(onClick).toHaveBeenCalled()
+  })
+  it('shows a pointer cursor for enabled buttons', () => {
+    render(<Button>Hover me</Button>)
+    expect(screen.getByRole('button', { name: 'Hover me' }).className).toContain('cursor-pointer')
   })
   it('honors disabled', () => {
     render(<Button disabled>X</Button>)
@@ -152,5 +166,52 @@ describe('DataTable', () => {
     )
     expect(screen.getByRole('columnheader', { name: 'Tên' }).className).toContain('text-secondary')
     expect(screen.getByRole('row', { name: 'Bàn 1' }).className).toContain('hover:bg-page')
+  })
+})
+
+describe('Pagination', () => {
+  it('renders page size controls and moves between pages', () => {
+    const onPageChange = vi.fn()
+    const onPageSizeChange = vi.fn()
+    render(
+      <Pagination
+        page={2}
+        pageCount={3}
+        pageSize={10}
+        totalItems={25}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
+      />,
+    )
+
+    expect(screen.getByText('Số dòng mỗi trang')).toBeInTheDocument()
+    expect(screen.getByText('Trang 2 / 3')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Số dòng mỗi trang'), { target: { value: '20' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Trang trước' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Trang sau' }))
+
+    expect(onPageSizeChange).toHaveBeenCalledWith(20)
+    expect(onPageChange).toHaveBeenNthCalledWith(1, 1)
+    expect(onPageChange).toHaveBeenNthCalledWith(2, 3)
+  })
+
+  it('disables navigation at the edges', () => {
+    render(
+      <Pagination page={1} pageCount={1} pageSize={10} totalItems={4} onPageChange={vi.fn()} />,
+    )
+
+    expect(screen.getByRole('button', { name: 'Trang đầu' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Trang trước' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Trang sau' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Trang cuối' })).toBeDisabled()
+  })
+
+  it('does not render a white card wrapper', () => {
+    const { container } = render(
+      <Pagination page={1} pageCount={1} pageSize={10} totalItems={4} onPageChange={vi.fn()} />,
+    )
+
+    expect(container.querySelector('[data-slot="pagination"]')?.className).not.toContain('bg-white')
   })
 })
