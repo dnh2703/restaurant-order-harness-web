@@ -7,8 +7,8 @@ import {
   createOption,
   createOptionGroup,
   deleteMenuItem,
-  fetchCategories,
-  fetchMenuItems,
+  listCategories,
+  listMenuItems,
   updateMenuItem,
 } from './menu-admin.server'
 
@@ -60,10 +60,10 @@ describe('menu admin API helpers', () => {
         }),
       )
 
-    await expect(fetchCategories(fakeStore())).resolves.toEqual([
+    await expect(listCategories(fakeStore())).resolves.toEqual([
       { id: 'c1', restaurantId: 'r1', name: 'Món chính', sortOrder: 2 },
     ])
-    await expect(fetchMenuItems(fakeStore(), 'c1')).resolves.toMatchObject([
+    await expect(listMenuItems(fakeStore(), 'c1')).resolves.toMatchObject([
       { id: 'm1', description: null, price: 65000, sortOrder: 3 },
     ])
     expect(String(fetchMock.mock.calls[1]![0])).toBe(

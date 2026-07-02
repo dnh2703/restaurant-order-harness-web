@@ -9,9 +9,9 @@ import {
   deleteMenuItem as fetchDeleteMenuItem,
   deleteOption as fetchDeleteOption,
   deleteOptionGroup as fetchDeleteOptionGroup,
-  fetchCategories,
-  fetchMenuItems,
-  fetchOptionGroups,
+  listCategories as listCategoriesFromApi,
+  listMenuItems as listMenuItemsFromApi,
+  listOptionGroups as listOptionGroupsFromApi,
   updateCategory as fetchUpdateCategory,
   updateMenuItem as fetchUpdateMenuItem,
   updateOption as fetchUpdateOption,
@@ -42,7 +42,7 @@ export type {
 }
 
 export const listCategories = createServerFn({ method: 'GET' }).handler(
-  (): Promise<AdminCategoryView[]> => fetchCategories(cookieTokenStore),
+  (): Promise<AdminCategoryView[]> => listCategoriesFromApi(cookieTokenStore),
 )
 
 export const createCategory = createServerFn({ method: 'POST' })
@@ -60,7 +60,7 @@ export const deleteCategory = createServerFn({ method: 'POST' })
 export const listMenuItems = createServerFn({ method: 'GET' })
   .validator((d: { categoryId?: string } | undefined) => d)
   .handler(({ data }): Promise<AdminMenuItemView[]> =>
-    fetchMenuItems(cookieTokenStore, data?.categoryId),
+    listMenuItemsFromApi(cookieTokenStore, data?.categoryId),
   )
 
 export const createMenuItem = createServerFn({ method: 'POST' })
@@ -78,7 +78,7 @@ export const deleteMenuItem = createServerFn({ method: 'POST' })
 export const listOptionGroups = createServerFn({ method: 'GET' })
   .validator((d: { menuItemId: string }) => d)
   .handler(({ data }): Promise<AdminOptionGroupView[]> =>
-    fetchOptionGroups(cookieTokenStore, data.menuItemId),
+    listOptionGroupsFromApi(cookieTokenStore, data.menuItemId),
   )
 
 export const createOptionGroup = createServerFn({ method: 'POST' })

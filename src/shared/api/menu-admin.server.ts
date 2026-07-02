@@ -97,7 +97,7 @@ function jsonInit(method: 'POST' | 'PATCH', body: unknown): RequestInit {
   }
 }
 
-export async function fetchCategories(store: TokenStore): Promise<AdminCategoryView[]> {
+export async function listCategories(store: TokenStore): Promise<AdminCategoryView[]> {
   const data = await readJsonData<{ categories: unknown[] }>(
     await authedFetch(store, '/api/categories/'),
   )
@@ -128,7 +128,7 @@ export async function deleteCategory(store: TokenStore, id: string): Promise<voi
   if (!res.ok) await readError(res)
 }
 
-export async function fetchMenuItems(
+export async function listMenuItems(
   store: TokenStore,
   categoryId?: string,
 ): Promise<AdminMenuItemView[]> {
@@ -163,7 +163,7 @@ export async function deleteMenuItem(store: TokenStore, id: string): Promise<voi
   if (!res.ok) await readError(res)
 }
 
-export async function fetchOptionGroups(
+export async function listOptionGroups(
   store: TokenStore,
   menuItemId: string,
 ): Promise<AdminOptionGroupView[]> {
