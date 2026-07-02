@@ -54,6 +54,7 @@ Verify command: implementation pending.
 | Layer | Expected proof |
 | --- | --- |
 | Unit | option group/option normalizers; option editor create/edit/delete handlers |
+| Component | option editor creates/updates/deletes option groups and options inside dish dialog |
 | Integration | option group and option server functions call Swagger-backed BE paths with staff auth store mocks |
 | E2E | admin login -> `/kitchen/menu` -> create dish -> add option group and option -> row/detail state updates |
 | Platform | n/a (web) |

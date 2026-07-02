@@ -52,6 +52,7 @@ Verify command: implementation pending.
 | Layer | Expected proof |
 | --- | --- |
 | Unit | category normalizers; SideNav shows **Thực đơn** only for `ADMIN` |
+| Component | category dialog create/edit/delete flows, trimmed name, sort order, delete confirmation |
 | Integration | category server functions call Swagger-backed BE paths with staff auth store mocks |
 | E2E | admin login -> `/kitchen/menu` -> create/edit/delete category smoke flow |
 | Platform | n/a (web) |

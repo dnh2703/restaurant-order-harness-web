@@ -57,6 +57,7 @@ Verify command: implementation pending.
 | Layer | Expected proof |
 | --- | --- |
 | Unit | menu item normalizers; list search/filter helpers; SideNav admin-only menu link |
+| Component | menu list filtering/search; dish dialog create/edit/delete; availability and payload fields |
 | Integration | menu item server functions call Swagger-backed BE paths with staff auth store mocks |
 | E2E | admin login -> `/kitchen/menu` -> create dish -> edit availability -> row updates |
 | Platform | n/a (web) |
