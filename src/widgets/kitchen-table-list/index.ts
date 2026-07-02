@@ -1,4 +1,4 @@
 export { KitchenTableList } from './KitchenTableList'
-export { CreateTableForm } from './CreateTableForm'
+export { CreateTableDialog } from './CreateTableForm'
 export { EditTableModal } from './EditTableModal'
 export { DeleteTableAlertDialog } from './DeleteTableAlertDialog'

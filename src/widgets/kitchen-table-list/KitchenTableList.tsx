@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import type { AdminTableView } from '@/shared/api/types/admin-table'
 import { TABLE_STATUS_LABEL } from '@/shared/api/tables-normalize'
-import { Badge, Button, DataTable, type DataTableColumn } from '@/shared/ui'
-import { CreateTableForm } from './CreateTableForm'
+import { Badge, Button, DataTable, Input, type DataTableColumn } from '@/shared/ui'
+import { CreateTableDialog } from './CreateTableForm'
 import { DeleteTableAlertDialog } from './DeleteTableAlertDialog'
 import { EditTableModal } from './EditTableModal'
 
@@ -66,6 +66,8 @@ function createKitchenTableColumns({
 }
 
 export function KitchenTableList({ tables, onCreate, onUpdate, onDelete, onOpenQr }: Props) {
+  const [search, setSearch] = useState('')
+  const [createOpen, setCreateOpen] = useState(false)
   const [editTable, setEditTable] = useState<AdminTableView | null>(null)
   const [editOpen, setEditOpen] = useState(false)
   const [deleteTable, setDeleteTable] = useState<AdminTableView | null>(null)
@@ -86,17 +88,39 @@ export function KitchenTableList({ tables, onCreate, onUpdate, onDelete, onOpenQ
     onDelete: openDelete,
     onOpenQr,
   })
+  const searchQuery = search.trim().toLocaleLowerCase('vi')
+  const filteredTables =
+    searchQuery.length === 0
+      ? tables
+      : tables.filter((table) => table.name.toLocaleLowerCase('vi').includes(searchQuery))
 
   return (
     <div className="flex flex-col gap-4">
-      <CreateTableForm onCreate={onCreate} />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Tìm bàn..."
+          aria-label="Tìm bàn"
+          containerClassName="h-11 w-full border border-line-strong bg-white px-4 shadow-card sm:max-w-sm"
+        />
+        <Button type="button" onClick={() => setCreateOpen(true)} className="h-11 shrink-0">
+          Thêm bàn ăn
+        </Button>
+      </div>
 
       <DataTable
         columns={columns}
-        data={tables}
+        data={filteredTables}
         getRowKey={(table) => table.id}
-        emptyMessage="Chưa có bàn nào. Thêm bàn đầu tiên ở trên."
+        emptyMessage={
+          searchQuery.length > 0
+            ? 'Không tìm thấy bàn phù hợp.'
+            : 'Chưa có bàn nào. Thêm bàn đầu tiên ở trên.'
+        }
       />
+
+      <CreateTableDialog open={createOpen} onOpenChange={setCreateOpen} onCreate={onCreate} />
 
       <EditTableModal
         table={editTable}
