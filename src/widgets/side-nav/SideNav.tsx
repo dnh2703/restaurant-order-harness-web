@@ -1,4 +1,4 @@
-import { CookingPotIcon, SignOutIcon } from '@phosphor-icons/react'
+import { ChairIcon, CookingPotIcon, SignOutIcon } from '@phosphor-icons/react'
 import type { StaffRole } from '@/entities/staff'
 import { BrandMark, Button } from '@/shared/ui'
 import { cn } from '@/shared/lib/cn'
@@ -7,6 +7,7 @@ interface Props {
   userName: string
   userRole: StaffRole
   onLogout: () => void
+  activeSection: 'board' | 'tables'
 }
 
 const ROLE_LABEL: Record<StaffRole, string> = {
@@ -15,8 +16,11 @@ const ROLE_LABEL: Record<StaffRole, string> = {
   CASHIER: 'Thu ngân',
 }
 
-/** Left shell for the kitchen app. Only the (active) "Bếp" tab exists today. */
-export function SideNav({ userName, userRole, onLogout }: Props) {
+/** Left shell for staff routes under /kitchen. Admin sees an extra Bàn ăn tab. */
+export function SideNav({ userName, userRole, onLogout, activeSection }: Props) {
+  const onBoard = activeSection === 'board'
+  const onTables = activeSection === 'tables'
+
   return (
     <aside className="hidden w-60 shrink-0 flex-col border-r border-line bg-white px-4 py-5 md:flex">
       <BrandMark size="sm" label="Bếp Minh Châu" className="px-1" />
@@ -24,15 +28,28 @@ export function SideNav({ userName, userRole, onLogout }: Props) {
       <nav className="mt-6 flex flex-col gap-1">
         <a
           href="/kitchen"
-          aria-current="page"
+          aria-current={onBoard ? 'page' : undefined}
           className={cn(
             'flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-semibold',
-            'bg-brand-bg text-brand',
+            onBoard ? 'bg-brand-bg text-brand' : 'text-ink-soft hover:bg-page',
           )}
         >
           <CookingPotIcon size={18} weight="bold" />
           Bếp
         </a>
+        {userRole === 'ADMIN' && (
+          <a
+            href="/kitchen/tables"
+            aria-current={onTables ? 'page' : undefined}
+            className={cn(
+              'flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-semibold',
+              onTables ? 'bg-brand-bg text-brand' : 'text-ink-soft hover:bg-page',
+            )}
+          >
+            <ChairIcon size={18} weight="bold" />
+            Bàn ăn
+          </a>
+        )}
       </nav>
 
       <div className="mt-auto flex items-center justify-between gap-2 border-t border-line pt-4">

@@ -59,7 +59,12 @@ export function KitchenScreenPage({ user, onLogout }: Props) {
 
   return (
     <div className="flex min-h-screen bg-page">
-      <SideNav userName={user.name} userRole={user.role} onLogout={onLogout} />
+      <SideNav
+        userName={user.name}
+        userRole={user.role}
+        onLogout={onLogout}
+        activeSection="board"
+      />
 
       <main className="flex min-w-0 flex-1 flex-col gap-4 px-4 py-4 sm:px-6">
         <header className="flex flex-wrap items-center justify-between gap-3">
