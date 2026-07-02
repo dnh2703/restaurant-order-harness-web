@@ -1,7 +1,7 @@
-import { CaretDownIcon, CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react'
-import type { ChangeEvent } from 'react'
+import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react'
 import { cn } from '@/shared/lib/cn'
 import { Button } from './Button'
+import { Select } from './Select'
 
 interface Props {
   page: number
@@ -35,10 +35,6 @@ export function Pagination({
     onPageChange(clampPage(nextPage, safePageCount))
   }
 
-  function handlePageSizeChange(event: ChangeEvent<HTMLSelectElement>) {
-    onPageSizeChange?.(Number(event.target.value))
-  }
-
   return (
     <nav
       aria-label="Phân trang"
@@ -52,28 +48,17 @@ export function Pagination({
         <label htmlFor="pagination-page-size" className="font-semibold">
           Số dòng mỗi trang
         </label>
-        <div className="relative">
-          <select
-            id="pagination-page-size"
-            aria-label="Số dòng mỗi trang"
-            value={pageSize}
-            onChange={handlePageSizeChange}
-            disabled={!onPageSizeChange}
-            className="h-11 min-w-20 appearance-none rounded-control border border-line-strong bg-transparent px-4 pr-9 font-semibold text-ink outline-none disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {pageSizeOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          <CaretDownIcon
-            aria-hidden
-            size={16}
-            weight="bold"
-            className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted"
-          />
-        </div>
+        <Select
+          value={pageSize.toString()}
+          onValueChange={(value) => onPageSizeChange?.(Number(value))}
+          options={pageSizeOptions.map((option) => ({
+            value: option.toString(),
+            label: option.toString(),
+          }))}
+          ariaLabel="Số dòng mỗi trang"
+          triggerId="pagination-page-size"
+          disabled={!onPageSizeChange}
+        />
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

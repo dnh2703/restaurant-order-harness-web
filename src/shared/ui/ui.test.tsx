@@ -10,6 +10,7 @@ import {
   Badge,
   DataTable,
   Pagination,
+  Select,
 } from './index'
 
 describe('Button', () => {
@@ -73,6 +74,28 @@ describe('Input', () => {
     fireEvent.change(input, { target: { value: 'pho' } })
     expect(onChange).toHaveBeenCalled()
     expect(screen.getByText('⌕')).toHaveAttribute('aria-hidden')
+  })
+})
+
+describe('Select', () => {
+  it('renders the selected option and calls onValueChange', () => {
+    const onValueChange = vi.fn()
+    render(
+      <Select
+        value="10"
+        onValueChange={onValueChange}
+        ariaLabel="Số dòng"
+        options={[
+          { value: '10', label: '10' },
+          { value: '20', label: '20' },
+        ]}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('combobox', { name: 'Số dòng' }))
+    fireEvent.click(screen.getByRole('option', { name: '20' }))
+
+    expect(onValueChange).toHaveBeenCalledWith('20')
   })
 })
 
@@ -187,7 +210,8 @@ describe('Pagination', () => {
     expect(screen.getByText('Số dòng mỗi trang')).toBeInTheDocument()
     expect(screen.getByText('Trang 2 / 3')).toBeInTheDocument()
 
-    fireEvent.change(screen.getByLabelText('Số dòng mỗi trang'), { target: { value: '20' } })
+    fireEvent.click(screen.getByRole('combobox', { name: 'Số dòng mỗi trang' }))
+    fireEvent.click(screen.getByRole('option', { name: '20' }))
     fireEvent.click(screen.getByRole('button', { name: 'Trang trước' }))
     fireEvent.click(screen.getByRole('button', { name: 'Trang sau' }))
 
