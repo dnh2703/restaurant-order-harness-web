@@ -182,6 +182,33 @@ describe('MenuAdminList', () => {
     expect(screen.getByRole('row', { name: /Món 01/ })).toBeInTheDocument()
   })
 
+  it('resets to the first page when category changes after visiting a later page', () => {
+    const mainItems = Array.from({ length: 10 }, (_, index) =>
+      makeMenuItem(`main-${index + 1}`, `Món chính ${String(index + 1).padStart(2, '0')}`, {
+        categoryId: 'c1',
+        sortOrder: index + 1,
+      }),
+    )
+    const drinkItems = Array.from({ length: 2 }, (_, index) =>
+      makeMenuItem(`drink-${index + 1}`, `Đồ uống ${String(index + 1).padStart(2, '0')}`, {
+        categoryId: 'c2',
+        sortOrder: index + 1,
+      }),
+    )
+
+    setup({ menuItems: [...mainItems, ...drinkItems] })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trang sau' }))
+    expect(screen.getByRole('row', { name: /Đồ uống 01/ })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('combobox', { name: 'Danh mục' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Món chính' }))
+
+    expect(screen.getByText('Trang 1 / 1')).toBeInTheDocument()
+    expect(screen.getByRole('row', { name: /Món chính 01/ })).toBeInTheDocument()
+    expect(screen.queryByRole('row', { name: /Đồ uống 01/ })).not.toBeInTheDocument()
+  })
+
   it('adds visible focus classes to the search and category controls', () => {
     setup()
 
