@@ -31,6 +31,24 @@ const menuItems: AdminMenuItemView[] = [
   },
 ]
 
+function makeMenuItem(
+  id: string,
+  name: string,
+  overrides: Partial<AdminMenuItemView> = {},
+): AdminMenuItemView {
+  return {
+    id,
+    categoryId: 'c1',
+    name,
+    description: null,
+    price: 10000,
+    imageUrl: null,
+    isAvailable: true,
+    sortOrder: Number(id.replace(/\D/g, '')) || 1,
+    ...overrides,
+  }
+}
+
 function setup(overrides: Partial<React.ComponentProps<typeof MenuAdminList>> = {}) {
   const props = {
     categories,
@@ -45,6 +63,13 @@ function setup(overrides: Partial<React.ComponentProps<typeof MenuAdminList>> = 
   render(<MenuAdminList {...props} />)
 
   return props
+}
+
+function getDishNames() {
+  return screen
+    .getAllByRole('row')
+    .slice(1)
+    .map((row) => within(row).getAllByRole('cell')[0]?.textContent)
 }
 
 describe('MenuAdminList', () => {
@@ -96,5 +121,73 @@ describe('MenuAdminList', () => {
     expect(props.onOpenCategories).toHaveBeenCalledTimes(1)
     expect(props.onEditItem).toHaveBeenCalledWith(menuItems[0])
     expect(props.onDeleteItem).toHaveBeenCalledWith(menuItems[0])
+  })
+
+  it('renders unsorted input by category sort order, item sort order, Vietnamese name, then missing categories last', () => {
+    setup({
+      categories: [
+        { id: 'drinks', restaurantId: 'r1', name: 'Đồ uống', sortOrder: 2 },
+        { id: 'main', restaurantId: 'r1', name: 'Món chính', sortOrder: 1 },
+      ],
+      menuItems: [
+        makeMenuItem('i5', 'Món chưa phân loại', { categoryId: 'missing', sortOrder: 1 }),
+        makeMenuItem('i4', 'Trà đào', { categoryId: 'drinks', sortOrder: 1 }),
+        makeMenuItem('i3', 'Bánh mì', { categoryId: 'main', sortOrder: 2 }),
+        makeMenuItem('i2', 'Bún bò', { categoryId: 'main', sortOrder: 1 }),
+        makeMenuItem('i1', 'Bánh cuốn', { categoryId: 'main', sortOrder: 2 }),
+      ],
+    })
+
+    expect(getDishNames()).toEqual([
+      'Bún bò',
+      'Bánh cuốn',
+      'Bánh mì',
+      'Trà đào',
+      'Món chưa phân loại',
+    ])
+  })
+
+  it('keeps page 2 items hidden until navigating to the next page', () => {
+    const manyItems = Array.from({ length: 11 }, (_, index) =>
+      makeMenuItem(`i${index + 1}`, `Món ${String(index + 1).padStart(2, '0')}`, {
+        sortOrder: index + 1,
+      }),
+    )
+
+    setup({ menuItems: manyItems })
+
+    expect(screen.getByRole('row', { name: /Món 10/ })).toBeInTheDocument()
+    expect(screen.queryByRole('row', { name: /Món 11/ })).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trang sau' }))
+
+    expect(screen.getByRole('row', { name: /Món 11/ })).toBeInTheDocument()
+  })
+
+  it('resets to the first page when search changes after visiting a later page', () => {
+    const manyItems = Array.from({ length: 11 }, (_, index) =>
+      makeMenuItem(`i${index + 1}`, `Món ${String(index + 1).padStart(2, '0')}`, {
+        sortOrder: index + 1,
+      }),
+    )
+
+    setup({ menuItems: manyItems })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Trang sau' }))
+    expect(screen.getByText('Trang 2 / 2')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByPlaceholderText('Tìm món...'), { target: { value: 'Món 0' } })
+
+    expect(screen.getByText('Trang 1 / 1')).toBeInTheDocument()
+    expect(screen.getByRole('row', { name: /Món 01/ })).toBeInTheDocument()
+  })
+
+  it('adds visible focus classes to the search and category controls', () => {
+    setup()
+
+    expect(
+      screen.getByPlaceholderText('Tìm món...').closest('[data-slot="input-wrapper"]'),
+    ).toHaveClass('focus-within:ring-2')
+    expect(screen.getByRole('combobox', { name: 'Danh mục' })).toHaveClass('focus-visible:ring-2')
   })
 })

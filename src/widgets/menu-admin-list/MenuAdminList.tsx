@@ -34,6 +34,26 @@ function getCategoryName(categories: AdminCategoryView[], categoryId: string) {
   return categories.find((category) => category.id === categoryId)?.name ?? 'Chưa phân loại'
 }
 
+function sortMenuItems(
+  items: AdminMenuItemView[],
+  sortedCategories: AdminCategoryView[],
+): AdminMenuItemView[] {
+  const categoryOrder = new Map(sortedCategories.map((category, index) => [category.id, index]))
+  const missingCategoryOrder = sortedCategories.length
+
+  return [...items].sort((a, b) => {
+    const categoryDiff =
+      (categoryOrder.get(a.categoryId) ?? missingCategoryOrder) -
+      (categoryOrder.get(b.categoryId) ?? missingCategoryOrder)
+    if (categoryDiff !== 0) return categoryDiff
+
+    const itemOrderDiff = a.sortOrder - b.sortOrder
+    if (itemOrderDiff !== 0) return itemOrderDiff
+
+    return a.name.localeCompare(b.name, 'vi')
+  })
+}
+
 function createMenuAdminColumns({
   categories,
   onEditItem,
@@ -115,10 +135,13 @@ export function MenuAdminList({
   const sortedCategories = useMemo(() => sortCategories(categories), [categories])
   const columns = createMenuAdminColumns({ categories, onEditItem, onDeleteItem })
 
-  const filteredItems = menuItems.filter((item) => {
-    const matchesCategory = categoryId === ALL_CATEGORIES || item.categoryId === categoryId
-    return matchesCategory && matchesQuery(item.name, search)
-  })
+  const filteredItems = sortMenuItems(
+    menuItems.filter((item) => {
+      const matchesCategory = categoryId === ALL_CATEGORIES || item.categoryId === categoryId
+      return matchesCategory && matchesQuery(item.name, search)
+    }),
+    sortedCategories,
+  )
   const pageCount = Math.max(1, Math.ceil(filteredItems.length / pageSize))
   const currentPage = Math.min(page, pageCount)
   const paginatedItems = filteredItems.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -137,21 +160,23 @@ export function MenuAdminList({
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Tìm món..."
             aria-label="Tìm món"
-            containerClassName="h-11 w-full border border-line-strong bg-white px-4 shadow-card sm:w-72"
+            containerClassName="h-11 w-full border border-line-strong bg-white px-4 shadow-card focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/30 sm:w-72"
           />
-          <Select
-            value={categoryId}
-            onValueChange={setCategoryId}
-            ariaLabel="Danh mục"
-            className="w-full sm:w-56"
-            options={[
-              { value: ALL_CATEGORIES, label: 'Tất cả' },
-              ...sortedCategories.map((category) => ({
-                value: category.id,
-                label: category.name,
-              })),
-            ]}
-          />
+          <div className="rounded-control focus-within:ring-2 focus-within:ring-brand/30">
+            <Select
+              value={categoryId}
+              onValueChange={setCategoryId}
+              ariaLabel="Danh mục"
+              className="w-full focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/30 sm:w-56"
+              options={[
+                { value: ALL_CATEGORIES, label: 'Tất cả' },
+                ...sortedCategories.map((category) => ({
+                  value: category.id,
+                  label: category.name,
+                })),
+              ]}
+            />
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="secondary" onClick={onOpenCategories} className="h-11">
