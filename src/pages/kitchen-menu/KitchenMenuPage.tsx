@@ -1,27 +1,22 @@
 import { useCallback, useState } from 'react'
-import { CategoryAdminDialog } from '@/widgets/category-admin-dialog'
 import { MenuItemDialog } from '@/widgets/menu-admin-form'
 import { MenuAdminList } from '@/widgets/menu-admin-list'
 import { SideNav } from '@/widgets/side-nav'
 import type { StaffUser } from '@/entities/staff'
 import {
-  createCategory,
   createMenuItem,
   createOption,
   createOptionGroup,
-  deleteCategory,
   deleteMenuItem,
   deleteOption,
   deleteOptionGroup,
   listOptionGroups,
-  updateCategory,
   updateMenuItem,
   updateOption,
   updateOptionGroup,
   type AdminCategoryView,
   type AdminMenuItemView,
   type AdminOptionGroupView,
-  type SaveCategoryInput,
   type SaveMenuItemInput,
   type SaveOptionGroupInput,
   type SaveOptionInput,
@@ -43,6 +38,7 @@ interface Props {
   user: StaffUser
   initialCategories: AdminCategoryView[]
   initialMenuItems: AdminMenuItemView[]
+  onManageCategories: () => void
   onLogout: () => void
 }
 
@@ -74,13 +70,18 @@ function toastApiError(err: unknown, fallback: string) {
   toast.error(err instanceof Error ? err.message : fallback)
 }
 
-export function KitchenMenuPage({ user, initialCategories, initialMenuItems, onLogout }: Props) {
-  const [categories, setCategories] = useState(() => sortCategories(initialCategories))
+export function KitchenMenuPage({
+  user,
+  initialCategories,
+  initialMenuItems,
+  onManageCategories,
+  onLogout,
+}: Props) {
+  const [categories] = useState(() => sortCategories(initialCategories))
   const [menuItems, setMenuItems] = useState(() =>
     sortMenuItems(initialMenuItems, initialCategories),
   )
   const [itemDialogOpen, setItemDialogOpen] = useState(false)
-  const [categoriesOpen, setCategoriesOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<AdminMenuItemView | null>(null)
   const [optionGroups, setOptionGroups] = useState<AdminOptionGroupView[]>([])
   const [deletingItem, setDeletingItem] = useState<AdminMenuItemView | null>(null)
@@ -92,41 +93,6 @@ export function KitchenMenuPage({ user, initialCategories, initialMenuItems, onL
       setOptionGroups(groups)
     } catch (err) {
       toastApiError(err, 'Không tải được tùy chọn món')
-    }
-  }, [])
-
-  const onCreateCategory = useCallback(async (input: SaveCategoryInput) => {
-    try {
-      const category = await createCategory({ data: input })
-      setCategories((prev) => sortCategories([...prev, category]))
-      toast.success(`Đã thêm ${category.name}`)
-    } catch (err) {
-      toastApiError(err, 'Không thêm được danh mục')
-      throw err
-    }
-  }, [])
-
-  const onUpdateCategory = useCallback(async (input: { id: string } & SaveCategoryInput) => {
-    try {
-      const category = await updateCategory({ data: input })
-      setCategories((prev) =>
-        sortCategories(prev.map((current) => (current.id === category.id ? category : current))),
-      )
-      toast.success('Đã cập nhật danh mục')
-    } catch (err) {
-      toastApiError(err, 'Không cập nhật được danh mục')
-      throw err
-    }
-  }, [])
-
-  const onDeleteCategory = useCallback(async (id: string) => {
-    try {
-      await deleteCategory({ data: { id } })
-      setCategories((prev) => prev.filter((category) => category.id !== id))
-      toast.success('Đã xóa danh mục')
-    } catch (err) {
-      toastApiError(err, 'Không xóa được danh mục')
-      throw err
     }
   }, [])
 
@@ -292,28 +258,17 @@ export function KitchenMenuPage({ user, initialCategories, initialMenuItems, onL
           </Button>
         </header>
 
-        <section
-          aria-label="Quản lý thực đơn"
-          className="rounded-panel border border-line-strong bg-white p-4 shadow-card"
-        >
+        <section aria-label="Quản lý thực đơn">
           <MenuAdminList
             categories={categories}
             menuItems={menuItems}
             onCreateItem={openCreateItem}
-            onOpenCategories={() => setCategoriesOpen(true)}
+            onOpenCategories={onManageCategories}
             onEditItem={openEditItem}
             onDeleteItem={(item) => setDeletingItem(item)}
           />
         </section>
       </main>
-      <CategoryAdminDialog
-        open={categoriesOpen}
-        onOpenChange={setCategoriesOpen}
-        categories={categories}
-        onCreate={onCreateCategory}
-        onUpdate={onUpdateCategory}
-        onDelete={onDeleteCategory}
-      />
       <MenuItemDialog
         open={itemDialogOpen}
         onOpenChange={(open) => {

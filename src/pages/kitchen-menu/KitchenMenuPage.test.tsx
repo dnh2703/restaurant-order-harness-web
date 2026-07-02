@@ -2,12 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import type { StaffUser } from '@/entities/staff'
 import {
-  createCategory,
   createMenuItem,
-  deleteCategory,
   deleteMenuItem,
   listOptionGroups,
-  updateCategory,
   updateMenuItem,
   type AdminCategoryView,
   type AdminMenuItemView,
@@ -18,11 +15,8 @@ vi.mock('@/shared/api/menu-admin', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/shared/api/menu-admin')>()
   return {
     ...actual,
-    createCategory: vi.fn(),
     createMenuItem: vi.fn(),
-    updateCategory: vi.fn(),
     updateMenuItem: vi.fn(),
-    deleteCategory: vi.fn(),
     deleteMenuItem: vi.fn(),
     listOptionGroups: vi.fn(),
     createOptionGroup: vi.fn(),
@@ -60,36 +54,22 @@ const menuItems: AdminMenuItemView[] = [
 ]
 
 function renderPage(overrides: Partial<React.ComponentProps<typeof KitchenMenuPage>> = {}) {
-  render(
-    <KitchenMenuPage
-      user={user}
-      initialCategories={categories}
-      initialMenuItems={menuItems}
-      onLogout={vi.fn()}
-      {...overrides}
-    />,
-  )
-}
-
-function openCategoryDialog() {
-  fireEvent.click(screen.getByRole('button', { name: 'Danh mục' }))
-  return screen.getByRole('dialog', { name: 'Quản lý danh mục' })
-}
-
-function categoryNamesInDialog() {
-  return within(screen.getByRole('dialog', { name: 'Quản lý danh mục' }))
-    .getAllByRole('row')
-    .slice(1)
-    .map((row) => within(row).getAllByRole('cell')[0]?.textContent)
+  const props = {
+    user,
+    initialCategories: categories,
+    initialMenuItems: menuItems,
+    onManageCategories: vi.fn(),
+    onLogout: vi.fn(),
+    ...overrides,
+  }
+  render(<KitchenMenuPage {...props} />)
+  return props
 }
 
 describe('KitchenMenuPage', () => {
   beforeEach(() => {
-    vi.mocked(createCategory).mockReset()
     vi.mocked(createMenuItem).mockReset()
-    vi.mocked(updateCategory).mockReset()
     vi.mocked(updateMenuItem).mockReset()
-    vi.mocked(deleteCategory).mockReset()
     vi.mocked(deleteMenuItem).mockReset()
     vi.mocked(listOptionGroups).mockReset()
     vi.mocked(listOptionGroups).mockResolvedValue([])
@@ -104,105 +84,12 @@ describe('KitchenMenuPage', () => {
     expect(screen.getByText('50.000đ')).toBeInTheDocument()
   })
 
-  it('opens the category dialog from the menu admin list', () => {
-    renderPage()
+  it('navigates to category management from the menu admin list', () => {
+    const props = renderPage()
 
-    openCategoryDialog()
+    fireEvent.click(screen.getByRole('button', { name: 'Danh mục' }))
 
-    expect(screen.getByRole('dialog', { name: 'Quản lý danh mục' })).toBeInTheDocument()
-  })
-
-  it('creates a category and sorts the local category list', async () => {
-    vi.mocked(createCategory).mockResolvedValue({
-      id: 'c2',
-      restaurantId: 'r1',
-      name: 'Đồ uống',
-      sortOrder: 0,
-    })
-    renderPage()
-
-    openCategoryDialog()
-    fireEvent.change(screen.getByLabelText('Tên danh mục mới'), { target: { value: ' Đồ uống ' } })
-    fireEvent.change(screen.getByLabelText('Thứ tự mới'), { target: { value: '0' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Thêm danh mục' }))
-
-    await waitFor(() => {
-      expect(createCategory).toHaveBeenCalledWith({
-        data: { name: 'Đồ uống', sortOrder: 0 },
-      })
-    })
-    await waitFor(() => {
-      expect(categoryNamesInDialog()).toEqual(['Đồ uống', 'Món chính'])
-    })
-  })
-
-  it('updates a category locally after a successful mutation', async () => {
-    vi.mocked(updateCategory).mockResolvedValue({
-      id: 'c1',
-      restaurantId: 'r1',
-      name: 'Món nóng',
-      sortOrder: 3,
-    })
-    renderPage()
-
-    openCategoryDialog()
-    fireEvent.click(
-      within(screen.getByRole('row', { name: /Món chính/ })).getByRole('button', { name: 'Sửa' }),
-    )
-    fireEvent.change(screen.getByLabelText('Tên danh mục'), { target: { value: ' Món nóng ' } })
-    fireEvent.change(screen.getByLabelText('Thứ tự'), { target: { value: '3' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Lưu danh mục' }))
-
-    await waitFor(() => {
-      expect(updateCategory).toHaveBeenCalledWith({
-        data: { id: 'c1', name: 'Món nóng', sortOrder: 3 },
-      })
-    })
-    expect(screen.getByRole('row', { name: /Món nóng/ })).toBeInTheDocument()
-    expect(screen.queryByRole('row', { name: /Món chính/ })).not.toBeInTheDocument()
-  })
-
-  it('deletes a category locally after a successful mutation', async () => {
-    vi.mocked(deleteCategory).mockResolvedValue()
-    renderPage({
-      initialCategories: [
-        { id: 'c2', restaurantId: 'r1', name: 'Đồ uống', sortOrder: 2 },
-        { id: 'c1', restaurantId: 'r1', name: 'Món chính', sortOrder: 1 },
-      ],
-    })
-
-    openCategoryDialog()
-    fireEvent.click(
-      within(screen.getByRole('row', { name: /Đồ uống/ })).getByRole('button', { name: 'Xóa' }),
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Xóa danh mục' }))
-
-    await waitFor(() => {
-      expect(deleteCategory).toHaveBeenCalledWith({ data: { id: 'c2' } })
-    })
-    expect(screen.queryByRole('row', { name: /Đồ uống/ })).not.toBeInTheDocument()
-    expect(screen.getByRole('row', { name: /Món chính/ })).toBeInTheDocument()
-  })
-
-  it('keeps the category dialog draft visible when create is rejected', async () => {
-    vi.mocked(createCategory).mockRejectedValue(new Error('Không thêm được danh mục'))
-    renderPage()
-
-    openCategoryDialog()
-    fireEvent.change(screen.getByLabelText('Tên danh mục mới'), {
-      target: { value: 'Tráng miệng' },
-    })
-    fireEvent.change(screen.getByLabelText('Thứ tự mới'), { target: { value: '5' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Thêm danh mục' }))
-
-    await waitFor(() => {
-      expect(createCategory).toHaveBeenCalledWith({
-        data: { name: 'Tráng miệng', sortOrder: 5 },
-      })
-    })
-    expect(screen.getByRole('dialog', { name: 'Quản lý danh mục' })).toBeInTheDocument()
-    expect(screen.getByLabelText('Tên danh mục mới')).toHaveValue('Tráng miệng')
-    expect(screen.getByLabelText('Thứ tự mới')).toHaveValue(5)
+    expect(props.onManageCategories).toHaveBeenCalledTimes(1)
   })
 
   it('creates a menu item and sorts it into the local list', async () => {

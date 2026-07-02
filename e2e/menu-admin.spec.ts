@@ -24,26 +24,39 @@ test.describe('Menu admin (Epic 6)', () => {
     const categoryName = `Danh mục E2E ${stamp}`
     const dishName = `Món E2E ${stamp}`
 
-    // Create a category. The freshly SSR'd page needs a beat to hydrate before
-    // its onClick handlers attach, so retry opening the dialog until it sticks.
-    const categoryDialog = page.getByRole('dialog', { name: 'Quản lý danh mục' })
+    // "Danh mục" opens the dedicated category page (still under the Thực đơn tab).
+    // The freshly SSR'd menu page needs a beat to hydrate before its onClick
+    // handlers attach, so retry navigating until it sticks.
+    const categoriesHeading = page.getByRole('heading', { name: 'Danh mục' })
     await expect(async () => {
       await page.getByRole('button', { name: 'Danh mục' }).click()
-      await expect(categoryDialog).toBeVisible({ timeout: 1000 })
+      await expect(categoriesHeading).toBeVisible({ timeout: 1000 })
     }).toPass()
-    await categoryDialog.getByLabel('Tên danh mục mới').fill(categoryName)
-    await categoryDialog.getByLabel('Thứ tự mới').fill('999')
-    await categoryDialog.getByRole('button', { name: 'Thêm danh mục' }).click()
-    await expect(categoryDialog.getByText(categoryName)).toBeVisible()
-    await page.keyboard.press('Escape')
-    await expect(categoryDialog).toBeHidden()
+    await expect(page).toHaveURL(/\/kitchen\/menu\/categories/)
 
-    // Create a dish in that category.
+    // Add a category through the modal.
+    await page.getByRole('button', { name: 'Thêm danh mục' }).click()
+    const categoryDialog = page.getByRole('dialog', { name: 'Thêm danh mục' })
+    await categoryDialog.getByLabel('Tên danh mục').fill(categoryName)
+    await categoryDialog.getByLabel('Thứ tự').fill('999')
+    await categoryDialog.getByRole('button', { name: 'Thêm danh mục' }).click()
+    await expect(categoryDialog).toBeHidden()
+    await expect(page.getByRole('cell', { name: categoryName })).toBeVisible()
+
+    // Back to the menu via the back button.
+    await page.getByRole('button', { name: /Thực đơn/ }).click()
+    await expect(page.getByRole('heading', { name: 'Thực đơn' })).toBeVisible()
+
+    // Create a dish. The dialog defaults to the first category, so we don't need
+    // to pick one. The dialog resets its fields once on open, so confirm the
+    // typed name survives that reset before continuing.
     await page.getByRole('button', { name: 'Thêm món' }).click()
     const createDialog = page.getByRole('dialog', { name: 'Thêm món' })
-    await createDialog.getByLabel('Tên món').fill(dishName)
-    await createDialog.getByRole('combobox', { name: 'Danh mục' }).click()
-    await page.getByRole('option', { name: categoryName }).click()
+    const nameField = createDialog.getByLabel('Tên món')
+    await expect(async () => {
+      await nameField.fill(dishName)
+      await expect(nameField).toHaveValue(dishName)
+    }).toPass()
     await createDialog.getByLabel('Giá').fill('50000')
     await createDialog.getByRole('button', { name: 'Lưu món' }).click()
     await expect(createDialog).toBeHidden()

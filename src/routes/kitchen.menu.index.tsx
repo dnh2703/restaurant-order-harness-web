@@ -4,7 +4,7 @@ import type { StaffUser } from '@/entities/staff'
 import { getStaffSession, logoutStaff } from '@/shared/api/auth'
 import { listCategories, listMenuItems } from '@/shared/api/menu-admin'
 
-export const Route = createFileRoute('/kitchen/menu')({
+export const Route = createFileRoute('/kitchen/menu/')({
   loader: async (): Promise<{
     user: StaffUser
     categories: Awaited<ReturnType<typeof listCategories>>
@@ -29,6 +29,7 @@ function KitchenMenuRoute() {
       user={user}
       initialCategories={categories}
       initialMenuItems={menuItems}
+      onManageCategories={() => navigate({ to: '/kitchen/menu/categories' })}
       onLogout={async () => {
         await logoutStaff()
         await navigate({ to: '/kitchen/login' })
