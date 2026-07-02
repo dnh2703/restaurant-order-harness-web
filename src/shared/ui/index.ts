@@ -14,6 +14,34 @@ export {
   DrawerTitle,
   DrawerDescription,
 } from './Drawer'
+export {
+  Dialog,
+  DialogPortal,
+  DialogOverlay,
+  DialogTrigger,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from './Dialog'
+export {
+  AlertDialog,
+  AlertDialogPortal,
+  AlertDialogOverlay,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from './AlertDialog'
 export { Badge, badgeVariants, type BadgeVariant, type BadgeSize } from './Badge'
 export { BrandMark } from './BrandMark'
+export { DataTable, type DataTableColumn } from './DataTable'
+export { Pagination } from './Pagination'
+export { Select, type SelectOption } from './Select'
 export { Toaster, toast } from './Toast'

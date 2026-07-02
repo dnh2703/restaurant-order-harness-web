@@ -1,6 +1,17 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { Button, Chip, Input, Drawer, DrawerContent, DrawerTitle, Badge } from './index'
+import {
+  Button,
+  Chip,
+  Input,
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  Badge,
+  DataTable,
+  Pagination,
+  Select,
+} from './index'
 
 describe('Button', () => {
   it('renders children, defaults to type=button, and tags data-slot', () => {
@@ -32,6 +43,10 @@ describe('Button', () => {
     fireEvent.click(btn)
     expect(onClick).toHaveBeenCalled()
   })
+  it('shows a pointer cursor for enabled buttons', () => {
+    render(<Button>Hover me</Button>)
+    expect(screen.getByRole('button', { name: 'Hover me' }).className).toContain('cursor-pointer')
+  })
   it('honors disabled', () => {
     render(<Button disabled>X</Button>)
     expect(screen.getByRole('button', { name: 'X' })).toBeDisabled()
@@ -59,6 +74,28 @@ describe('Input', () => {
     fireEvent.change(input, { target: { value: 'pho' } })
     expect(onChange).toHaveBeenCalled()
     expect(screen.getByText('⌕')).toHaveAttribute('aria-hidden')
+  })
+})
+
+describe('Select', () => {
+  it('renders the selected option and calls onValueChange', () => {
+    const onValueChange = vi.fn()
+    render(
+      <Select
+        value="10"
+        onValueChange={onValueChange}
+        ariaLabel="Số dòng"
+        options={[
+          { value: '10', label: '10' },
+          { value: '20', label: '20' },
+        ]}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('combobox', { name: 'Số dòng' }))
+    fireEvent.click(screen.getByRole('option', { name: '20' }))
+
+    expect(onValueChange).toHaveBeenCalledWith('20')
   })
 })
 
@@ -100,5 +137,105 @@ describe('Badge', () => {
       </Badge>,
     )
     expect(container.querySelector('.rounded-full')).not.toBeNull()
+  })
+})
+
+describe('DataTable', () => {
+  it('renders headers and row cells from column definitions', () => {
+    render(
+      <DataTable
+        columns={[
+          { id: 'name', header: 'Tên', cell: (row: { name: string; seats: number }) => row.name },
+          { id: 'seats', header: 'Ghế', cell: (row) => row.seats },
+        ]}
+        data={[
+          { id: '1', name: 'Bàn 1', seats: 4 },
+          { id: '2', name: 'Bàn 2', seats: 2 },
+        ]}
+        getRowKey={(row) => row.id}
+      />,
+    )
+
+    expect(screen.getByRole('columnheader', { name: 'Tên' })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Ghế' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: 'Bàn 1' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '4' })).toBeInTheDocument()
+  })
+
+  it('renders an empty state across all columns', () => {
+    render(
+      <DataTable
+        columns={[{ id: 'name', header: 'Tên', cell: (row: { name: string }) => row.name }]}
+        data={[]}
+        getRowKey={(row) => row.name}
+        emptyMessage="Chưa có dữ liệu"
+      />,
+    )
+
+    expect(screen.getByText('Chưa có dữ liệu')).toHaveAttribute('colspan', '1')
+  })
+
+  it('uses stronger table contrast classes', () => {
+    const { container } = render(
+      <DataTable
+        columns={[{ id: 'name', header: 'Tên', cell: (row: { name: string }) => row.name }]}
+        data={[{ name: 'Bàn 1' }]}
+        getRowKey={(row) => row.name}
+      />,
+    )
+
+    expect(container.querySelector('[data-slot="data-table"]')?.className).toContain(
+      'border-line-strong',
+    )
+    expect(screen.getByRole('columnheader', { name: 'Tên' }).className).toContain('text-secondary')
+    expect(screen.getByRole('row', { name: 'Bàn 1' }).className).toContain('hover:bg-page')
+  })
+})
+
+describe('Pagination', () => {
+  it('renders page size controls and moves between pages', () => {
+    const onPageChange = vi.fn()
+    const onPageSizeChange = vi.fn()
+    render(
+      <Pagination
+        page={2}
+        pageCount={3}
+        pageSize={10}
+        totalItems={25}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
+      />,
+    )
+
+    expect(screen.getByText('Số dòng mỗi trang')).toBeInTheDocument()
+    expect(screen.getByText('Trang 2 / 3')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('combobox', { name: 'Số dòng mỗi trang' }))
+    fireEvent.click(screen.getByRole('option', { name: '20' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Trang trước' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Trang sau' }))
+
+    expect(onPageSizeChange).toHaveBeenCalledWith(20)
+    expect(onPageChange).toHaveBeenNthCalledWith(1, 1)
+    expect(onPageChange).toHaveBeenNthCalledWith(2, 3)
+  })
+
+  it('disables navigation at the edges', () => {
+    render(
+      <Pagination page={1} pageCount={1} pageSize={10} totalItems={4} onPageChange={vi.fn()} />,
+    )
+
+    expect(screen.getByRole('button', { name: 'Trang đầu' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Trang trước' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Trang sau' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Trang cuối' })).toBeDisabled()
+  })
+
+  it('does not render a white card wrapper', () => {
+    const { container } = render(
+      <Pagination page={1} pageCount={1} pageSize={10} totalItems={4} onPageChange={vi.fn()} />,
+    )
+
+    expect(container.querySelector('[data-slot="pagination"]')?.className).not.toContain('bg-white')
   })
 })
