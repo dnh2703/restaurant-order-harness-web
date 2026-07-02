@@ -6,6 +6,7 @@ import {
   createMenuItem,
   deleteCategory,
   deleteMenuItem,
+  listOptionGroups,
   updateCategory,
   updateMenuItem,
   type AdminCategoryView,
@@ -23,6 +24,13 @@ vi.mock('@/shared/api/menu-admin', async (importOriginal) => {
     updateMenuItem: vi.fn(),
     deleteCategory: vi.fn(),
     deleteMenuItem: vi.fn(),
+    listOptionGroups: vi.fn(),
+    createOptionGroup: vi.fn(),
+    updateOptionGroup: vi.fn(),
+    deleteOptionGroup: vi.fn(),
+    createOption: vi.fn(),
+    updateOption: vi.fn(),
+    deleteOption: vi.fn(),
   }
 })
 
@@ -83,6 +91,8 @@ describe('KitchenMenuPage', () => {
     vi.mocked(updateMenuItem).mockReset()
     vi.mocked(deleteCategory).mockReset()
     vi.mocked(deleteMenuItem).mockReset()
+    vi.mocked(listOptionGroups).mockReset()
+    vi.mocked(listOptionGroups).mockResolvedValue([])
   })
 
   it('renders the header and menu admin list from initial props', () => {

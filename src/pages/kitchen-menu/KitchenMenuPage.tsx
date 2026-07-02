@@ -7,14 +7,24 @@ import type { StaffUser } from '@/entities/staff'
 import {
   createCategory,
   createMenuItem,
+  createOption,
+  createOptionGroup,
   deleteCategory,
   deleteMenuItem,
+  deleteOption,
+  deleteOptionGroup,
+  listOptionGroups,
   updateCategory,
   updateMenuItem,
+  updateOption,
+  updateOptionGroup,
   type AdminCategoryView,
   type AdminMenuItemView,
+  type AdminOptionGroupView,
   type SaveCategoryInput,
   type SaveMenuItemInput,
+  type SaveOptionGroupInput,
+  type SaveOptionInput,
 } from '@/shared/api/menu-admin'
 import {
   AlertDialog,
@@ -72,8 +82,18 @@ export function KitchenMenuPage({ user, initialCategories, initialMenuItems, onL
   const [itemDialogOpen, setItemDialogOpen] = useState(false)
   const [categoriesOpen, setCategoriesOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<AdminMenuItemView | null>(null)
+  const [optionGroups, setOptionGroups] = useState<AdminOptionGroupView[]>([])
   const [deletingItem, setDeletingItem] = useState<AdminMenuItemView | null>(null)
   const [deletingBusy, setDeletingBusy] = useState(false)
+
+  const refreshGroups = useCallback(async (menuItemId: string) => {
+    try {
+      const groups = await listOptionGroups({ data: { menuItemId } })
+      setOptionGroups(groups)
+    } catch (err) {
+      toastApiError(err, 'Không tải được tùy chọn món')
+    }
+  }, [])
 
   const onCreateCategory = useCallback(async (input: SaveCategoryInput) => {
     try {
@@ -112,13 +132,19 @@ export function KitchenMenuPage({ user, initialCategories, initialMenuItems, onL
 
   const openCreateItem = useCallback(() => {
     setEditingItem(null)
+    setOptionGroups([])
     setItemDialogOpen(true)
   }, [])
 
-  const openEditItem = useCallback((item: AdminMenuItemView) => {
-    setEditingItem(item)
-    setItemDialogOpen(true)
-  }, [])
+  const openEditItem = useCallback(
+    (item: AdminMenuItemView) => {
+      setEditingItem(item)
+      setOptionGroups([])
+      setItemDialogOpen(true)
+      void refreshGroups(item.id)
+    },
+    [refreshGroups],
+  )
 
   const onSaveMenuItem = useCallback(
     async (input: SaveMenuItemInput | (Partial<SaveMenuItemInput> & { id: string })) => {
@@ -163,6 +189,95 @@ export function KitchenMenuPage({ user, initialCategories, initialMenuItems, onL
     }
   }, [deletingBusy, deletingItem])
 
+  const onCreateGroup = useCallback(
+    async (menuItemId: string, input: SaveOptionGroupInput) => {
+      try {
+        await createOptionGroup({ data: { menuItemId, input } })
+        await refreshGroups(menuItemId)
+        toast.success('Đã thêm nhóm tùy chọn')
+      } catch (err) {
+        toastApiError(err, 'Không thêm được nhóm tùy chọn')
+        throw err
+      }
+    },
+    [refreshGroups],
+  )
+
+  const onUpdateGroup = useCallback(
+    async (menuItemId: string, groupId: string, input: Partial<SaveOptionGroupInput>) => {
+      try {
+        await updateOptionGroup({ data: { menuItemId, groupId, input } })
+        await refreshGroups(menuItemId)
+        toast.success('Đã cập nhật nhóm tùy chọn')
+      } catch (err) {
+        toastApiError(err, 'Không cập nhật được nhóm tùy chọn')
+        throw err
+      }
+    },
+    [refreshGroups],
+  )
+
+  const onDeleteGroup = useCallback(
+    async (menuItemId: string, groupId: string) => {
+      try {
+        await deleteOptionGroup({ data: { menuItemId, groupId } })
+        await refreshGroups(menuItemId)
+        toast.success('Đã xóa nhóm tùy chọn')
+      } catch (err) {
+        toastApiError(err, 'Không xóa được nhóm tùy chọn')
+        throw err
+      }
+    },
+    [refreshGroups],
+  )
+
+  const onCreateOption = useCallback(
+    async (menuItemId: string, groupId: string, input: SaveOptionInput) => {
+      try {
+        await createOption({ data: { menuItemId, groupId, input } })
+        await refreshGroups(menuItemId)
+        toast.success('Đã thêm tùy chọn')
+      } catch (err) {
+        toastApiError(err, 'Không thêm được tùy chọn')
+        throw err
+      }
+    },
+    [refreshGroups],
+  )
+
+  const onUpdateOption = useCallback(
+    async (
+      menuItemId: string,
+      groupId: string,
+      optionId: string,
+      input: Partial<SaveOptionInput>,
+    ) => {
+      try {
+        await updateOption({ data: { menuItemId, groupId, optionId, input } })
+        await refreshGroups(menuItemId)
+        toast.success('Đã cập nhật tùy chọn')
+      } catch (err) {
+        toastApiError(err, 'Không cập nhật được tùy chọn')
+        throw err
+      }
+    },
+    [refreshGroups],
+  )
+
+  const onDeleteOption = useCallback(
+    async (menuItemId: string, groupId: string, optionId: string) => {
+      try {
+        await deleteOption({ data: { menuItemId, groupId, optionId } })
+        await refreshGroups(menuItemId)
+        toast.success('Đã xóa tùy chọn')
+      } catch (err) {
+        toastApiError(err, 'Không xóa được tùy chọn')
+        throw err
+      }
+    },
+    [refreshGroups],
+  )
+
   return (
     <div className="flex min-h-screen bg-page">
       <SideNav userName={user.name} userRole={user.role} onLogout={onLogout} activeSection="menu" />
@@ -203,11 +318,21 @@ export function KitchenMenuPage({ user, initialCategories, initialMenuItems, onL
         open={itemDialogOpen}
         onOpenChange={(open) => {
           setItemDialogOpen(open)
-          if (!open) setEditingItem(null)
+          if (!open) {
+            setEditingItem(null)
+            setOptionGroups([])
+          }
         }}
         categories={categories}
         item={editingItem}
         onSave={onSaveMenuItem}
+        optionGroups={optionGroups}
+        onCreateGroup={onCreateGroup}
+        onUpdateGroup={onUpdateGroup}
+        onDeleteGroup={onDeleteGroup}
+        onCreateOption={onCreateOption}
+        onUpdateOption={onUpdateOption}
+        onDeleteOption={onDeleteOption}
       />
       <AlertDialog
         open={deletingItem !== null}

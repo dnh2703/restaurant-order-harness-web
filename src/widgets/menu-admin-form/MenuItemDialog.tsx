@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import type {
   AdminCategoryView,
   AdminMenuItemView,
+  AdminOptionGroupView,
   SaveMenuItemInput,
+  SaveOptionGroupInput,
+  SaveOptionInput,
 } from '@/shared/api/menu-admin'
 import {
-  Badge,
   Button,
   Dialog,
   DialogContent,
@@ -16,6 +18,7 @@ import {
   Input,
   Select,
 } from '@/shared/ui'
+import { OptionEditor } from './OptionEditor'
 
 interface Props {
   open: boolean
@@ -25,6 +28,22 @@ interface Props {
   onSave: (
     input: SaveMenuItemInput | (Partial<SaveMenuItemInput> & { id: string }),
   ) => Promise<void>
+  optionGroups: AdminOptionGroupView[]
+  onCreateGroup: (menuItemId: string, input: SaveOptionGroupInput) => Promise<void>
+  onUpdateGroup: (
+    menuItemId: string,
+    groupId: string,
+    input: Partial<SaveOptionGroupInput>,
+  ) => Promise<void>
+  onDeleteGroup: (menuItemId: string, groupId: string) => Promise<void>
+  onCreateOption: (menuItemId: string, groupId: string, input: SaveOptionInput) => Promise<void>
+  onUpdateOption: (
+    menuItemId: string,
+    groupId: string,
+    optionId: string,
+    input: Partial<SaveOptionInput>,
+  ) => Promise<void>
+  onDeleteOption: (menuItemId: string, groupId: string, optionId: string) => Promise<void>
 }
 
 const fieldClass =
@@ -46,7 +65,21 @@ function trimNullable(value: string): string | null {
   return trimmed.length > 0 ? trimmed : null
 }
 
-export function MenuItemDialog({ open, onOpenChange, categories, item, onSave }: Props) {
+export function MenuItemDialog({
+  open,
+  onOpenChange,
+  categories,
+  item,
+  onSave,
+  optionGroups,
+  onCreateGroup,
+  onUpdateGroup,
+  onDeleteGroup,
+  onCreateOption,
+  onUpdateOption,
+  onDeleteOption,
+}: Props) {
+  const menuItemId = item?.id ?? null
   const sortedCategories = useMemo(() => sortCategories(categories), [categories])
   const [categoryId, setCategoryId] = useState('')
   const [name, setName] = useState('')
@@ -251,10 +284,20 @@ export function MenuItemDialog({ open, onOpenChange, categories, item, onSave }:
             Còn món
           </label>
 
-          <div className="flex items-center justify-between gap-3 rounded-card border border-line-strong bg-page px-3 py-2">
-            <span className="text-sm font-semibold text-ink-soft">Tùy chọn món</span>
-            <Badge variant="outline">Task 8</Badge>
-          </div>
+          <OptionEditor
+            menuItemId={menuItemId}
+            groups={optionGroups}
+            onCreateGroup={(input) => onCreateGroup(menuItemId ?? '', input)}
+            onUpdateGroup={(groupId, input) => onUpdateGroup(menuItemId ?? '', groupId, input)}
+            onDeleteGroup={(groupId) => onDeleteGroup(menuItemId ?? '', groupId)}
+            onCreateOption={(groupId, input) => onCreateOption(menuItemId ?? '', groupId, input)}
+            onUpdateOption={(groupId, optionId, input) =>
+              onUpdateOption(menuItemId ?? '', groupId, optionId, input)
+            }
+            onDeleteOption={(groupId, optionId) =>
+              onDeleteOption(menuItemId ?? '', groupId, optionId)
+            }
+          />
 
           <DialogFooter>
             <Button

@@ -26,6 +26,13 @@ function setup(overrides: Partial<React.ComponentProps<typeof MenuItemDialog>> =
     categories,
     item: null,
     onSave: vi.fn().mockResolvedValue(undefined),
+    optionGroups: [],
+    onCreateGroup: vi.fn().mockResolvedValue(undefined),
+    onUpdateGroup: vi.fn().mockResolvedValue(undefined),
+    onDeleteGroup: vi.fn().mockResolvedValue(undefined),
+    onCreateOption: vi.fn().mockResolvedValue(undefined),
+    onUpdateOption: vi.fn().mockResolvedValue(undefined),
+    onDeleteOption: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   }
 
