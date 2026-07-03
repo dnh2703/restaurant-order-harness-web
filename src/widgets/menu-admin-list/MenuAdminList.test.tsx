@@ -73,7 +73,7 @@ function getDishNames() {
 }
 
 describe('MenuAdminList', () => {
-  it('renders dish rows with name, category, price, status, and option placeholder', () => {
+  it('renders dish rows with name, category, price, and status', () => {
     setup()
 
     const row = screen.getByRole('row', { name: /Phở bò/ })
@@ -82,8 +82,8 @@ describe('MenuAdminList', () => {
     expect(within(row).getByText('Món chính')).toBeInTheDocument()
     expect(within(row).getByText('50.000đ')).toBeInTheDocument()
     expect(within(row).getByText('Còn món')).toBeInTheDocument()
-    expect(within(row).getByText('—')).toBeInTheDocument()
     expect(screen.getByText('Hết món')).toBeInTheDocument()
+    expect(screen.queryByRole('columnheader', { name: 'Tùy chọn' })).not.toBeInTheDocument()
   })
 
   it('filters by search text', () => {

@@ -92,12 +92,6 @@ function createMenuAdminColumns({
       ),
     },
     {
-      id: 'options',
-      header: 'Tùy chọn',
-      className: 'text-muted',
-      cell: () => '—',
-    },
-    {
       id: 'actions',
       header: 'Thao tác',
       cell: (item) => (
