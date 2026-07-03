@@ -173,10 +173,7 @@ export function KitchenCategoriesPage({
           </Button>
         </header>
 
-        <section
-          aria-label="Danh sách danh mục"
-          className="rounded-panel border border-line-strong bg-white p-4 shadow-card"
-        >
+        <section aria-label="Danh sách danh mục">
           <DataTable
             columns={columns}
             data={categories}
