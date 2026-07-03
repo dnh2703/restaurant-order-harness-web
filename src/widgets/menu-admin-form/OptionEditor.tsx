@@ -105,7 +105,7 @@ function OptionRow({
     <div
       role="group"
       aria-label={`Tùy chọn ${option.name}`}
-      className="grid gap-2 sm:grid-cols-[1fr_9rem_auto]"
+      className="grid gap-2 sm:grid-cols-[1fr_9rem_9rem]"
     >
       <Input
         aria-label="Tên tùy chọn"
@@ -269,7 +269,7 @@ function GroupCard({
         ))}
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-[1fr_9rem_auto]">
+      <div className="grid gap-2 sm:grid-cols-[1fr_9rem_9rem]">
         <Input
           aria-label="Tên tùy chọn mới"
           value={newName}
