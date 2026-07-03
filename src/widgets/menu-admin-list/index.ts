@@ -1,0 +1,1 @@
+export { MenuAdminList } from './MenuAdminList'

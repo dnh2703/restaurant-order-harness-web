@@ -1,4 +1,4 @@
-import { ChairIcon, CookingPotIcon, SignOutIcon } from '@phosphor-icons/react'
+import { BookOpenIcon, ChairIcon, CookingPotIcon, SignOutIcon } from '@phosphor-icons/react'
 import type { StaffRole } from '@/entities/staff'
 import { BrandMark, Button } from '@/shared/ui'
 import { cn } from '@/shared/lib/cn'
@@ -7,7 +7,7 @@ interface Props {
   userName: string
   userRole: StaffRole
   onLogout: () => void
-  activeSection: 'board' | 'tables'
+  activeSection: 'board' | 'tables' | 'menu'
 }
 
 const ROLE_LABEL: Record<StaffRole, string> = {
@@ -20,6 +20,7 @@ const ROLE_LABEL: Record<StaffRole, string> = {
 export function SideNav({ userName, userRole, onLogout, activeSection }: Props) {
   const onBoard = activeSection === 'board'
   const onTables = activeSection === 'tables'
+  const onMenu = activeSection === 'menu'
 
   return (
     <aside className="hidden w-60 shrink-0 flex-col border-r border-line bg-white px-4 py-5 md:flex">
@@ -38,17 +39,30 @@ export function SideNav({ userName, userRole, onLogout, activeSection }: Props) 
           Bếp
         </a>
         {userRole === 'ADMIN' && (
-          <a
-            href="/kitchen/tables"
-            aria-current={onTables ? 'page' : undefined}
-            className={cn(
-              'flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-semibold',
-              onTables ? 'bg-brand-bg text-brand' : 'text-ink-soft hover:bg-page',
-            )}
-          >
-            <ChairIcon size={18} weight="bold" />
-            Bàn ăn
-          </a>
+          <>
+            <a
+              href="/kitchen/tables"
+              aria-current={onTables ? 'page' : undefined}
+              className={cn(
+                'flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-semibold',
+                onTables ? 'bg-brand-bg text-brand' : 'text-ink-soft hover:bg-page',
+              )}
+            >
+              <ChairIcon size={18} weight="bold" />
+              Bàn ăn
+            </a>
+            <a
+              href="/kitchen/menu"
+              aria-current={onMenu ? 'page' : undefined}
+              className={cn(
+                'flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-semibold',
+                onMenu ? 'bg-brand-bg text-brand' : 'text-ink-soft hover:bg-page',
+              )}
+            >
+              <BookOpenIcon size={18} weight="bold" />
+              Thực đơn
+            </a>
+          </>
         )}
       </nav>
 

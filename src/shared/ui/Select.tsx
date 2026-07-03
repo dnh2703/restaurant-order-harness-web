@@ -38,7 +38,7 @@ export function Select({
         aria-label={ariaLabel}
         data-slot="select-trigger"
         className={cn(
-          'flex h-11 min-w-20 cursor-pointer items-center justify-between gap-2 rounded-control border border-line-strong bg-white px-4 font-semibold text-ink outline-none disabled:cursor-not-allowed disabled:opacity-50',
+          'flex h-11 min-w-20 cursor-pointer items-center justify-between gap-2 rounded-control border border-line-strong bg-white px-4 text-sm font-semibold text-ink outline-none disabled:cursor-not-allowed disabled:opacity-50',
           className,
         )}
       >
