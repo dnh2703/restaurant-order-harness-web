@@ -11,6 +11,8 @@ import { Badge, Button, Input, Select } from '@/shared/ui'
 interface Props {
   menuItemId: string | null
   groups: AdminOptionGroupView[]
+  /** Show a skeleton while the initial option groups load. */
+  loading?: boolean
   onCreateGroup: (input: SaveOptionGroupInput) => Promise<void>
   onUpdateGroup: (groupId: string, input: Partial<SaveOptionGroupInput>) => Promise<void>
   onDeleteGroup: (groupId: string) => Promise<void>
@@ -34,6 +36,39 @@ const typeOptions = [
 function parseNumberOrZero(value: string): number {
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : 0
+}
+
+const skeletonBlock = 'animate-pulse rounded-control bg-black/[0.06]'
+
+function GroupSkeleton() {
+  return (
+    <div
+      aria-hidden
+      className="flex flex-col gap-3 rounded-card border border-line-strong bg-white p-3"
+    >
+      <div className="grid gap-2 sm:grid-cols-[1fr_10rem_auto]">
+        <div className={`h-10 ${skeletonBlock}`} />
+        <div className={`h-10 ${skeletonBlock}`} />
+        <div className={`h-10 w-28 ${skeletonBlock}`} />
+      </div>
+      <div className={`h-4 w-24 ${skeletonBlock}`} />
+      <div className={`h-10 ${skeletonBlock}`} />
+    </div>
+  )
+}
+
+function OptionEditorSkeleton() {
+  return (
+    <div className="flex flex-col gap-3" role="status" aria-live="polite">
+      <span className="sr-only">Đang tải tùy chọn…</span>
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm font-semibold text-ink-soft">Tùy chọn món</span>
+        <div className={`h-6 w-16 ${skeletonBlock}`} aria-hidden />
+      </div>
+      <GroupSkeleton />
+      <GroupSkeleton />
+    </div>
+  )
 }
 
 function OptionRow({
@@ -269,6 +304,7 @@ function GroupCard({
 export function OptionEditor({
   menuItemId,
   groups,
+  loading,
   onCreateGroup,
   onUpdateGroup,
   onDeleteGroup,
@@ -287,6 +323,10 @@ export function OptionEditor({
         Lưu món trước khi thêm tùy chọn.
       </div>
     )
+  }
+
+  if (loading) {
+    return <OptionEditorSkeleton />
   }
 
   async function handleCreateGroup() {

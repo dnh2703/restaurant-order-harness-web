@@ -84,6 +84,7 @@ export function KitchenMenuPage({
   const [itemDialogOpen, setItemDialogOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<AdminMenuItemView | null>(null)
   const [optionGroups, setOptionGroups] = useState<AdminOptionGroupView[]>([])
+  const [optionGroupsLoading, setOptionGroupsLoading] = useState(false)
   const [deletingItem, setDeletingItem] = useState<AdminMenuItemView | null>(null)
   const [deletingBusy, setDeletingBusy] = useState(false)
 
@@ -93,12 +94,15 @@ export function KitchenMenuPage({
       setOptionGroups(groups)
     } catch (err) {
       toastApiError(err, 'Không tải được tùy chọn món')
+    } finally {
+      setOptionGroupsLoading(false)
     }
   }, [])
 
   const openCreateItem = useCallback(() => {
     setEditingItem(null)
     setOptionGroups([])
+    setOptionGroupsLoading(false)
     setItemDialogOpen(true)
   }, [])
 
@@ -106,6 +110,7 @@ export function KitchenMenuPage({
     (item: AdminMenuItemView) => {
       setEditingItem(item)
       setOptionGroups([])
+      setOptionGroupsLoading(true)
       setItemDialogOpen(true)
       void refreshGroups(item.id)
     },
@@ -276,12 +281,14 @@ export function KitchenMenuPage({
           if (!open) {
             setEditingItem(null)
             setOptionGroups([])
+            setOptionGroupsLoading(false)
           }
         }}
         categories={categories}
         item={editingItem}
         onSave={onSaveMenuItem}
         optionGroups={optionGroups}
+        optionGroupsLoading={optionGroupsLoading}
         onCreateGroup={onCreateGroup}
         onUpdateGroup={onUpdateGroup}
         onDeleteGroup={onDeleteGroup}

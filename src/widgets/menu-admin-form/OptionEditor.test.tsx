@@ -40,6 +40,14 @@ describe('OptionEditor', () => {
     expect(screen.queryByRole('button', { name: 'Thêm nhóm' })).not.toBeInTheDocument()
   })
 
+  it('shows a loading skeleton and hides controls while options load', () => {
+    setup({ loading: true, groups: [] })
+
+    expect(screen.getByRole('status')).toBeInTheDocument()
+    expect(screen.getByText('Đang tải tùy chọn…')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Tên nhóm mới')).not.toBeInTheDocument()
+  })
+
   it('renders existing groups and their options', () => {
     setup()
 

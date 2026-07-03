@@ -29,6 +29,7 @@ interface Props {
     input: SaveMenuItemInput | (Partial<SaveMenuItemInput> & { id: string }),
   ) => Promise<void>
   optionGroups: AdminOptionGroupView[]
+  optionGroupsLoading?: boolean
   onCreateGroup: (menuItemId: string, input: SaveOptionGroupInput) => Promise<void>
   onUpdateGroup: (
     menuItemId: string,
@@ -72,6 +73,7 @@ export function MenuItemDialog({
   item,
   onSave,
   optionGroups,
+  optionGroupsLoading,
   onCreateGroup,
   onUpdateGroup,
   onDeleteGroup,
@@ -287,6 +289,7 @@ export function MenuItemDialog({
           <OptionEditor
             menuItemId={menuItemId}
             groups={optionGroups}
+            loading={optionGroupsLoading}
             onCreateGroup={(input) => onCreateGroup(menuItemId ?? '', input)}
             onUpdateGroup={(groupId, input) => onUpdateGroup(menuItemId ?? '', groupId, input)}
             onDeleteGroup={(groupId) => onDeleteGroup(menuItemId ?? '', groupId)}
