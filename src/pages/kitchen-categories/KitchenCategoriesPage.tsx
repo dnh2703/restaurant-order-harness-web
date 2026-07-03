@@ -153,18 +153,18 @@ export function KitchenCategoriesPage({
     <div className="flex min-h-screen bg-page">
       <SideNav userName={user.name} userRole={user.role} onLogout={onLogout} activeSection="menu" />
       <main className="flex min-w-0 flex-1 flex-col gap-4 px-4 py-4 sm:px-6">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={onBack}
+          className="inline-flex w-fit items-center gap-1.5 px-0 text-base font-semibold text-ink hover:text-brand"
+        >
+          <ArrowLeftIcon size={18} weight="regular" />
+          Thực đơn
+        </Button>
+
         <header className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex min-w-0 flex-col gap-1">
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={onBack}
-              className="-ml-2 w-fit gap-1 text-muted hover:text-ink"
-            >
-              <ArrowLeftIcon size={16} weight="bold" />
-              Thực đơn
-            </Button>
+          <div className="min-w-0">
             <h1 className="text-xl font-extrabold text-ink">Danh mục</h1>
             <p className="text-sm text-muted">Quản lý danh mục món ăn của nhà hàng.</p>
           </div>
