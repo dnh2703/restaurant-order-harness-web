@@ -18,7 +18,9 @@ import {
   Input,
   Select,
 } from '@/shared/ui'
+import { cn } from '@/shared/lib/cn'
 import { OptionEditor } from './OptionEditor'
+import { IMAGE_ACCEPT_ATTR, validateImageFile } from './image-upload'
 
 interface Props {
   open: boolean
@@ -28,6 +30,7 @@ interface Props {
   onSave: (
     input: SaveMenuItemInput | (Partial<SaveMenuItemInput> & { id: string }),
   ) => Promise<void>
+  onUploadImage: (file: File) => Promise<string>
   optionGroups: AdminOptionGroupView[]
   optionGroupsLoading?: boolean
   onCreateGroup: (menuItemId: string, input: SaveOptionGroupInput) => Promise<void>
@@ -72,6 +75,7 @@ export function MenuItemDialog({
   categories,
   item,
   onSave,
+  onUploadImage,
   optionGroups,
   optionGroupsLoading,
   onCreateGroup,
@@ -91,6 +95,9 @@ export function MenuItemDialog({
   const [isAvailable, setIsAvailable] = useState(true)
   const [sortOrder, setSortOrder] = useState('')
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [showUrlInput, setShowUrlInput] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -102,6 +109,9 @@ export function MenuItemDialog({
     setIsAvailable(item?.isAvailable ?? true)
     setSortOrder(item ? String(item.sortOrder) : '')
     setSaving(false)
+    setUploading(false)
+    setUploadError(null)
+    setShowUrlInput(false)
   }, [item, open, sortedCategories])
 
   const hasCategories = sortedCategories.length > 0
@@ -109,9 +119,33 @@ export function MenuItemDialog({
   const previewUrl = imageUrl.trim()
   const title = item ? 'Sửa món' : 'Thêm món'
 
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    // Reset so re-picking the same file still fires onChange.
+    e.target.value = ''
+    if (!file) return
+
+    const validationError = validateImageFile(file)
+    if (validationError) {
+      setUploadError(validationError)
+      return
+    }
+
+    setUploadError(null)
+    setUploading(true)
+    try {
+      const url = await onUploadImage(file)
+      setImageUrl(url)
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Tải ảnh thất bại')
+    } finally {
+      setUploading(false)
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (saving || !hasCategories || !trimmedName) return
+    if (saving || uploading || !hasCategories || !trimmedName) return
 
     const fields: SaveMenuItemInput = {
       categoryId,
@@ -155,6 +189,124 @@ export function MenuItemDialog({
               Cần tạo danh mục trước khi thêm món.
             </div>
           ) : null}
+
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="menu-item-image" className="text-sm font-semibold text-ink-soft">
+              Ảnh món
+            </label>
+            <div className="flex flex-col items-center gap-2">
+              <label
+                htmlFor="menu-item-image"
+                className={cn(
+                  'group flex flex-col items-center gap-2',
+                  saving || uploading ? 'cursor-not-allowed' : 'cursor-pointer',
+                )}
+              >
+                <span
+                  className={cn(
+                    'relative flex h-[180px] w-80 shrink-0 items-center justify-center overflow-hidden rounded-card border border-line-strong bg-surface-muted transition group-hover:border-brand',
+                    (saving || uploading) && 'opacity-70',
+                  )}
+                >
+                  {previewUrl ? (
+                    <img
+                      src={previewUrl}
+                      alt="Xem trước ảnh món"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-9 w-9 text-ink-muted"
+                      aria-hidden="true"
+                    >
+                      <rect x="3" y="4" width="18" height="16" rx="2" />
+                      <circle cx="8.5" cy="9.5" r="1.5" />
+                      <path d="m21 16-4.5-4.5L5 20" />
+                    </svg>
+                  )}
+                  {uploading ? (
+                    <span className="absolute inset-0 flex items-center justify-center bg-ink/50">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        className="h-6 w-6 animate-spin text-white"
+                        aria-hidden="true"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="9"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          opacity="0.25"
+                        />
+                        <path
+                          d="M21 12a9 9 0 0 0-9-9"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </span>
+                  ) : (
+                    <span className="pointer-events-none absolute inset-0 hidden items-center justify-center bg-ink/40 text-xs font-semibold text-white group-hover:flex">
+                      Đổi ảnh
+                    </span>
+                  )}
+                </span>
+                <span className="text-sm font-semibold text-brand group-hover:underline">
+                  {uploading ? 'Đang tải ảnh lên…' : 'Nhấn để đổi ảnh món'}
+                </span>
+              </label>
+              <input
+                id="menu-item-image"
+                name="menuItemImage"
+                type="file"
+                accept={IMAGE_ACCEPT_ATTR}
+                aria-label="Ảnh món"
+                onChange={handleFileChange}
+                disabled={saving || uploading}
+                className="sr-only"
+              />
+              <p className="text-xs text-ink-muted">JPEG, PNG hoặc WebP · tối đa 5 MB</p>
+              {uploadError ? (
+                <p role="alert" className="text-xs font-semibold text-red-600">
+                  {uploadError}
+                </p>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => setShowUrlInput((prev) => !prev)}
+                disabled={saving}
+                className="text-xs font-semibold text-brand underline-offset-2 hover:underline disabled:opacity-60"
+              >
+                {showUrlInput ? 'Ẩn link ảnh ngoài' : 'Dán link ảnh ngoài'}
+              </button>
+              {showUrlInput ? (
+                <div className="flex w-full flex-col gap-1.5">
+                  <label htmlFor="menu-item-image-url" className="sr-only">
+                    Link ảnh ngoài
+                  </label>
+                  <Input
+                    id="menu-item-image-url"
+                    name="menuItemImageUrl"
+                    autoComplete="off"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    placeholder="https://..."
+                    containerClassName={fieldClass}
+                    disabled={saving}
+                  />
+                </div>
+              ) : null}
+            </div>
+          </div>
 
           <div className="grid gap-3 sm:grid-cols-[1fr_14rem]">
             <div className="flex min-w-0 flex-col gap-1.5">
@@ -242,33 +394,6 @@ export function MenuItemDialog({
             />
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-[1fr_8rem]">
-            <div className="flex min-w-0 flex-col gap-1.5">
-              <label htmlFor="menu-item-image" className="text-sm font-semibold text-ink-soft">
-                Ảnh
-              </label>
-              <Input
-                id="menu-item-image"
-                name="menuItemImage"
-                autoComplete="off"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://..."
-                containerClassName={fieldClass}
-                disabled={saving}
-              />
-            </div>
-            {previewUrl ? (
-              <img
-                src={previewUrl}
-                alt="Xem trước ảnh món"
-                className="h-20 w-28 rounded-card border border-line-strong object-cover"
-              />
-            ) : (
-              <div className="hidden h-20 w-28 rounded-card border border-dashed border-line-strong sm:block" />
-            )}
-          </div>
-
           <label
             htmlFor="menu-item-available"
             className="flex items-center gap-2 text-sm font-semibold text-ink"
@@ -311,7 +436,7 @@ export function MenuItemDialog({
             >
               Hủy
             </Button>
-            <Button type="submit" disabled={saving || !hasCategories || !trimmedName}>
+            <Button type="submit" disabled={saving || uploading || !hasCategories || !trimmedName}>
               {saving ? 'Đang lưu…' : 'Lưu món'}
             </Button>
           </DialogFooter>

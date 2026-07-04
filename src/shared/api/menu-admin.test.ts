@@ -10,6 +10,7 @@ import {
   listCategories,
   listMenuItems,
   updateMenuItem,
+  uploadMenuItemImage,
 } from './menu-admin.server'
 
 function fakeStore(): TokenStore {
@@ -194,6 +195,41 @@ describe('menu admin API helpers', () => {
     )
     expect(optionInit.method).toBe('POST')
     expect(JSON.parse(optionInit.body as string)).toEqual({ name: 'Lớn', priceDelta: 10000 })
+  })
+
+  it('uploads a dish image as multipart and returns the public url', async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(
+        jsonResponse({ data: { url: 'https://cdn.test/dishes/r1/abc.webp' } }, 201),
+      )
+
+    const file = new File(['bytes'], 'pho.png', { type: 'image/png' })
+    await expect(uploadMenuItemImage(fakeStore(), file)).resolves.toBe(
+      'https://cdn.test/dishes/r1/abc.webp',
+    )
+
+    const [url, init] = fetchMock.mock.calls[0]!
+    expect(String(url)).toBe('http://localhost:3000/api/menu-items/image')
+    expect((init as RequestInit).method).toBe('POST')
+    expect((init as RequestInit).body).toBeInstanceOf(FormData)
+    expect(((init as RequestInit).body as FormData).get('file')).toBe(file)
+    // Do not set Content-Type manually — the runtime adds the multipart boundary.
+    expect((init as RequestInit).headers).not.toHaveProperty('content-type')
+  })
+
+  it('maps image upload error codes to MenuAdminApiError messages', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      jsonResponse({ error: { code: 'IMAGE_TOO_LARGE', message: 'raw' } }, 400),
+    )
+
+    const file = new File(['bytes'], 'big.png', { type: 'image/png' })
+    await expect(uploadMenuItemImage(fakeStore(), file)).rejects.toMatchObject({
+      name: 'MenuAdminApiError',
+      code: 'IMAGE_TOO_LARGE',
+      status: 400,
+      message: 'Ảnh vượt quá 5 MB',
+    } satisfies Partial<MenuAdminApiError>)
   })
 
   it('maps backend errors to MenuAdminApiError messages', async () => {

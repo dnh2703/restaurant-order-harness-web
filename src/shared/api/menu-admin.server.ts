@@ -41,6 +41,14 @@ function mapMenuAdminErrorCode(code?: string): string | undefined {
       return 'Không tìm thấy nhóm tùy chọn'
     case 'OPTION_NOT_FOUND':
       return 'Không tìm thấy tùy chọn'
+    case 'IMAGE_MISSING':
+      return 'Chưa chọn ảnh'
+    case 'IMAGE_TYPE_UNSUPPORTED':
+      return 'Chỉ chấp nhận ảnh JPEG, PNG hoặc WebP'
+    case 'IMAGE_TOO_LARGE':
+      return 'Ảnh vượt quá 5 MB'
+    case 'STORAGE_UNAVAILABLE':
+      return 'Lưu trữ tạm thời không khả dụng, vui lòng thử lại'
     case 'FORBIDDEN':
       return 'Bạn không có quyền truy cập'
     case 'UNAUTHORIZED':
@@ -161,6 +169,19 @@ export async function deleteMenuItem(store: TokenStore, id: string): Promise<voi
     method: 'DELETE',
   })
   if (!res.ok) await readError(res)
+}
+
+/**
+ * Upload a dish image as multipart/form-data and return the public URL.
+ * The `Content-Type` header is intentionally omitted so the runtime sets the multipart
+ * boundary; `authedFetch` only adds the Authorization header.
+ */
+export async function uploadMenuItemImage(store: TokenStore, file: File): Promise<string> {
+  const form = new FormData()
+  form.append('file', file)
+  const res = await authedFetch(store, '/api/menu-items/image', { method: 'POST', body: form })
+  const data = await readJsonData<{ url: string }>(res)
+  return data.url
 }
 
 export async function listOptionGroups(

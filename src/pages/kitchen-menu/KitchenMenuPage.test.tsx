@@ -109,7 +109,6 @@ describe('KitchenMenuPage', () => {
     fireEvent.change(screen.getByLabelText('Tên món'), { target: { value: '  Bánh mì  ' } })
     fireEvent.change(screen.getByLabelText('Giá'), { target: { value: '25000' } })
     fireEvent.change(screen.getByLabelText('Mô tả'), { target: { value: '   ' } })
-    fireEvent.change(screen.getByLabelText('Ảnh'), { target: { value: '   ' } })
     fireEvent.change(screen.getByLabelText('Thứ tự'), { target: { value: '0' } })
     fireEvent.click(screen.getByRole('button', { name: 'Lưu món' }))
 

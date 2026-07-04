@@ -14,6 +14,7 @@ import {
   updateMenuItem,
   updateOption,
   updateOptionGroup,
+  uploadMenuItemImage,
   type AdminCategoryView,
   type AdminMenuItemView,
   type AdminOptionGroupView,
@@ -142,6 +143,12 @@ export function KitchenMenuPage({
     },
     [categories],
   )
+
+  const onUploadImage = useCallback(async (file: File): Promise<string> => {
+    const form = new FormData()
+    form.append('file', file)
+    return uploadMenuItemImage({ data: form })
+  }, [])
 
   const onDeleteMenuItem = useCallback(async () => {
     if (!deletingItem || deletingBusy) return
@@ -287,6 +294,7 @@ export function KitchenMenuPage({
         categories={categories}
         item={editingItem}
         onSave={onSaveMenuItem}
+        onUploadImage={onUploadImage}
         optionGroups={optionGroups}
         optionGroupsLoading={optionGroupsLoading}
         onCreateGroup={onCreateGroup}
