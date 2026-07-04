@@ -46,6 +46,22 @@ describe('resolveKitchenAccess', () => {
     expect(resolveKitchenAccess('/kitchen/tables', admin)).toEqual({ allow: true })
   })
 
+  it('requires an admin session for reports', () => {
+    expect(resolveKitchenAccess('/kitchen/reports', null)).toEqual({
+      allow: false,
+      redirectTo: '/kitchen/login',
+    })
+    expect(resolveKitchenAccess('/kitchen/reports', kitchen)).toEqual({
+      allow: false,
+      redirectTo: '/kitchen',
+    })
+    expect(resolveKitchenAccess('/kitchen/reports', cashier)).toEqual({
+      allow: false,
+      redirectTo: '/kitchen/cashier',
+    })
+    expect(resolveKitchenAccess('/kitchen/reports', admin)).toEqual({ allow: true })
+  })
+
   it('lets cashier and admin into the cashier screen, kitchen staff to their board', () => {
     expect(resolveKitchenAccess('/kitchen/cashier', cashier)).toEqual({ allow: true })
     expect(resolveKitchenAccess('/kitchen/cashier', admin)).toEqual({ allow: true })

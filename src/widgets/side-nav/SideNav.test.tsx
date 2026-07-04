@@ -74,4 +74,20 @@ describe('SideNav', () => {
 
     expect(screen.queryByRole('link', { name: /Thu ngân/ })).not.toBeInTheDocument()
   })
+
+  it('shows Báo cáo for admin and marks it current when active', () => {
+    render(
+      <SideNav userName="Quản Lý" userRole="ADMIN" onLogout={vi.fn()} activeSection="reports" />,
+    )
+    const link = screen.getByRole('link', { name: /Báo cáo/ })
+    expect(link).toHaveAttribute('href', '/kitchen/reports')
+    expect(link).toHaveAttribute('aria-current', 'page')
+  })
+
+  it('hides Báo cáo from kitchen staff', () => {
+    render(
+      <SideNav userName="Đầu Bếp" userRole="KITCHEN" onLogout={vi.fn()} activeSection="board" />,
+    )
+    expect(screen.queryByRole('link', { name: /Báo cáo/ })).not.toBeInTheDocument()
+  })
 })
