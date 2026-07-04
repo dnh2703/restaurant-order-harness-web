@@ -7,6 +7,17 @@ function toISODate(d: Date): string {
   return `${y}-${m}-${day}`
 }
 
+/** ISO YYYY-MM-DD -> local-midnight Date. */
+export function isoToDate(iso: string): Date {
+  const parts = iso.split('-')
+  return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]))
+}
+
+/** Local Date -> ISO YYYY-MM-DD. */
+export function dateToISO(d: Date): string {
+  return toISODate(d)
+}
+
 /** Today in local time as YYYY-MM-DD. */
 export function todayISO(): string {
   return toISODate(new Date())
@@ -39,4 +50,20 @@ export function presetRange(preset: RangePreset): DateRange {
   const to = todayISO()
   const spanDays = preset === 'today' ? 0 : preset === '7d' ? 6 : 29
   return { from: addDays(to, -spanDays), to }
+}
+
+/** Which preset (if any) the given range exactly equals; null for a custom range. */
+export function matchPreset(value: DateRange): RangePreset | null {
+  const presets: RangePreset[] = ['today', '7d', '30d']
+  for (const p of presets) {
+    const r = presetRange(p)
+    if (r.from === value.from && r.to === value.to) return p
+  }
+  return null
+}
+
+/** react-day-picker Date range -> ISO DateRange; null unless both ends are set. */
+export function rdpRangeToIso(range: { from?: Date; to?: Date } | undefined): DateRange | null {
+  if (range?.from && range?.to) return { from: dateToISO(range.from), to: dateToISO(range.to) }
+  return null
 }
