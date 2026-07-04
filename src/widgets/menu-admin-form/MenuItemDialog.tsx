@@ -204,7 +204,7 @@ export function MenuItemDialog({
               >
                 <span
                   className={cn(
-                    'relative flex aspect-[16/9] w-full max-w-sm items-center justify-center overflow-hidden rounded-card border border-line-strong bg-surface-muted transition group-hover:border-brand',
+                    'relative flex h-[180px] w-80 shrink-0 items-center justify-center overflow-hidden rounded-card border border-line-strong bg-surface-muted transition group-hover:border-brand',
                     (saving || uploading) && 'opacity-70',
                   )}
                 >
