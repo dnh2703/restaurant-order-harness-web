@@ -26,6 +26,7 @@ export {
   DialogTitle,
   DialogDescription,
 } from './Dialog'
+export { Popover, PopoverTrigger, PopoverAnchor, PopoverContent } from './Popover'
 export {
   AlertDialog,
   AlertDialogPortal,
