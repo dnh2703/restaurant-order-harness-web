@@ -16,6 +16,7 @@ Replace the native date inputs in `DateRangeControl` with a shadcn-style date **
 | Popover | **existing `radix-ui`** unified package (`Popover`) | Already a dependency (used by Select/Dialog). No new dep for the popover layer. Animations via `tw-animate-css` (already imported in `styles.css`). |
 | Range UX | **one range calendar** (`mode="range"`, `numberOfMonths={2}`) | Faithful shadcn "date range picker" pattern; picks from+to together. Presets kept alongside. |
 | Reusability | primitives live in **`shared/ui`** | Matches the kit conventions (shadcn-style wrappers over radix, exported from `index.ts`). |
+| Preset active state | active preset → `Button variant="primary"` (**brand blue `#2563eb`, white text**) + `aria-pressed`; inactive → `secondary` | User request: the Hôm nay / 7 ngày / 30 ngày buttons must show their active state in brand color. |
 | Label formatting | `Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: 'short', year: 'numeric' })` | No extra formatting dep; consistent VN locale. |
 | App data shape | keep `DateRange = { from: string; to: string }` (ISO `YYYY-MM-DD`) | The rest of E07 (server fns, normalizer) speaks ISO strings; the picker converts ISO↔`Date` at its boundary only. |
 
@@ -31,8 +32,8 @@ src/shared/ui/index.ts             # export the three
 ```
 
 Edits:
-- `src/shared/lib/date-range.ts` — add two pure converters: `isoToDate(iso: string): Date` and `dateToISO(d: Date): string` (reuse the existing local `toISODate` logic; keep symmetric with `addDays`/`todayISO`, all local-time).
-- `src/widgets/date-range-control/DateRangeControl.tsx` — replace the two `<input type="date">` (and their clamp handlers) with a single `<DateRangePicker value={value} onChange={onChange} />`. Keep the preset buttons unchanged.
+- `src/shared/lib/date-range.ts` — add two pure converters: `isoToDate(iso: string): Date` and `dateToISO(d: Date): string` (reuse the existing local `toISODate` logic; keep symmetric with `addDays`/`todayISO`, all local-time). Add a pure `matchPreset(value: DateRange): RangePreset | null` that returns which preset (if any) the current range equals — used for the active-state highlight below.
+- `src/widgets/date-range-control/DateRangeControl.tsx` — replace the two `<input type="date">` (and their clamp handlers) with a single `<DateRangePicker value={value} onChange={onChange} />`. **Preset buttons get an active state:** compute the active preset with `matchPreset(value)`; the matching button renders `variant="primary"` (brand blue `bg-brand text-white`) with `aria-pressed={true}`, the others render `variant="secondary"` with `aria-pressed={false}`. A custom range (picked via the calendar) matches no preset, so all presets show the inactive `secondary` style.
 - `src/shared/ui/index.ts` — add exports.
 - `package.json` — add `react-day-picker`.
 
@@ -58,7 +59,8 @@ Edits:
   - Opening the popover shows the calendar (role/grid present).
   - Selecting a start then end day calls `onChange` once with the correct ISO `{from,to}` and closes. (Drive via Testing Library `userEvent`/`fireEvent` on day cells by accessible name.)
   - Picking only a start day does **not** emit yet.
-- `DateRangeControl` (update existing test): presets still emit `presetRange(...)`; the widget renders a `DateRangePicker` (assert the trigger label reflects `value`) instead of the old `Từ`/`Đến` inputs. Remove the now-obsolete clamp-input assertions (clamping is inherent to range selection now).
+- `matchPreset`: returns the right `RangePreset` for a range equal to `presetRange(id)`, and `null` for a custom range.
+- `DateRangeControl` (update existing test): presets still emit `presetRange(...)`; the widget renders a `DateRangePicker` (assert the trigger label reflects `value`) instead of the old `Từ`/`Đến` inputs; **the active preset is highlighted** — when `value === presetRange('7d')` (the default), the "7 ngày" button has `aria-pressed="true"` and the others `aria-pressed="false"`; a custom range leaves all presets `aria-pressed="false"`. Remove the now-obsolete clamp-input assertions (clamping is inherent to range selection now).
 
 **Popover / Calendar** are thin wrappers → a light render smoke each (renders children / renders a month grid). Keep assertions real, not tautological.
 
