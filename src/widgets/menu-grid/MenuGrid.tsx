@@ -35,7 +35,7 @@ function DishCard({
         'overflow-hidden rounded-card bg-white shadow-card ' + (soldOut ? 'opacity-50' : '')
       }
     >
-      <div className="relative h-[150px] bg-gradient-to-br from-line-strong to-[#c5cedd]">
+      <div className="relative aspect-[16/9] bg-gradient-to-br from-line-strong to-[#c5cedd]">
         {item.imageUrl && (
           <img src={item.imageUrl} alt={item.name} className="size-full object-cover" />
         )}
