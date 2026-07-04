@@ -1,4 +1,4 @@
-import { getCookie, setCookie, deleteCookie } from '@tanstack/react-start/server'
+import { getCookie, setCookie, deleteCookie, getRequest } from '@tanstack/react-start/server'
 import { API_BASE_URL } from '@/shared/config'
 import type { StaffUser } from '@/shared/api/types/staff'
 
@@ -12,10 +12,41 @@ export interface TokenStore {
   clear(): void
 }
 
-/** Cookie-backed token store. httpOnly so tokens never reach client JS. */
+/**
+ * Per-request token overlay. Within a single server request `setCookie` only writes the
+ * *response* while `getCookie` keeps returning the original *request* cookies. So after we
+ * refresh-and-rotate the token, a later authed call in the same SSR request would re-read the
+ * stale (already-rotated) token and refresh again with a revoked refresh token -> 401 storm.
+ * This overlay makes reads reflect the latest save/clear. It is keyed by the request object so
+ * concurrent requests never share state, and the entry is GC'd when the request is collected.
+ */
+interface TokenOverlay {
+  access?: string
+  refresh?: string
+}
+const requestOverlay = new WeakMap<object, TokenOverlay>()
+
+/** The current request object, used as the overlay key, or undefined outside the server runtime. */
+function overlayKey(): object | undefined {
+  try {
+    return getRequest()
+  } catch {
+    return undefined
+  }
+}
+
+/** Cookie-backed token store with a per-request overlay. httpOnly so tokens never reach client JS. */
 export const cookieTokenStore: TokenStore = {
-  getAccess: () => getCookie(ACCESS_COOKIE),
-  getRefresh: () => getCookie(REFRESH_COOKIE),
+  getAccess() {
+    const key = overlayKey()
+    const overlay = key && requestOverlay.get(key)
+    return overlay ? overlay.access : getCookie(ACCESS_COOKIE)
+  },
+  getRefresh() {
+    const key = overlayKey()
+    const overlay = key && requestOverlay.get(key)
+    return overlay ? overlay.refresh : getCookie(REFRESH_COOKIE)
+  },
   save(access, refresh) {
     const base = {
       httpOnly: true,
@@ -25,10 +56,14 @@ export const cookieTokenStore: TokenStore = {
     }
     setCookie(ACCESS_COOKIE, access, { ...base, maxAge: 60 * 60 })
     setCookie(REFRESH_COOKIE, refresh, { ...base, maxAge: 60 * 60 * 24 * 30 })
+    const key = overlayKey()
+    if (key) requestOverlay.set(key, { access, refresh })
   },
   clear() {
     deleteCookie(ACCESS_COOKIE, { path: '/' })
     deleteCookie(REFRESH_COOKIE, { path: '/' })
+    const key = overlayKey()
+    if (key) requestOverlay.set(key, { access: undefined, refresh: undefined })
   },
 }
 

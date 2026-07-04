@@ -1,14 +1,13 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { KitchenScreenPage } from '@/pages/kitchen-screen'
 import type { StaffUser } from '@/entities/staff'
-import { getStaffSession, logoutStaff } from '@/shared/api/auth'
+import { logoutStaff } from '@/shared/api/auth'
 
 export const Route = createFileRoute('/kitchen/')({
-  loader: async (): Promise<{ user: StaffUser }> => {
-    const session = await getStaffSession()
-    // The parent guard already redirected unauthenticated users; assert for types.
-    if (!session) throw new Error('No session')
-    return { user: session }
+  loader: ({ context }): { user: StaffUser } => {
+    // Reuse the session the parent guard already fetched; bounce to login if it's gone.
+    if (!context.session) throw redirect({ to: '/kitchen/login' })
+    return { user: context.session }
   },
   component: KitchenIndex,
 })

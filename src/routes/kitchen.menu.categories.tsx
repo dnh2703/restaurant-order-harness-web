@@ -1,17 +1,20 @@
-import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate, useRouter } from '@tanstack/react-router'
 import { KitchenCategoriesPage } from '@/pages/kitchen-categories'
 import type { StaffUser } from '@/entities/staff'
-import { getStaffSession, logoutStaff } from '@/shared/api/auth'
+import { logoutStaff } from '@/shared/api/auth'
 import { listCategories } from '@/shared/api/menu-admin'
+import { withKitchenAuth } from '@/shared/lib/kitchen-auth'
 
 export const Route = createFileRoute('/kitchen/menu/categories')({
-  loader: async (): Promise<{
+  loader: async ({
+    context,
+  }): Promise<{
     user: StaffUser
     categories: Awaited<ReturnType<typeof listCategories>>
   }> => {
-    const [session, categories] = await Promise.all([getStaffSession(), listCategories()])
-    if (!session) throw new Error('No session')
-    return { user: session, categories }
+    if (!context.session) throw redirect({ to: '/kitchen/login' })
+    const categories = await withKitchenAuth(() => listCategories())
+    return { user: context.session, categories }
   },
   component: KitchenCategoriesRoute,
 })
