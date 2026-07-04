@@ -13,7 +13,7 @@ interface Props {
   userName: string
   userRole: StaffRole
   onLogout: () => void
-  activeSection: 'board' | 'cashier' | 'tables' | 'menu'
+  activeSection: 'board' | 'cashier' | 'tables' | 'menu' | 'reports'
 }
 
 const ROLE_LABEL: Record<StaffRole, string> = {
