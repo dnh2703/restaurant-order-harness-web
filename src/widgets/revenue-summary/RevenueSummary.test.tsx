@@ -14,13 +14,15 @@ describe('RevenueSummary', () => {
     expect(screen.getByText('150.000đ')).toBeInTheDocument()
   })
 
-  it('avoids divide-by-zero when there are no orders', () => {
+  it('avoids divide-by-zero when there are no orders (average shows 0đ, not NaN)', () => {
     render(
       <RevenueSummary
-        summary={{ from: '2026-07-01', to: '2026-07-07', totalRevenue: 0, totalOrders: 0 }}
+        summary={{ from: '2026-07-01', to: '2026-07-07', totalRevenue: 100000, totalOrders: 0 }}
       />,
     )
-    // Average tile shows 0đ, not NaN.
-    expect(screen.getAllByText('0đ').length).toBeGreaterThanOrEqual(1)
+    // Total tile shows 100.000đ; the average tile must show 0đ (not NaNđ).
+    expect(screen.getByText('100.000đ')).toBeInTheDocument()
+    expect(screen.getByText('0đ')).toBeInTheDocument()
+    expect(screen.queryByText('NaNđ')).not.toBeInTheDocument()
   })
 })
