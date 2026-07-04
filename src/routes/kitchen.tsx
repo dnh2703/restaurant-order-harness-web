@@ -18,9 +18,9 @@ export function resolveKitchenAccess(pathname: string, session: StaffUser | null
 }
 
 export const Route = createFileRoute('/kitchen')({
-  beforeLoad: async ({ location }) => {
+  beforeLoad: async ({ location }): Promise<{ session: StaffUser | null }> => {
     // The login route is public; everything else under /kitchen requires a session.
-    if (location.pathname === '/kitchen/login') return {}
+    if (location.pathname === '/kitchen/login') return { session: null }
     let session
     try {
       session = await getStaffSession()
@@ -32,6 +32,8 @@ export const Route = createFileRoute('/kitchen')({
     if (!access.allow) {
       throw redirect({ to: access.redirectTo })
     }
+    // Child loaders reuse this session instead of re-fetching it — one auth round-trip per
+    // navigation, avoiding a second token refresh that would rotate the refresh token again.
     return { session }
   },
   component: KitchenLayout,

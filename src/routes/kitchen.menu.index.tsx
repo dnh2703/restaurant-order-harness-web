@@ -1,22 +1,25 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { KitchenMenuPage } from '@/pages/kitchen-menu'
 import type { StaffUser } from '@/entities/staff'
-import { getStaffSession, logoutStaff } from '@/shared/api/auth'
+import { logoutStaff } from '@/shared/api/auth'
 import { listCategories, listMenuItems } from '@/shared/api/menu-admin'
+import { withKitchenAuth } from '@/shared/lib/kitchen-auth'
 
 export const Route = createFileRoute('/kitchen/menu/')({
-  loader: async (): Promise<{
+  loader: async ({
+    context,
+  }): Promise<{
     user: StaffUser
     categories: Awaited<ReturnType<typeof listCategories>>
     menuItems: Awaited<ReturnType<typeof listMenuItems>>
   }> => {
-    const [session, categories, menuItems] = await Promise.all([
-      getStaffSession(),
-      listCategories(),
-      listMenuItems(),
-    ])
-    if (!session) throw new Error('No session')
-    return { user: session, categories, menuItems }
+    // Reuse the parent guard's session; if a data call still hits an expired session, bounce
+    // to login rather than surfacing the router's generic error boundary.
+    if (!context.session) throw redirect({ to: '/kitchen/login' })
+    const [categories, menuItems] = await withKitchenAuth(() =>
+      Promise.all([listCategories(), listMenuItems()]),
+    )
+    return { user: context.session, categories, menuItems }
   },
   component: KitchenMenuRoute,
 })
