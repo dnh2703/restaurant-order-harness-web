@@ -14,8 +14,8 @@ export function todayISO(): string {
 
 /** Shift an ISO date (YYYY-MM-DD) by n days (may be negative). */
 export function addDays(iso: string, n: number): string {
-  const [y, m, d] = iso.split('-').map(Number)
-  const date = new Date(y, m - 1, d)
+  const parts = iso.split('-')
+  const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]))
   date.setDate(date.getDate() + n)
   return toISODate(date)
 }
