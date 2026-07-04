@@ -93,16 +93,25 @@ export function CashierScreenPage({ user, onLogout }: Props) {
       />
 
       <main className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
-          <div className="flex items-center gap-3">
-            <h1 className="text-lg font-bold text-brand">Thu ngân</h1>
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-4 sm:px-6">
+          <div>
+            <h1 className="text-xl font-extrabold text-ink">Thu ngân</h1>
+            <p className="text-sm text-muted">Chốt hóa đơn và thanh toán cho từng bàn.</p>
+          </div>
+          <div className="flex items-center gap-2">
             <Badge variant={mode === 'live' ? 'brand' : 'outline'} dot>
               {mode === 'live' ? 'Trực tiếp' : 'Đang dò'}
             </Badge>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={onLogout}
+              className="md:hidden"
+            >
+              Đăng xuất
+            </Button>
           </div>
-          <Button type="button" variant="ghost" size="sm" onClick={onLogout} className="md:hidden">
-            Đăng xuất
-          </Button>
         </header>
 
         {error && <p className="bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
