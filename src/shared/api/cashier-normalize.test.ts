@@ -75,7 +75,8 @@ describe('normalizeBillDetail', () => {
       ],
     })
     expect(bill.discountReason).toBeNull()
-    expect(bill.items[0].options).toEqual([])
-    expect(bill.items[0].note).toBeNull()
+    const item = bill.items[0]!
+    expect(item.options).toEqual([])
+    expect(item.note).toBeNull()
   })
 })
