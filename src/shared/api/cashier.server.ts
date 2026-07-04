@@ -8,7 +8,7 @@ import type {
 } from '@/shared/api/types/cashier'
 
 async function readData<T>(res: Response): Promise<T> {
-  if (!res.ok) throw new Error(`Backend error (${res.status})`)
+  if (!res.ok) throw new Error(`Không tải được dữ liệu (${res.status})`)
   return ((await res.json()) as { data: T }).data
 }
 

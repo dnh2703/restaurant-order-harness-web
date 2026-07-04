@@ -5,7 +5,7 @@ import { InvoiceReceipt } from '@/widgets/invoice-receipt'
 import { useOpenTables } from '@/entities/cashier'
 import type { BillDetail, DiscountType, PaymentMethod } from '@/entities/cashier'
 import type { StaffUser } from '@/entities/staff'
-import { Button } from '@/shared/ui'
+import { Badge, Button } from '@/shared/ui'
 import { getBillDetail, applyOrderDiscount, payOrder } from '@/shared/api/cashier'
 
 interface Props {
@@ -20,7 +20,7 @@ interface PaidInvoice {
 }
 
 export function CashierScreenPage({ user, onLogout }: Props) {
-  const { tables, refetch } = useOpenTables(user.restaurantId)
+  const { tables, mode, refetch } = useOpenTables(user.restaurantId)
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
   const [bill, setBill] = useState<BillDetail | null>(null)
   const [busy, setBusy] = useState(false)
@@ -85,7 +85,12 @@ export function CashierScreenPage({ user, onLogout }: Props) {
   return (
     <div className="flex h-screen flex-col">
       <header className="flex items-center justify-between border-b border-line px-4 py-3">
-        <h1 className="text-lg font-bold text-brand">Thu ngân</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg font-bold text-brand">Thu ngân</h1>
+          <Badge variant={mode === 'live' ? 'brand' : 'outline'} dot>
+            {mode === 'live' ? 'Trực tiếp' : 'Đang dò'}
+          </Badge>
+        </div>
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted">{user.name}</span>
           <Button type="button" variant="secondary" size="sm" onClick={onLogout}>

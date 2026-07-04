@@ -79,7 +79,7 @@ export function CashierBillPanel({ bill, busy, onApplyDiscount, onPay }: Props) 
             className="h-11 rounded-lg border border-line-strong bg-white px-3 text-sm"
           >
             <option value="PERCENT">%</option>
-            <option value="FIXED">VNĐ</option>
+            <option value="FIXED">đ</option>
           </select>
           <Input
             type="number"
