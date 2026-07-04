@@ -1,0 +1,1 @@
+export { CashierTableList } from './CashierTableList'

@@ -1,11 +1,11 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { StaffLoginPage } from '@/pages/staff-login'
 import { getStaffSession, loginStaff } from '@/shared/api/auth'
+import { kitchenLandingForRole } from './kitchen'
 
 export const Route = createFileRoute('/kitchen/login')({
-  // Already signed in as kitchen staff? Skip the login form and go to the board.
-  // Only redirect KITCHEN/ADMIN (the roles /kitchen allows) so a CASHIER session
-  // doesn't bounce login -> /kitchen -> (guard rejects) -> login in a loop.
+  // Already signed in? Skip the login form and go to the role's home. Every staff
+  // role (KITCHEN, CASHIER, ADMIN) has a landing inside /kitchen, so no loop.
   beforeLoad: async () => {
     let session = null
     try {
@@ -14,8 +14,8 @@ export const Route = createFileRoute('/kitchen/login')({
       // Backend unreachable: just show the login form.
       return
     }
-    if (session && (session.role === 'KITCHEN' || session.role === 'ADMIN')) {
-      throw redirect({ to: '/kitchen' })
+    if (session) {
+      throw redirect({ to: kitchenLandingForRole(session.role) })
     }
   },
   component: KitchenLogin,
@@ -26,8 +26,8 @@ function KitchenLogin() {
   return (
     <StaffLoginPage
       onSubmit={async (email, password) => {
-        await loginStaff({ data: { email, password } })
-        await navigate({ to: '/kitchen' })
+        const user = await loginStaff({ data: { email, password } })
+        await navigate({ to: kitchenLandingForRole(user.role) })
       }}
     />
   )

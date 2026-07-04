@@ -45,4 +45,33 @@ describe('SideNav', () => {
 
     expect(screen.getByRole('link', { name: /Thực đơn/ })).toHaveAttribute('aria-current', 'page')
   })
+
+  it('shows only the Thu ngân tab for a cashier, not the kitchen board', () => {
+    render(
+      <SideNav userName="Thu Ngân" userRole="CASHIER" onLogout={vi.fn()} activeSection="cashier" />,
+    )
+
+    const cashierTab = screen.getByRole('link', { name: /Thu ngân/ })
+    expect(cashierTab).toHaveAttribute('href', '/kitchen/cashier')
+    expect(cashierTab).toHaveAttribute('aria-current', 'page')
+    expect(screen.queryByRole('link', { name: /Bếp/ })).not.toBeInTheDocument()
+  })
+
+  it('shows the Thu ngân tab for admin alongside the kitchen tabs', () => {
+    render(<SideNav userName="Quản Lý" userRole="ADMIN" onLogout={vi.fn()} activeSection="board" />)
+
+    expect(screen.getByRole('link', { name: /Thu ngân/ })).toHaveAttribute(
+      'href',
+      '/kitchen/cashier',
+    )
+    expect(screen.getByRole('link', { name: /Bếp/ })).toBeInTheDocument()
+  })
+
+  it('hides the Thu ngân tab from kitchen staff', () => {
+    render(
+      <SideNav userName="Đầu Bếp" userRole="KITCHEN" onLogout={vi.fn()} activeSection="board" />,
+    )
+
+    expect(screen.queryByRole('link', { name: /Thu ngân/ })).not.toBeInTheDocument()
+  })
 })

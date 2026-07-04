@@ -1,4 +1,10 @@
-import { BookOpenIcon, ChairIcon, CookingPotIcon, SignOutIcon } from '@phosphor-icons/react'
+import {
+  BookOpenIcon,
+  ChairIcon,
+  CookingPotIcon,
+  ReceiptIcon,
+  SignOutIcon,
+} from '@phosphor-icons/react'
 import type { StaffRole } from '@/entities/staff'
 import { BrandMark, Button } from '@/shared/ui'
 import { cn } from '@/shared/lib/cn'
@@ -7,7 +13,7 @@ interface Props {
   userName: string
   userRole: StaffRole
   onLogout: () => void
-  activeSection: 'board' | 'tables' | 'menu'
+  activeSection: 'board' | 'cashier' | 'tables' | 'menu'
 }
 
 const ROLE_LABEL: Record<StaffRole, string> = {
@@ -19,25 +25,43 @@ const ROLE_LABEL: Record<StaffRole, string> = {
 /** Left shell for staff routes under /kitchen. Admin sees an extra Bàn ăn tab. */
 export function SideNav({ userName, userRole, onLogout, activeSection }: Props) {
   const onBoard = activeSection === 'board'
+  const onCashier = activeSection === 'cashier'
   const onTables = activeSection === 'tables'
   const onMenu = activeSection === 'menu'
+  const canSeeBoard = userRole === 'KITCHEN' || userRole === 'ADMIN'
+  const canSeeCashier = userRole === 'CASHIER' || userRole === 'ADMIN'
 
   return (
     <aside className="hidden w-60 shrink-0 flex-col border-r border-line bg-white px-4 py-5 md:flex">
       <BrandMark size="sm" label="Bếp Minh Châu" className="px-1" />
 
       <nav className="mt-6 flex flex-col gap-1">
-        <a
-          href="/kitchen"
-          aria-current={onBoard ? 'page' : undefined}
-          className={cn(
-            'flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-semibold',
-            onBoard ? 'bg-brand-bg text-brand' : 'text-ink-soft hover:bg-page',
-          )}
-        >
-          <CookingPotIcon size={18} weight="bold" />
-          Bếp
-        </a>
+        {canSeeBoard && (
+          <a
+            href="/kitchen"
+            aria-current={onBoard ? 'page' : undefined}
+            className={cn(
+              'flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-semibold',
+              onBoard ? 'bg-brand-bg text-brand' : 'text-ink-soft hover:bg-page',
+            )}
+          >
+            <CookingPotIcon size={18} weight="bold" />
+            Bếp
+          </a>
+        )}
+        {canSeeCashier && (
+          <a
+            href="/kitchen/cashier"
+            aria-current={onCashier ? 'page' : undefined}
+            className={cn(
+              'flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-semibold',
+              onCashier ? 'bg-brand-bg text-brand' : 'text-ink-soft hover:bg-page',
+            )}
+          >
+            <ReceiptIcon size={18} weight="bold" />
+            Thu ngân
+          </a>
+        )}
         {userRole === 'ADMIN' && (
           <>
             <a

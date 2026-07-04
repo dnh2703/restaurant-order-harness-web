@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { StaffUser } from '@/entities/staff'
-import { resolveKitchenAccess } from './kitchen'
+import { kitchenLandingForRole, resolveKitchenAccess } from './kitchen'
 
 const admin: StaffUser = {
   id: 'u-admin',
@@ -33,7 +33,7 @@ describe('resolveKitchenAccess', () => {
     })
     expect(resolveKitchenAccess('/kitchen/menu', cashier)).toEqual({
       allow: false,
-      redirectTo: '/kitchen/login',
+      redirectTo: '/kitchen/cashier',
     })
     expect(resolveKitchenAccess('/kitchen/menu', admin)).toEqual({ allow: true })
   })
@@ -44,5 +44,35 @@ describe('resolveKitchenAccess', () => {
       redirectTo: '/kitchen',
     })
     expect(resolveKitchenAccess('/kitchen/tables', admin)).toEqual({ allow: true })
+  })
+
+  it('lets cashier and admin into the cashier screen, kitchen staff to their board', () => {
+    expect(resolveKitchenAccess('/kitchen/cashier', cashier)).toEqual({ allow: true })
+    expect(resolveKitchenAccess('/kitchen/cashier', admin)).toEqual({ allow: true })
+    expect(resolveKitchenAccess('/kitchen/cashier', kitchen)).toEqual({
+      allow: false,
+      redirectTo: '/kitchen',
+    })
+    expect(resolveKitchenAccess('/kitchen/cashier', null)).toEqual({
+      allow: false,
+      redirectTo: '/kitchen/login',
+    })
+  })
+
+  it('bounces a cashier off the kitchen board to the cashier screen', () => {
+    expect(resolveKitchenAccess('/kitchen', cashier)).toEqual({
+      allow: false,
+      redirectTo: '/kitchen/cashier',
+    })
+    expect(resolveKitchenAccess('/kitchen', kitchen)).toEqual({ allow: true })
+    expect(resolveKitchenAccess('/kitchen', admin)).toEqual({ allow: true })
+  })
+})
+
+describe('kitchenLandingForRole', () => {
+  it('sends cashiers to the cashier screen and everyone else to the board', () => {
+    expect(kitchenLandingForRole('CASHIER')).toBe('/kitchen/cashier')
+    expect(kitchenLandingForRole('KITCHEN')).toBe('/kitchen')
+    expect(kitchenLandingForRole('ADMIN')).toBe('/kitchen')
   })
 })

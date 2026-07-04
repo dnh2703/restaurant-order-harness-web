@@ -1,0 +1,148 @@
+import { useCallback, useEffect, useState } from 'react'
+import { CashierTableList } from '@/widgets/cashier-table-list'
+import { CashierBillPanel } from '@/widgets/cashier-bill-panel'
+import { InvoiceReceipt } from '@/widgets/invoice-receipt'
+import { SideNav } from '@/widgets/side-nav'
+import { useOpenTables } from '@/entities/cashier'
+import type { BillDetail, DiscountType, PaymentMethod } from '@/entities/cashier'
+import type { StaffUser } from '@/entities/staff'
+import { Badge, Button } from '@/shared/ui'
+import { getBillDetail, applyOrderDiscount, payOrder } from '@/shared/api/cashier'
+
+interface Props {
+  user: StaffUser
+  onLogout: () => void
+}
+
+interface PaidInvoice {
+  bill: BillDetail
+  tableName: string
+  method: PaymentMethod
+}
+
+export function CashierScreenPage({ user, onLogout }: Props) {
+  const { tables, mode, refetch } = useOpenTables(user.restaurantId)
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
+  const [bill, setBill] = useState<BillDetail | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [paid, setPaid] = useState<PaidInvoice | null>(null)
+
+  const loadBill = useCallback(async (orderId: string) => {
+    try {
+      setBill(await getBillDetail({ data: { id: orderId } }))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Không tải được hóa đơn')
+    }
+  }, [])
+
+  // Refetch the selected bill when the live table list changes (SSE / polling).
+  useEffect(() => {
+    if (selectedOrderId && tables.some((t) => t.orderId === selectedOrderId)) {
+      void loadBill(selectedOrderId)
+    }
+  }, [tables, selectedOrderId, loadBill])
+
+  function selectTable(orderId: string) {
+    setError(null)
+    setSelectedOrderId(orderId)
+    setBill(null)
+    void loadBill(orderId)
+  }
+
+  async function handleDiscount(input: { type: DiscountType; value: number; reason: string }) {
+    if (!selectedOrderId) return
+    setBusy(true)
+    setError(null)
+    try {
+      await applyOrderDiscount({ data: { id: selectedOrderId, ...input } })
+      await loadBill(selectedOrderId)
+      refetch()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Không áp dụng được giảm giá')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handlePay(method: PaymentMethod) {
+    if (!selectedOrderId || !bill) return
+    const tableName = tables.find((t) => t.orderId === selectedOrderId)?.tableName ?? ''
+    setBusy(true)
+    setError(null)
+    try {
+      await payOrder({ data: { id: selectedOrderId, method } })
+      setPaid({ bill, tableName, method })
+      setSelectedOrderId(null)
+      setBill(null)
+      refetch()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Không thanh toán được')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="flex h-screen bg-page">
+      <SideNav
+        userName={user.name}
+        userRole={user.role}
+        onLogout={onLogout}
+        activeSection="cashier"
+      />
+
+      <main className="flex min-w-0 flex-1 flex-col">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line-strong px-4 py-4 sm:px-6">
+          <div>
+            <h1 className="text-xl font-extrabold text-ink">Thu ngân</h1>
+            <p className="text-sm text-muted">Chốt hóa đơn và thanh toán cho từng bàn.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant={mode === 'live' ? 'brand' : 'outline'} dot>
+              {mode === 'live' ? 'Trực tiếp' : 'Đang dò'}
+            </Badge>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={onLogout}
+              className="md:hidden"
+            >
+              Đăng xuất
+            </Button>
+          </div>
+        </header>
+
+        {error && <p className="bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
+
+        <div className="grid min-h-0 flex-1 grid-cols-[minmax(220px,320px)_1fr]">
+          <aside className="min-h-0 overflow-y-auto border-r border-line-strong bg-page">
+            <CashierTableList
+              tables={tables}
+              selectedOrderId={selectedOrderId}
+              onSelect={selectTable}
+            />
+          </aside>
+          <section className="min-h-0 overflow-y-auto">
+            <CashierBillPanel
+              bill={bill}
+              busy={busy}
+              onApplyDiscount={handleDiscount}
+              onPay={handlePay}
+            />
+          </section>
+        </div>
+      </main>
+
+      {paid && (
+        <InvoiceReceipt
+          bill={paid.bill}
+          tableName={paid.tableName}
+          method={paid.method}
+          onClose={() => setPaid(null)}
+        />
+      )}
+    </div>
+  )
+}

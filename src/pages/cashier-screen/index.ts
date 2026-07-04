@@ -1,0 +1,1 @@
+export { CashierScreenPage } from './CashierScreenPage'
