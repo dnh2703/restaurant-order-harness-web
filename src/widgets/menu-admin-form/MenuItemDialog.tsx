@@ -19,6 +19,7 @@ import {
   Select,
 } from '@/shared/ui'
 import { OptionEditor } from './OptionEditor'
+import { IMAGE_ACCEPT_ATTR, validateImageFile } from './image-upload'
 
 interface Props {
   open: boolean
@@ -28,6 +29,7 @@ interface Props {
   onSave: (
     input: SaveMenuItemInput | (Partial<SaveMenuItemInput> & { id: string }),
   ) => Promise<void>
+  onUploadImage: (file: File) => Promise<string>
   optionGroups: AdminOptionGroupView[]
   optionGroupsLoading?: boolean
   onCreateGroup: (menuItemId: string, input: SaveOptionGroupInput) => Promise<void>
@@ -72,6 +74,7 @@ export function MenuItemDialog({
   categories,
   item,
   onSave,
+  onUploadImage,
   optionGroups,
   optionGroupsLoading,
   onCreateGroup,
@@ -91,6 +94,9 @@ export function MenuItemDialog({
   const [isAvailable, setIsAvailable] = useState(true)
   const [sortOrder, setSortOrder] = useState('')
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [showUrlInput, setShowUrlInput] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -102,6 +108,9 @@ export function MenuItemDialog({
     setIsAvailable(item?.isAvailable ?? true)
     setSortOrder(item ? String(item.sortOrder) : '')
     setSaving(false)
+    setUploading(false)
+    setUploadError(null)
+    setShowUrlInput(false)
   }, [item, open, sortedCategories])
 
   const hasCategories = sortedCategories.length > 0
@@ -109,9 +118,33 @@ export function MenuItemDialog({
   const previewUrl = imageUrl.trim()
   const title = item ? 'Sửa món' : 'Thêm món'
 
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    // Reset so re-picking the same file still fires onChange.
+    e.target.value = ''
+    if (!file) return
+
+    const validationError = validateImageFile(file)
+    if (validationError) {
+      setUploadError(validationError)
+      return
+    }
+
+    setUploadError(null)
+    setUploading(true)
+    try {
+      const url = await onUploadImage(file)
+      setImageUrl(url)
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Tải ảnh thất bại')
+    } finally {
+      setUploading(false)
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (saving || !hasCategories || !trimmedName) return
+    if (saving || uploading || !hasCategories || !trimmedName) return
 
     const fields: SaveMenuItemInput = {
       categoryId,
@@ -242,31 +275,66 @@ export function MenuItemDialog({
             />
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-[1fr_8rem]">
-            <div className="flex min-w-0 flex-col gap-1.5">
-              <label htmlFor="menu-item-image" className="text-sm font-semibold text-ink-soft">
-                Ảnh
-              </label>
-              <Input
-                id="menu-item-image"
-                name="menuItemImage"
-                autoComplete="off"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://..."
-                containerClassName={fieldClass}
-                disabled={saving}
-              />
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="menu-item-image" className="text-sm font-semibold text-ink-soft">
+              Ảnh
+            </label>
+            <div className="grid gap-3 sm:grid-cols-[1fr_8rem]">
+              <div className="flex min-w-0 flex-col gap-2">
+                <input
+                  id="menu-item-image"
+                  name="menuItemImage"
+                  type="file"
+                  accept={IMAGE_ACCEPT_ATTR}
+                  onChange={handleFileChange}
+                  disabled={saving || uploading}
+                  className="block w-full text-sm text-ink-soft file:mr-3 file:rounded-control file:border file:border-line-strong file:bg-surface file:px-3 file:py-2 file:text-sm file:font-semibold file:text-ink hover:file:bg-surface-muted disabled:opacity-60"
+                />
+                <p className="text-xs text-ink-muted">JPEG, PNG hoặc WebP · tối đa 5 MB</p>
+                {uploading ? (
+                  <p className="text-xs font-semibold text-ink-soft">Đang tải ảnh lên…</p>
+                ) : null}
+                {uploadError ? (
+                  <p role="alert" className="text-xs font-semibold text-red-600">
+                    {uploadError}
+                  </p>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => setShowUrlInput((prev) => !prev)}
+                  disabled={saving}
+                  className="self-start text-xs font-semibold text-brand underline-offset-2 hover:underline disabled:opacity-60"
+                >
+                  {showUrlInput ? 'Ẩn link ảnh ngoài' : 'Dán link ảnh ngoài'}
+                </button>
+                {showUrlInput ? (
+                  <>
+                    <label htmlFor="menu-item-image-url" className="sr-only">
+                      Link ảnh ngoài
+                    </label>
+                    <Input
+                      id="menu-item-image-url"
+                      name="menuItemImageUrl"
+                      autoComplete="off"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="https://..."
+                      containerClassName={fieldClass}
+                      disabled={saving}
+                    />
+                  </>
+                ) : null}
+              </div>
+              {previewUrl ? (
+                <img
+                  src={previewUrl}
+                  alt="Xem trước ảnh món"
+                  className="h-20 w-28 rounded-card border border-line-strong object-cover"
+                />
+              ) : (
+                <div className="hidden h-20 w-28 rounded-card border border-dashed border-line-strong sm:block" />
+              )}
             </div>
-            {previewUrl ? (
-              <img
-                src={previewUrl}
-                alt="Xem trước ảnh món"
-                className="h-20 w-28 rounded-card border border-line-strong object-cover"
-              />
-            ) : (
-              <div className="hidden h-20 w-28 rounded-card border border-dashed border-line-strong sm:block" />
-            )}
           </div>
 
           <label
@@ -311,7 +379,7 @@ export function MenuItemDialog({
             >
               Hủy
             </Button>
-            <Button type="submit" disabled={saving || !hasCategories || !trimmedName}>
+            <Button type="submit" disabled={saving || uploading || !hasCategories || !trimmedName}>
               {saving ? 'Đang lưu…' : 'Lưu món'}
             </Button>
           </DialogFooter>

@@ -16,6 +16,7 @@ import {
   updateMenuItem as fetchUpdateMenuItem,
   updateOption as fetchUpdateOption,
   updateOptionGroup as fetchUpdateOptionGroup,
+  uploadMenuItemImage as fetchUploadMenuItemImage,
 } from '@/shared/api/menu-admin.server'
 import type {
   AdminCategoryView,
@@ -74,6 +75,17 @@ export const updateMenuItem = createServerFn({ method: 'POST' })
 export const deleteMenuItem = createServerFn({ method: 'POST' })
   .validator((d: { id: string }) => d)
   .handler(({ data }): Promise<void> => fetchDeleteMenuItem(cookieTokenStore, data.id))
+
+export const uploadMenuItemImage = createServerFn({ method: 'POST' })
+  .validator((data: FormData): FormData => {
+    if (!(data instanceof FormData)) throw new Error('Expected multipart form data')
+    return data
+  })
+  .handler(({ data }): Promise<string> => {
+    const file = data.get('file')
+    if (!(file instanceof File)) throw new Error('Chưa chọn ảnh')
+    return fetchUploadMenuItemImage(cookieTokenStore, file)
+  })
 
 export const listOptionGroups = createServerFn({ method: 'GET' })
   .validator((d: { menuItemId: string }) => d)

@@ -19,6 +19,12 @@ const item: AdminMenuItemView = {
   sortOrder: 4,
 }
 
+function imageFile(name = 'dish.png', type = 'image/png', size = 1024): File {
+  const file = new File(['x'], name, { type })
+  Object.defineProperty(file, 'size', { value: size })
+  return file
+}
+
 function setup(overrides: Partial<React.ComponentProps<typeof MenuItemDialog>> = {}) {
   const props = {
     open: true,
@@ -26,6 +32,7 @@ function setup(overrides: Partial<React.ComponentProps<typeof MenuItemDialog>> =
     categories,
     item: null,
     onSave: vi.fn().mockResolvedValue(undefined),
+    onUploadImage: vi.fn().mockResolvedValue('https://cdn.test/uploaded.webp'),
     optionGroups: [],
     onCreateGroup: vi.fn().mockResolvedValue(undefined),
     onUpdateGroup: vi.fn().mockResolvedValue(undefined),
@@ -50,7 +57,8 @@ describe('MenuItemDialog', () => {
     fireEvent.click(screen.getByRole('option', { name: 'Đồ uống' }))
     fireEvent.change(screen.getByLabelText('Giá'), { target: { value: '50000' } })
     fireEvent.change(screen.getByLabelText('Mô tả'), { target: { value: '  Tô lớn  ' } })
-    fireEvent.change(screen.getByLabelText('Ảnh'), {
+    fireEvent.click(screen.getByRole('button', { name: 'Dán link ảnh ngoài' }))
+    fireEvent.change(screen.getByLabelText('Link ảnh ngoài'), {
       target: { value: '  https://cdn.test/pho.jpg  ' },
     })
     fireEvent.click(screen.getByLabelText('Còn món'))
@@ -77,7 +85,6 @@ describe('MenuItemDialog', () => {
     fireEvent.change(screen.getByLabelText('Tên món'), { target: { value: '  Bún bò  ' } })
     fireEvent.change(screen.getByLabelText('Giá'), { target: { value: 'không phải số' } })
     fireEvent.change(screen.getByLabelText('Mô tả'), { target: { value: '   ' } })
-    fireEvent.change(screen.getByLabelText('Ảnh'), { target: { value: '   ' } })
     fireEvent.change(screen.getByLabelText('Thứ tự'), { target: { value: '' } })
     fireEvent.click(screen.getByRole('button', { name: 'Lưu món' }))
 
@@ -100,7 +107,10 @@ describe('MenuItemDialog', () => {
     expect(screen.getByLabelText('Tên món')).toHaveValue('Trà đào')
     expect(screen.getByLabelText('Giá')).toHaveValue(35000)
     expect(screen.getByLabelText('Mô tả')).toHaveValue('Ly lớn')
-    expect(screen.getByLabelText('Ảnh')).toHaveValue('https://cdn.test/tra-dao.jpg')
+    expect(screen.getByRole('img', { name: 'Xem trước ảnh món' })).toHaveAttribute(
+      'src',
+      'https://cdn.test/tra-dao.jpg',
+    )
     expect(screen.getByLabelText('Còn món')).not.toBeChecked()
     expect(screen.getByLabelText('Thứ tự')).toHaveValue(4)
 
@@ -137,5 +147,60 @@ describe('MenuItemDialog', () => {
       'src',
       'https://cdn.test/tra-dao.jpg',
     )
+  })
+
+  it('uploads a picked file and previews the returned url', async () => {
+    const onUploadImage = vi.fn().mockResolvedValue('https://cdn.test/uploaded.webp')
+    setup({ onUploadImage })
+
+    const file = imageFile()
+    fireEvent.change(screen.getByLabelText('Ảnh'), { target: { files: [file] } })
+
+    expect(onUploadImage).toHaveBeenCalledWith(file)
+    await waitFor(() => {
+      expect(screen.getByRole('img', { name: 'Xem trước ảnh món' })).toHaveAttribute(
+        'src',
+        'https://cdn.test/uploaded.webp',
+      )
+    })
+  })
+
+  it('rejects an unsupported file client-side without uploading', () => {
+    const onUploadImage = vi.fn()
+    setup({ onUploadImage })
+
+    fireEvent.change(screen.getByLabelText('Ảnh'), {
+      target: { files: [imageFile('bad.gif', 'image/gif')] },
+    })
+
+    expect(onUploadImage).not.toHaveBeenCalled()
+    expect(screen.getByRole('alert')).toHaveTextContent('Chỉ chấp nhận ảnh JPEG, PNG hoặc WebP')
+  })
+
+  it('disables save while an upload is in flight', async () => {
+    let resolveUpload: (url: string) => void = () => {}
+    const onUploadImage = vi.fn(() => new Promise<string>((resolve) => (resolveUpload = resolve)))
+    setup({ onUploadImage })
+
+    fireEvent.change(screen.getByLabelText('Tên món'), { target: { value: 'Phở' } })
+    fireEvent.change(screen.getByLabelText('Ảnh'), { target: { files: [imageFile()] } })
+
+    expect(screen.getByRole('button', { name: 'Lưu món' })).toBeDisabled()
+
+    resolveUpload('https://cdn.test/uploaded.webp')
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Lưu món' })).not.toBeDisabled()
+    })
+  })
+
+  it('shows the upload error message when the upload fails', async () => {
+    const onUploadImage = vi.fn().mockRejectedValue(new Error('Ảnh vượt quá 5 MB'))
+    setup({ onUploadImage })
+
+    fireEvent.change(screen.getByLabelText('Ảnh'), { target: { files: [imageFile()] } })
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent('Ảnh vượt quá 5 MB')
+    })
   })
 })
