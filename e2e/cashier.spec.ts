@@ -9,11 +9,14 @@ test.describe('Cashier screen', () => {
       !email || !password,
       'Set E2E_CASHIER_EMAIL/E2E_CASHIER_PASSWORD (seeded CASHIER or ADMIN account, e.g. admin@demo.test / admin-password)',
     )
-    await page.goto('/cashier/login')
+    await page.goto('/kitchen/login')
     await page.getByPlaceholder('admin@gmail.com').fill(email!)
     await page.getByPlaceholder(/Mật khẩu/).fill(password!)
     await page.getByRole('button', { name: /Đăng nhập/ }).click()
 
+    // Both CASHIER and ADMIN may access the cashier screen; go there directly so the
+    // assertion holds regardless of which role's home the login redirected to.
+    await page.goto('/kitchen/cashier')
     await expect(page.getByRole('heading', { name: 'Thu ngân' })).toBeVisible()
     // Either at least one open table, or the empty state — both prove the screen loaded.
     await expect(

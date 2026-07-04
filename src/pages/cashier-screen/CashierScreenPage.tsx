@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { CashierTableList } from '@/widgets/cashier-table-list'
 import { CashierBillPanel } from '@/widgets/cashier-bill-panel'
 import { InvoiceReceipt } from '@/widgets/invoice-receipt'
+import { SideNav } from '@/widgets/side-nav'
 import { useOpenTables } from '@/entities/cashier'
 import type { BillDetail, DiscountType, PaymentMethod } from '@/entities/cashier'
 import type { StaffUser } from '@/entities/staff'
@@ -83,41 +84,47 @@ export function CashierScreenPage({ user, onLogout }: Props) {
   }
 
   return (
-    <div className="flex h-screen flex-col">
-      <header className="flex items-center justify-between border-b border-line px-4 py-3">
-        <div className="flex items-center gap-3">
-          <h1 className="text-lg font-bold text-brand">Thu ngân</h1>
-          <Badge variant={mode === 'live' ? 'brand' : 'outline'} dot>
-            {mode === 'live' ? 'Trực tiếp' : 'Đang dò'}
-          </Badge>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-muted">{user.name}</span>
-          <Button type="button" variant="secondary" size="sm" onClick={onLogout}>
+    <div className="flex h-screen bg-page">
+      <SideNav
+        userName={user.name}
+        userRole={user.role}
+        onLogout={onLogout}
+        activeSection="cashier"
+      />
+
+      <main className="flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-bold text-brand">Thu ngân</h1>
+            <Badge variant={mode === 'live' ? 'brand' : 'outline'} dot>
+              {mode === 'live' ? 'Trực tiếp' : 'Đang dò'}
+            </Badge>
+          </div>
+          <Button type="button" variant="ghost" size="sm" onClick={onLogout} className="md:hidden">
             Đăng xuất
           </Button>
+        </header>
+
+        {error && <p className="bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
+
+        <div className="grid min-h-0 flex-1 grid-cols-[minmax(220px,320px)_1fr]">
+          <aside className="min-h-0 overflow-y-auto border-r border-line bg-canvas">
+            <CashierTableList
+              tables={tables}
+              selectedOrderId={selectedOrderId}
+              onSelect={selectTable}
+            />
+          </aside>
+          <section className="min-h-0 overflow-y-auto">
+            <CashierBillPanel
+              bill={bill}
+              busy={busy}
+              onApplyDiscount={handleDiscount}
+              onPay={handlePay}
+            />
+          </section>
         </div>
-      </header>
-
-      {error && <p className="bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
-
-      <div className="grid min-h-0 flex-1 grid-cols-[minmax(220px,320px)_1fr]">
-        <aside className="min-h-0 overflow-y-auto border-r border-line bg-canvas">
-          <CashierTableList
-            tables={tables}
-            selectedOrderId={selectedOrderId}
-            onSelect={selectTable}
-          />
-        </aside>
-        <section className="min-h-0 overflow-y-auto">
-          <CashierBillPanel
-            bill={bill}
-            busy={busy}
-            onApplyDiscount={handleDiscount}
-            onPay={handlePay}
-          />
-        </section>
-      </div>
+      </main>
 
       {paid && (
         <InvoiceReceipt
