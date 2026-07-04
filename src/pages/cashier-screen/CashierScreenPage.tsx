@@ -93,7 +93,7 @@ export function CashierScreenPage({ user, onLogout }: Props) {
       />
 
       <main className="flex min-w-0 flex-1 flex-col">
-        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-4 sm:px-6">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line-strong px-4 py-4 sm:px-6">
           <div>
             <h1 className="text-xl font-extrabold text-ink">Thu ngân</h1>
             <p className="text-sm text-muted">Chốt hóa đơn và thanh toán cho từng bàn.</p>
@@ -117,14 +117,14 @@ export function CashierScreenPage({ user, onLogout }: Props) {
         {error && <p className="bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
 
         <div className="grid min-h-0 flex-1 grid-cols-[minmax(220px,320px)_1fr]">
-          <aside className="min-h-0 overflow-y-auto border-r border-line bg-canvas">
+          <aside className="min-h-0 overflow-y-auto border-r border-line-strong bg-white">
             <CashierTableList
               tables={tables}
               selectedOrderId={selectedOrderId}
               onSelect={selectTable}
             />
           </aside>
-          <section className="min-h-0 overflow-y-auto">
+          <section className="min-h-0 overflow-y-auto bg-page">
             <CashierBillPanel
               bill={bill}
               busy={busy}
