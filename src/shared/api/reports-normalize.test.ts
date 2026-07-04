@@ -37,3 +37,25 @@ describe('normalizeTopDish', () => {
     ).toEqual({ menuItemId: 'm1', name: 'Phở bò', quantitySold: 8, revenue: 417000 })
   })
 })
+
+describe('normalizer null-resilience', () => {
+  it('skips a null entry in the days array without throwing', () => {
+    const report = normalizeRevenueReport(
+      { days: [null, { day: '2026-07-02', revenue: 100, orderCount: 1 }] },
+      { from: '2026-07-01', to: '2026-07-02' },
+    )
+    expect(report.days).toEqual([
+      { day: '2026-07-01', revenue: 0, orderCount: 0 },
+      { day: '2026-07-02', revenue: 100, orderCount: 1 },
+    ])
+  })
+
+  it('returns a zeroed dish for null input without throwing', () => {
+    expect(normalizeTopDish(null)).toEqual({
+      menuItemId: '',
+      name: '',
+      quantitySold: 0,
+      revenue: 0,
+    })
+  })
+})

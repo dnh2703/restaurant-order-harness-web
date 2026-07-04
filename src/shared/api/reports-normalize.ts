@@ -7,7 +7,7 @@ function str(v: unknown): string {
 }
 
 function normalizeDay(raw: unknown): RevenueDay {
-  const r = raw as Record<string, unknown>
+  const r = (raw ?? {}) as Record<string, unknown>
   return {
     day: str(r.day),
     revenue: toNumber(r.revenue),
@@ -39,7 +39,7 @@ export function normalizeRevenueReport(raw: unknown, range: DateRange): RevenueR
 }
 
 export function normalizeTopDish(raw: unknown): TopDish {
-  const r = raw as Record<string, unknown>
+  const r = (raw ?? {}) as Record<string, unknown>
   return {
     menuItemId: str(r.menuItemId),
     name: str(r.name),
