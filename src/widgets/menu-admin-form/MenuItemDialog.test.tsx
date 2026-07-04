@@ -154,7 +154,7 @@ describe('MenuItemDialog', () => {
     setup({ onUploadImage })
 
     const file = imageFile()
-    fireEvent.change(screen.getByLabelText('Ảnh'), { target: { files: [file] } })
+    fireEvent.change(screen.getByLabelText('Ảnh món'), { target: { files: [file] } })
 
     expect(onUploadImage).toHaveBeenCalledWith(file)
     await waitFor(() => {
@@ -169,7 +169,7 @@ describe('MenuItemDialog', () => {
     const onUploadImage = vi.fn()
     setup({ onUploadImage })
 
-    fireEvent.change(screen.getByLabelText('Ảnh'), {
+    fireEvent.change(screen.getByLabelText('Ảnh món'), {
       target: { files: [imageFile('bad.gif', 'image/gif')] },
     })
 
@@ -183,7 +183,7 @@ describe('MenuItemDialog', () => {
     setup({ onUploadImage })
 
     fireEvent.change(screen.getByLabelText('Tên món'), { target: { value: 'Phở' } })
-    fireEvent.change(screen.getByLabelText('Ảnh'), { target: { files: [imageFile()] } })
+    fireEvent.change(screen.getByLabelText('Ảnh món'), { target: { files: [imageFile()] } })
 
     expect(screen.getByRole('button', { name: 'Lưu món' })).toBeDisabled()
 
@@ -197,7 +197,7 @@ describe('MenuItemDialog', () => {
     const onUploadImage = vi.fn().mockRejectedValue(new Error('Ảnh vượt quá 5 MB'))
     setup({ onUploadImage })
 
-    fireEvent.change(screen.getByLabelText('Ảnh'), { target: { files: [imageFile()] } })
+    fireEvent.change(screen.getByLabelText('Ảnh món'), { target: { files: [imageFile()] } })
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent('Ảnh vượt quá 5 MB')

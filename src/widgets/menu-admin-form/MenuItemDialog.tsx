@@ -18,6 +18,7 @@ import {
   Input,
   Select,
 } from '@/shared/ui'
+import { cn } from '@/shared/lib/cn'
 import { OptionEditor } from './OptionEditor'
 import { IMAGE_ACCEPT_ATTR, validateImageFile } from './image-upload'
 
@@ -275,66 +276,117 @@ export function MenuItemDialog({
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="menu-item-image" className="text-sm font-semibold text-ink-soft">
-              Ảnh
-            </label>
-            <div className="grid gap-3 sm:grid-cols-[1fr_8rem]">
-              <div className="flex min-w-0 flex-col gap-2">
-                <input
-                  id="menu-item-image"
-                  name="menuItemImage"
-                  type="file"
-                  accept={IMAGE_ACCEPT_ATTR}
-                  onChange={handleFileChange}
-                  disabled={saving || uploading}
-                  className="block w-full text-sm text-ink-soft file:mr-3 file:rounded-control file:border file:border-line-strong file:bg-surface file:px-3 file:py-2 file:text-sm file:font-semibold file:text-ink hover:file:bg-surface-muted disabled:opacity-60"
-                />
-                <p className="text-xs text-ink-muted">JPEG, PNG hoặc WebP · tối đa 5 MB</p>
-                {uploading ? (
-                  <p className="text-xs font-semibold text-ink-soft">Đang tải ảnh lên…</p>
-                ) : null}
-                {uploadError ? (
-                  <p role="alert" className="text-xs font-semibold text-red-600">
-                    {uploadError}
-                  </p>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={() => setShowUrlInput((prev) => !prev)}
-                  disabled={saving}
-                  className="self-start text-xs font-semibold text-brand underline-offset-2 hover:underline disabled:opacity-60"
-                >
-                  {showUrlInput ? 'Ẩn link ảnh ngoài' : 'Dán link ảnh ngoài'}
-                </button>
-                {showUrlInput ? (
-                  <>
-                    <label htmlFor="menu-item-image-url" className="sr-only">
-                      Link ảnh ngoài
-                    </label>
-                    <Input
-                      id="menu-item-image-url"
-                      name="menuItemImageUrl"
-                      autoComplete="off"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      placeholder="https://..."
-                      containerClassName={fieldClass}
-                      disabled={saving}
-                    />
-                  </>
-                ) : null}
-              </div>
-              {previewUrl ? (
-                <img
-                  src={previewUrl}
-                  alt="Xem trước ảnh món"
-                  className="h-20 w-28 rounded-card border border-line-strong object-cover"
-                />
-              ) : (
-                <div className="hidden h-20 w-28 rounded-card border border-dashed border-line-strong sm:block" />
+          <div className="flex flex-col items-center gap-2">
+            <label
+              htmlFor="menu-item-image"
+              className={cn(
+                'group flex flex-col items-center gap-2',
+                saving || uploading ? 'cursor-not-allowed' : 'cursor-pointer',
               )}
-            </div>
+            >
+              <span
+                className={cn(
+                  'relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border border-line-strong bg-surface-muted transition group-hover:border-brand',
+                  (saving || uploading) && 'opacity-70',
+                )}
+              >
+                {previewUrl ? (
+                  <img
+                    src={previewUrl}
+                    alt="Xem trước ảnh món"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-9 w-9 text-ink-muted"
+                    aria-hidden="true"
+                  >
+                    <rect x="3" y="4" width="18" height="16" rx="2" />
+                    <circle cx="8.5" cy="9.5" r="1.5" />
+                    <path d="m21 16-4.5-4.5L5 20" />
+                  </svg>
+                )}
+                {uploading ? (
+                  <span className="absolute inset-0 flex items-center justify-center bg-ink/50">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      className="h-6 w-6 animate-spin text-white"
+                      aria-hidden="true"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        opacity="0.25"
+                      />
+                      <path
+                        d="M21 12a9 9 0 0 0-9-9"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </span>
+                ) : (
+                  <span className="pointer-events-none absolute inset-0 hidden items-center justify-center bg-ink/40 text-xs font-semibold text-white group-hover:flex">
+                    Đổi ảnh
+                  </span>
+                )}
+              </span>
+              <span className="text-sm font-semibold text-brand group-hover:underline">
+                {uploading ? 'Đang tải ảnh lên…' : 'Nhấn để đổi ảnh món'}
+              </span>
+            </label>
+            <input
+              id="menu-item-image"
+              name="menuItemImage"
+              type="file"
+              accept={IMAGE_ACCEPT_ATTR}
+              aria-label="Ảnh món"
+              onChange={handleFileChange}
+              disabled={saving || uploading}
+              className="sr-only"
+            />
+            <p className="text-xs text-ink-muted">JPEG, PNG hoặc WebP · tối đa 5 MB</p>
+            {uploadError ? (
+              <p role="alert" className="text-xs font-semibold text-red-600">
+                {uploadError}
+              </p>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => setShowUrlInput((prev) => !prev)}
+              disabled={saving}
+              className="text-xs font-semibold text-brand underline-offset-2 hover:underline disabled:opacity-60"
+            >
+              {showUrlInput ? 'Ẩn link ảnh ngoài' : 'Dán link ảnh ngoài'}
+            </button>
+            {showUrlInput ? (
+              <div className="flex w-full flex-col gap-1.5">
+                <label htmlFor="menu-item-image-url" className="sr-only">
+                  Link ảnh ngoài
+                </label>
+                <Input
+                  id="menu-item-image-url"
+                  name="menuItemImageUrl"
+                  autoComplete="off"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="https://..."
+                  containerClassName={fieldClass}
+                  disabled={saving}
+                />
+              </div>
+            ) : null}
           </div>
 
           <label
