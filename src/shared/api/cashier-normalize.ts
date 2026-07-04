@@ -48,7 +48,10 @@ function normalizeItem(raw: unknown): BillItem {
 }
 
 export function normalizeBillDetail(raw: unknown): BillDetail {
-  const r = raw as Record<string, unknown>
+  const outer = raw as Record<string, unknown>
+  // The cashier bill endpoint wraps the order in `{ order: {...} }`; tolerate both
+  // that envelope and a bare order object.
+  const r = (outer.order ?? outer) as Record<string, unknown>
   return {
     orderId: str(r.id ?? r.orderId),
     status: (r.status as BillDetail['status']) ?? 'OPEN',

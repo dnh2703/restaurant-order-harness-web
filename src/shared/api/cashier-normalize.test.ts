@@ -79,4 +79,35 @@ describe('normalizeBillDetail', () => {
     expect(item.options).toEqual([])
     expect(item.note).toBeNull()
   })
+
+  it('unwraps the { order } envelope the cashier bill endpoint returns', () => {
+    // GET /api/cashier/orders/:id responds with { data: { order: {...} } }; after
+    // readData strips `data`, the normalizer still receives the `{ order }` wrapper.
+    const bill = normalizeBillDetail({
+      order: {
+        id: 'o1',
+        status: 'OPEN',
+        subtotal: '577000',
+        discountAmount: '0',
+        total: '577000',
+        openedAt: '2026-06-28T18:00:58.540Z',
+        items: [
+          {
+            id: 'i1',
+            nameSnapshot: 'Phở bò',
+            unitPrice: '50000',
+            quantity: '4',
+            note: null,
+            status: 'SERVED',
+            options: [],
+          },
+        ],
+      },
+    })
+    expect(bill.orderId).toBe('o1')
+    expect(bill.subtotal).toBe(577000)
+    expect(bill.total).toBe(577000)
+    expect(bill.items).toHaveLength(1)
+    expect(bill.items[0]?.nameSnapshot).toBe('Phở bò')
+  })
 })

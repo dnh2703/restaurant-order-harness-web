@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { BillDetail, DiscountType, PaymentMethod } from '@/entities/cashier'
 import { formatVND } from '@/shared/lib/format'
-import { Button, Input } from '@/shared/ui'
+import { Button, Input, Select, type SelectOption } from '@/shared/ui'
 
 interface Props {
   bill: BillDetail | null
@@ -10,11 +10,19 @@ interface Props {
   onPay: (method: PaymentMethod) => void
 }
 
-const METHODS: { value: PaymentMethod; label: string }[] = [
+const DISCOUNT_TYPES: SelectOption[] = [
+  { value: 'PERCENT', label: '%' },
+  { value: 'FIXED', label: 'đ' },
+]
+
+const METHODS: SelectOption[] = [
   { value: 'CASH', label: 'Tiền mặt' },
   { value: 'TRANSFER', label: 'Chuyển khoản' },
   { value: 'CARD', label: 'Thẻ' },
 ]
+
+/** Filled field styling so the discount inputs read clearly on the panel. */
+const fieldClass = 'h-11 border border-line-strong bg-white'
 
 export function CashierBillPanel({ bill, busy, onApplyDiscount, onPay }: Props) {
   const [discountType, setDiscountType] = useState<DiscountType>('PERCENT')
@@ -72,21 +80,20 @@ export function CashierBillPanel({ bill, busy, onApplyDiscount, onPay }: Props) 
       <fieldset className="flex flex-col gap-2 border-t border-line pt-3">
         <legend className="mb-1 text-sm font-semibold text-ink-soft">Giảm giá / phụ thu</legend>
         <div className="flex gap-2">
-          <select
-            aria-label="Loại giảm giá"
+          <Select
+            ariaLabel="Loại giảm giá"
             value={discountType}
-            onChange={(e) => setDiscountType(e.target.value as DiscountType)}
-            className="h-11 rounded-lg border border-line-strong bg-white px-3 text-sm"
-          >
-            <option value="PERCENT">%</option>
-            <option value="FIXED">đ</option>
-          </select>
+            onValueChange={(v) => setDiscountType(v as DiscountType)}
+            options={DISCOUNT_TYPES}
+            className="w-24 shrink-0"
+          />
           <Input
             type="number"
             aria-label="Giá trị giảm"
             value={discountValue}
             onChange={(e) => setDiscountValue(e.target.value)}
             placeholder="0"
+            containerClassName={fieldClass}
           />
         </div>
         <Input
@@ -95,6 +102,7 @@ export function CashierBillPanel({ bill, busy, onApplyDiscount, onPay }: Props) 
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="Lý do"
+          containerClassName={fieldClass}
         />
         <Button
           type="button"
@@ -110,18 +118,13 @@ export function CashierBillPanel({ bill, busy, onApplyDiscount, onPay }: Props) 
 
       <fieldset className="mt-auto flex flex-col gap-2 border-t border-line pt-3">
         <legend className="mb-1 text-sm font-semibold text-ink-soft">Thanh toán</legend>
-        <select
-          aria-label="Phương thức thanh toán"
+        <Select
+          ariaLabel="Phương thức thanh toán"
           value={method}
-          onChange={(e) => setMethod(e.target.value as PaymentMethod)}
-          className="h-11 rounded-lg border border-line-strong bg-white px-3 text-sm"
-        >
-          {METHODS.map((m) => (
-            <option key={m.value} value={m.value}>
-              {m.label}
-            </option>
-          ))}
-        </select>
+          onValueChange={(v) => setMethod(v as PaymentMethod)}
+          options={METHODS}
+          className="w-full"
+        />
         <Button type="button" fullWidth size="lg" disabled={busy} onClick={() => onPay(method)}>
           Thanh toán
         </Button>
