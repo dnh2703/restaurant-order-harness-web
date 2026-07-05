@@ -1,9 +1,18 @@
 import type { ComponentProps } from 'react'
 import { DayPicker } from 'react-day-picker'
+import type { ChevronProps } from 'react-day-picker'
 import { vi } from 'react-day-picker/locale'
 import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react'
 import { buttonVariants } from '@/shared/ui/Button'
 import { cn } from '@/shared/lib/cn'
+
+function CalendarChevron({ orientation, ...rest }: ChevronProps) {
+  return orientation === 'left' ? (
+    <CaretLeftIcon size={16} weight="bold" {...rest} />
+  ) : (
+    <CaretRightIcon size={16} weight="bold" {...rest} />
+  )
+}
 
 /** shadcn-style calendar over react-day-picker, styled with project tokens (Vietnamese). */
 export function Calendar({
@@ -42,12 +51,7 @@ export function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: ({ orientation, ...rest }) =>
-          orientation === 'left' ? (
-            <CaretLeftIcon size={16} weight="bold" {...rest} />
-          ) : (
-            <CaretRightIcon size={16} weight="bold" {...rest} />
-          ),
+        Chevron: CalendarChevron,
       }}
       {...props}
     />
