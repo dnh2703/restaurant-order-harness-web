@@ -1,5 +1,5 @@
-import { Button } from '@/shared/ui'
-import { presetRange, type RangePreset } from '@/shared/lib/date-range'
+import { Button, DateRangePicker } from '@/shared/ui'
+import { presetRange, matchPreset, type RangePreset } from '@/shared/lib/date-range'
 import type { DateRange } from '@/shared/api/types/reports'
 
 interface Props {
@@ -13,15 +13,8 @@ const PRESETS: Array<{ id: RangePreset; label: string }> = [
   { id: '30d', label: '30 ngày' },
 ]
 
-const inputClass = 'rounded-control border border-line-strong px-2 py-1 text-sm text-ink'
-
 export function DateRangeControl({ value, onChange }: Props) {
-  function setFrom(from: string) {
-    onChange({ from, to: from > value.to ? from : value.to })
-  }
-  function setTo(to: string) {
-    onChange({ from: to < value.from ? to : value.from, to })
-  }
+  const active = matchPreset(value)
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -30,34 +23,16 @@ export function DateRangeControl({ value, onChange }: Props) {
           <Button
             key={p.id}
             type="button"
-            variant="secondary"
+            variant={active === p.id ? 'primary' : 'secondary'}
             size="sm"
+            aria-pressed={active === p.id}
             onClick={() => onChange(presetRange(p.id))}
           >
             {p.label}
           </Button>
         ))}
       </div>
-      <label className="flex items-center gap-1.5 text-sm text-muted">
-        Từ
-        <input
-          type="date"
-          aria-label="Từ"
-          value={value.from}
-          onChange={(e) => setFrom(e.target.value)}
-          className={inputClass}
-        />
-      </label>
-      <label className="flex items-center gap-1.5 text-sm text-muted">
-        Đến
-        <input
-          type="date"
-          aria-label="Đến"
-          value={value.to}
-          onChange={(e) => setTo(e.target.value)}
-          className={inputClass}
-        />
-      </label>
+      <DateRangePicker value={value} onChange={onChange} />
     </div>
   )
 }
