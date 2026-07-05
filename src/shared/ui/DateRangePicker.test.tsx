@@ -24,6 +24,6 @@ describe('DateRangePicker', () => {
   it('opens the calendar grid when the trigger is clicked', () => {
     render(<DateRangePicker value={{ from: '2026-07-01', to: '2026-07-07' }} onChange={vi.fn()} />)
     fireEvent.click(screen.getByRole('button', { name: (n) => n.includes('–') }))
-    expect(screen.getAllByRole('grid').length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('grid')).toHaveLength(2)
   })
 })
