@@ -34,7 +34,8 @@ describe('ReportsScreenPage', () => {
     render(<ReportsScreenPage user={user} onLogout={vi.fn()} />)
     await waitFor(() => expect(screen.getAllByText('566.000đ').length).toBeGreaterThanOrEqual(1))
     expect(screen.getByText('Phở bò')).toBeInTheDocument()
-    expect(screen.getAllByTestId('bar').length).toBeGreaterThanOrEqual(1)
+    // The revenue chart is now a Recharts chart wrapped in shadcn ChartContainer.
+    expect(document.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 
   it('refetches when the date range changes via a preset', async () => {
