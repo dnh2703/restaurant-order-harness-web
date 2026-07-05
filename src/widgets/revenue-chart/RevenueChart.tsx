@@ -25,7 +25,10 @@ export function RevenueChart({ days }: Props) {
             <div
               key={d.day}
               title={`${d.day}: ${formatVND(d.revenue)}`}
-              className="flex min-w-0 flex-1 flex-col justify-end"
+              // h-full is load-bearing: the bar's height is a percentage, which only
+              // resolves against a parent with a definite height. Without h-full this
+              // wrapper sizes to content (an indefinite height) and every bar collapses to 0.
+              className="flex h-full min-w-0 flex-1 flex-col justify-end"
             >
               <div
                 data-testid="bar"

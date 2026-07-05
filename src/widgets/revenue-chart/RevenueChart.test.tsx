@@ -17,6 +17,16 @@ describe('RevenueChart', () => {
     expect(img.getAttribute('aria-label')).toContain('150.000đ')
   })
 
+  it('gives each bar wrapper a definite height so percentage-height bars do not collapse', () => {
+    // Regression guard for the bars rendering at 0px: the bar height is a percentage,
+    // so its wrapper must carry h-full (a definite height). jsdom does no layout, so we
+    // assert the load-bearing class is present rather than measuring pixels.
+    render(<RevenueChart days={days} />)
+    for (const bar of screen.getAllByTestId('bar')) {
+      expect(bar.parentElement?.className).toContain('h-full')
+    }
+  })
+
   it('renders an empty state when there are no days', () => {
     render(<RevenueChart days={[]} />)
     expect(screen.getByText('Không có dữ liệu.')).toBeInTheDocument()
