@@ -53,7 +53,7 @@ export function DateRangePicker({ value, onChange, className }: Props) {
       <PopoverContent align="end">
         <Calendar
           mode="range"
-          numberOfMonths={1}
+          numberOfMonths={2}
           defaultMonth={isoToDate(value.from)}
           selected={{ from: isoToDate(value.from), to: isoToDate(value.to) }}
           onSelect={handleSelect}
