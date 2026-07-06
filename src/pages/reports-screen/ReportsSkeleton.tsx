@@ -10,8 +10,10 @@ export function ReportsSkeleton() {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {[0, 1, 2].map((i) => (
           <div key={i} className={`${card} p-4`}>
-            <Skeleton className="h-3 w-24" />
-            <Skeleton className="mt-2 h-7 w-32" />
+            {/* Heights match RevenueSummary: label text-xs (16px) + mt-1 + value text-2xl (32px),
+                so the tile does not resize when real data replaces the skeleton. */}
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="mt-1 h-8 w-32" />
           </div>
         ))}
       </div>
