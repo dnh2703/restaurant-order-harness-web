@@ -48,6 +48,7 @@ export { Select, type SelectOption } from './Select'
 export { Toaster, toast } from './Toast'
 export { Calendar } from './Calendar'
 export { DateRangePicker, formatRangeLabel } from './DateRangePicker'
+export { Skeleton } from './Skeleton'
 export {
   ChartContainer,
   ChartTooltip,

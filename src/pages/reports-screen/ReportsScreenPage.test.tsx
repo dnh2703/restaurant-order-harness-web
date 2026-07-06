@@ -38,6 +38,27 @@ describe('ReportsScreenPage', () => {
     expect(document.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 
+  it('shows a skeleton while loading, then swaps to the real content', async () => {
+    let resolveRev: (v: typeof revenue) => void = () => {}
+    vi.mocked(getRevenueReport).mockReturnValue(
+      new Promise<typeof revenue>((res) => {
+        resolveRev = res
+      }),
+    )
+
+    render(<ReportsScreenPage user={user} onLogout={vi.fn()} />)
+
+    // While loading: skeleton placeholders are shown, the real chart is not.
+    expect(document.querySelector('[data-slot="skeleton"]')).not.toBeNull()
+    expect(document.querySelector('[data-slot="chart"]')).toBeNull()
+    expect(screen.queryByText('Đang tải…')).not.toBeInTheDocument()
+
+    resolveRev(revenue)
+
+    await waitFor(() => expect(document.querySelector('[data-slot="chart"]')).not.toBeNull())
+    expect(document.querySelector('[data-slot="skeleton"]')).toBeNull()
+  })
+
   it('refetches when the date range changes via a preset', async () => {
     render(<ReportsScreenPage user={user} onLogout={vi.fn()} />)
     await waitFor(() => expect(getRevenueReport).toHaveBeenCalledTimes(1))

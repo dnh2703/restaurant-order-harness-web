@@ -8,6 +8,7 @@ import type { StaffUser } from '@/entities/staff'
 import { getRevenueReport, getTopDishes } from '@/shared/api/reports'
 import { presetRange } from '@/shared/lib/date-range'
 import type { DateRange, RevenueReport, TopDish } from '@/shared/api/types/reports'
+import { ReportsSkeleton } from './ReportsSkeleton'
 
 interface Props {
   user: StaffUser
@@ -63,20 +64,25 @@ export function ReportsScreenPage({ user, onLogout }: Props) {
         {error && <p className="bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
 
         <div className="flex flex-col gap-6 p-4 sm:p-6">
-          {report && <RevenueSummary summary={report.summary} />}
-          <section>
-            <h2 className="mb-2 text-sm font-extrabold uppercase tracking-wide text-secondary">
-              Doanh thu theo ngày
-            </h2>
-            {report && <RevenueChart days={report.days} />}
-          </section>
-          <section>
-            <h2 className="mb-2 text-sm font-extrabold uppercase tracking-wide text-secondary">
-              Món bán chạy
-            </h2>
-            <TopDishesTable dishes={dishes} />
-          </section>
-          {loading && <p className="text-sm text-muted">Đang tải…</p>}
+          {loading ? (
+            <ReportsSkeleton />
+          ) : (
+            <>
+              {report && <RevenueSummary summary={report.summary} />}
+              <section>
+                <h2 className="mb-2 text-sm font-extrabold uppercase tracking-wide text-secondary">
+                  Doanh thu theo ngày
+                </h2>
+                {report && <RevenueChart days={report.days} />}
+              </section>
+              <section>
+                <h2 className="mb-2 text-sm font-extrabold uppercase tracking-wide text-secondary">
+                  Món bán chạy
+                </h2>
+                <TopDishesTable dishes={dishes} />
+              </section>
+            </>
+          )}
         </div>
       </main>
     </div>
