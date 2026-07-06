@@ -19,7 +19,9 @@ export function ReportsScreenPage({ user, onLogout }: Props) {
   const [range, setRange] = useState<DateRange>(() => presetRange('7d'))
   const [report, setReport] = useState<RevenueReport | null>(null)
   const [dishes, setDishes] = useState<TopDish[]>([])
-  const [loading, setLoading] = useState(false)
+  // Start in the loading state: the page always fetches on mount, so the first paint
+  // (including SSR, before the effect runs) should show the skeleton, not empty content.
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async (r: DateRange) => {

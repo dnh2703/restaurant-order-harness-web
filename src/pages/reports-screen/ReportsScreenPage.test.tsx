@@ -1,5 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { renderToString } from 'react-dom/server'
 import { ReportsScreenPage } from './ReportsScreenPage'
 import { getRevenueReport, getTopDishes } from '@/shared/api/reports'
 
@@ -36,6 +37,15 @@ describe('ReportsScreenPage', () => {
     expect(screen.getByText('Phở bò')).toBeInTheDocument()
     // The revenue chart is now a Recharts chart wrapped in shadcn ChartContainer.
     expect(document.querySelector('[data-slot="chart"]')).not.toBeNull()
+  })
+
+  it('renders the skeleton (not an empty state) on the initial SSR/first paint', () => {
+    // Effects do not run during SSR, so the first painted frame reflects the initial
+    // state. It must show the skeleton, never the "no data" empty state, to avoid a
+    // flash of empty content on reload.
+    const html = renderToString(<ReportsScreenPage user={user} onLogout={vi.fn()} />)
+    expect(html).toContain('data-slot="skeleton"')
+    expect(html).not.toContain('Chưa có dữ liệu bán hàng trong khoảng này.')
   })
 
   it('shows a skeleton while loading, then swaps to the real content', async () => {
