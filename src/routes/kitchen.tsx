@@ -19,7 +19,9 @@ export function resolveKitchenAccess(pathname: string, session: StaffUser | null
   const home = kitchenLandingForRole(session.role)
   const isCashierRoute = pathname.startsWith('/kitchen/cashier')
   const isAdminRoute =
-    pathname.startsWith('/kitchen/tables') || pathname.startsWith('/kitchen/menu')
+    pathname.startsWith('/kitchen/tables') ||
+    pathname.startsWith('/kitchen/menu') ||
+    pathname.startsWith('/kitchen/reports')
 
   if (isCashierRoute) {
     if (session.role === 'CASHIER' || session.role === 'ADMIN') return { allow: true }

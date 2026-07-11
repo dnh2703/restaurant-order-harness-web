@@ -1,6 +1,7 @@
 import {
   BookOpenIcon,
   ChairIcon,
+  ChartBarIcon,
   CookingPotIcon,
   ReceiptIcon,
   SignOutIcon,
@@ -13,7 +14,7 @@ interface Props {
   userName: string
   userRole: StaffRole
   onLogout: () => void
-  activeSection: 'board' | 'cashier' | 'tables' | 'menu'
+  activeSection: 'board' | 'cashier' | 'tables' | 'menu' | 'reports'
 }
 
 const ROLE_LABEL: Record<StaffRole, string> = {
@@ -28,6 +29,7 @@ export function SideNav({ userName, userRole, onLogout, activeSection }: Props) 
   const onCashier = activeSection === 'cashier'
   const onTables = activeSection === 'tables'
   const onMenu = activeSection === 'menu'
+  const onReports = activeSection === 'reports'
   const canSeeBoard = userRole === 'KITCHEN' || userRole === 'ADMIN'
   const canSeeCashier = userRole === 'CASHIER' || userRole === 'ADMIN'
 
@@ -85,6 +87,17 @@ export function SideNav({ userName, userRole, onLogout, activeSection }: Props) 
             >
               <BookOpenIcon size={18} weight="bold" />
               Thực đơn
+            </a>
+            <a
+              href="/kitchen/reports"
+              aria-current={onReports ? 'page' : undefined}
+              className={cn(
+                'flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-semibold',
+                onReports ? 'bg-brand-bg text-brand' : 'text-ink-soft hover:bg-page',
+              )}
+            >
+              <ChartBarIcon size={18} weight="bold" />
+              Báo cáo
             </a>
           </>
         )}
