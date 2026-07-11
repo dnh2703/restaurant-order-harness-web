@@ -55,7 +55,7 @@ describe('CustomerOrderPage', () => {
   it('renders the tracker once the order is loaded', () => {
     vi.mocked(useOrderStream).mockReturnValue({
       order: ORDER as never,
-      mode: 'live',
+      mode: 'polling',
       refetch: vi.fn(),
     })
     render(<CustomerOrderPage qrToken="tok" />)

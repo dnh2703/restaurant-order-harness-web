@@ -33,7 +33,7 @@ export function CustomerOrderPage({ qrToken, backLink }: Props) {
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-2xl">
-      <OrderTracker order={order} mode={mode} backLink={backLink} />
+      <OrderTracker order={order} backLink={backLink} />
     </main>
   )
 }

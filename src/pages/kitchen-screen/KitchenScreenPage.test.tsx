@@ -20,7 +20,7 @@ vi.mock('@/entities/kitchen', () => ({
     ],
     cooking: [],
     served: [],
-    mode: 'live',
+    mode: 'polling',
     advance,
   })),
 }))

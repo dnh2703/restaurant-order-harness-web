@@ -21,7 +21,7 @@ interface PaidInvoice {
 }
 
 export function CashierScreenPage({ user, onLogout }: Props) {
-  const { tables, mode, refetch } = useOpenTables(user.restaurantId)
+  const { tables, refetch } = useOpenTables(user.restaurantId)
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
   const [bill, setBill] = useState<BillDetail | null>(null)
   const [busy, setBusy] = useState(false)
@@ -99,8 +99,8 @@ export function CashierScreenPage({ user, onLogout }: Props) {
             <p className="text-sm text-muted">Chốt hóa đơn và thanh toán cho từng bàn.</p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={mode === 'live' ? 'brand' : 'outline'} dot>
-              {mode === 'live' ? 'Trực tiếp' : 'Đang dò'}
+            <Badge variant="outline" dot>
+              Đang dò
             </Badge>
             <Button
               type="button"
