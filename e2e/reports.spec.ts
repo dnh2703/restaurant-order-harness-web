@@ -11,8 +11,11 @@ test.describe('admin reports', () => {
     )
     await page.goto('/kitchen/login')
     await page.getByPlaceholder('admin@gmail.com').fill(email!)
-    await page.getByPlaceholder(/Mật khẩu/).fill(password!)
-    await page.getByRole('button', { name: /Đăng nhập/ }).click()
+    await page.getByPlaceholder(/Mật khẩu/i).fill(password!)
+    await Promise.all([
+      page.waitForURL((url) => !url.pathname.endsWith('/login')),
+      page.getByRole('button', { name: /Đăng nhập/ }).click(),
+    ])
 
     await page.goto('/kitchen/reports')
     await expect(page.getByRole('heading', { name: 'Báo cáo' })).toBeVisible()
