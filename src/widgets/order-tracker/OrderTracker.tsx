@@ -1,24 +1,21 @@
 // src/widgets/order-tracker/OrderTracker.tsx
 import type { ReactNode } from 'react'
 import type { Order } from '@/entities/order'
-import type { StreamMode } from '@/entities/order'
 import { cn } from '@/shared/lib/cn'
 import { formatVND } from '@/shared/lib/format'
 import { OrderStatusChip } from './OrderStatusChip'
 
 interface Props {
   order: Order
-  mode: StreamMode
   /** e.g. a router Link back to the menu, rendered in the footer. */
   backLink?: ReactNode
 }
 
-export function OrderTracker({ order, mode, backLink }: Props) {
+export function OrderTracker({ order, backLink }: Props) {
   return (
     <div className="flex h-full flex-col bg-white">
-      <div className="flex items-center justify-between border-b border-line px-6 py-5">
+      <div className="border-b border-line px-6 py-5">
         <div className="text-lg font-extrabold text-ink">Đơn của bạn</div>
-        <ConnectionDot mode={mode} />
       </div>
 
       {order.items.length === 0 ? (
@@ -85,21 +82,5 @@ export function OrderTracker({ order, mode, backLink }: Props) {
         </>
       )}
     </div>
-  )
-}
-
-function ConnectionDot({ mode }: { mode: StreamMode }) {
-  const live = mode === 'live'
-  return (
-    <span className="flex items-center gap-1.5 text-xs font-semibold text-muted">
-      <span
-        className={cn(
-          'size-2 rounded-full',
-          live ? 'bg-emerald-500' : 'bg-amber-500',
-          live && 'animate-pulse',
-        )}
-      />
-      {live ? 'Đang cập nhật trực tiếp' : 'Đang đồng bộ…'}
-    </span>
   )
 }

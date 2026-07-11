@@ -4,7 +4,7 @@ import { SideNav } from '@/widgets/side-nav'
 import { SoldOutPanel } from '@/widgets/sold-out-panel'
 import { useKitchenQueue } from '@/entities/kitchen'
 import type { StaffUser } from '@/entities/staff'
-import { Badge, Button, Toaster, toast } from '@/shared/ui'
+import { Button, Toaster, toast } from '@/shared/ui'
 import {
   listMenuItemsForKitchen,
   setMenuItemAvailability,
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export function KitchenScreenPage({ user, onLogout }: Props) {
-  const { pending, cooking, served, mode, advance } = useKitchenQueue(user.restaurantId)
+  const { pending, cooking, served, advance } = useKitchenQueue(user.restaurantId)
   const [panelOpen, setPanelOpen] = useState(false)
   const [menuItems, setMenuItems] = useState<KitchenMenuItem[]>([])
 
@@ -73,9 +73,6 @@ export function KitchenScreenPage({ user, onLogout }: Props) {
             <p className="text-sm text-muted">Đồng bộ đơn theo thời gian thực.</p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={mode === 'live' ? 'brand' : 'outline'} dot>
-              {mode === 'live' ? 'Trực tiếp' : 'Đang dò'}
-            </Badge>
             <Button size="sm" variant="secondary" onClick={openPanel}>
               Hết món
             </Button>

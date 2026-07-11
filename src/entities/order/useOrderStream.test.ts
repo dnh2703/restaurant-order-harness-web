@@ -30,94 +30,46 @@ const ORDER = {
   ],
 }
 
-// Controllable EventSource mock.
-class MockEventSource {
-  static instances: MockEventSource[] = []
-  onopen: (() => void) | null = null
-  onerror: (() => void) | null = null
-  listeners: Record<string, ((e: MessageEvent) => void)[]> = {}
-  closed = false
-  constructor(public url: string) {
-    MockEventSource.instances.push(this)
-  }
-  addEventListener(type: string, fn: (e: MessageEvent) => void) {
-    ;(this.listeners[type] ??= []).push(fn)
-  }
-  emit(type: string) {
-    for (const fn of this.listeners[type] ?? []) fn(new MessageEvent(type))
-  }
-  close() {
-    this.closed = true
-  }
-}
-
 beforeEach(() => {
-  MockEventSource.instances = []
-  vi.stubGlobal('EventSource', MockEventSource as unknown as typeof EventSource)
   vi.mocked(getOrder).mockResolvedValue(ORDER as never)
 })
 afterEach(() => {
-  vi.unstubAllGlobals()
   vi.useRealTimers()
 })
 
 describe('useOrderStream', () => {
-  it('loads the order and reports live once the stream opens', async () => {
+  it('loads the order on mount and stays in polling mode', async () => {
     const { result } = renderHook(() => useOrderStream('tok'))
     await waitFor(() => expect(result.current.order?.id).toBe('o1'))
-    act(() => MockEventSource.instances[0]!.onopen?.())
-    expect(result.current.mode).toBe('live')
+    expect(result.current.mode).toBe('polling')
   })
 
-  it('refetches the order on an order_item.updated event', async () => {
-    const { result } = renderHook(() => useOrderStream('tok'))
-    await waitFor(() => expect(result.current.order?.id).toBe('o1'))
-    vi.mocked(getOrder).mockClear()
-    act(() => MockEventSource.instances[0]!.emit('order_item.updated'))
-    await waitFor(() => expect(getOrder).toHaveBeenCalledTimes(1))
-  })
-
-  it('falls back to polling when the stream errors', async () => {
+  it('polls the order again every 2.5s', async () => {
     vi.useFakeTimers()
     const { result } = renderHook(() => useOrderStream('tok'))
     await vi.waitFor(() => expect(result.current.order?.id).toBe('o1'))
-    act(() => MockEventSource.instances[0]!.onerror?.())
-    expect(result.current.mode).toBe('polling')
     vi.mocked(getOrder).mockClear()
     await act(async () => {
       await vi.advanceTimersByTimeAsync(2500)
     })
-    expect(getOrder).toHaveBeenCalled()
+    expect(getOrder).toHaveBeenCalledTimes(1)
+  })
+
+  it('stops polling once unmounted', async () => {
+    vi.useFakeTimers()
+    const { result, unmount } = renderHook(() => useOrderStream('tok'))
+    await vi.waitFor(() => expect(result.current.order?.id).toBe('o1'))
+    unmount()
+    vi.mocked(getOrder).mockClear()
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5000)
+    })
+    expect(getOrder).not.toHaveBeenCalled()
   })
 
   it('reports error when the initial load fails', async () => {
     vi.mocked(getOrder).mockRejectedValueOnce(new Error('boom'))
     const { result } = renderHook(() => useOrderStream('tok'))
     await waitFor(() => expect(result.current.mode).toBe('error'))
-  })
-
-  it('returns to live after reconnect timer fires and new stream opens, then stops polling', async () => {
-    vi.useFakeTimers()
-    const { result } = renderHook(() => useOrderStream('tok'))
-    // Wait for initial load
-    await vi.waitFor(() => expect(result.current.order?.id).toBe('o1'))
-    // Trigger onerror → polling mode
-    act(() => MockEventSource.instances[0]!.onerror?.())
-    expect(result.current.mode).toBe('polling')
-    vi.mocked(getOrder).mockClear()
-    // Advance to fire the reconnect timer (5000ms)
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(5000)
-    })
-    // A new EventSource should have been created; open it
-    const newEs = MockEventSource.instances[MockEventSource.instances.length - 1]!
-    act(() => newEs.onopen?.())
-    expect(result.current.mode).toBe('live')
-    // Verify polling has stopped: advancing another 2500ms must NOT trigger getOrder
-    vi.mocked(getOrder).mockClear()
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(2500)
-    })
-    expect(getOrder).not.toHaveBeenCalled()
   })
 })

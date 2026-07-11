@@ -2,10 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { getOpenTables } from '@/shared/api/cashier'
 import type { CashierTable } from './model'
 
-export type StreamMode = 'live' | 'polling' | 'error'
+export type StreamMode = 'polling' | 'error'
 
 const POLL_MS = 2500
-const RECONNECT_MS = 5000
 
 export function useOpenTables(restaurantId: string): {
   tables: CashierTable[]
@@ -22,6 +21,7 @@ export function useOpenTables(restaurantId: string): {
       const next = await getOpenTables()
       if (disposedRef.current) return
       loadedRef.current = true
+      setMode('polling')
       setTables(next)
     } catch {
       if (disposedRef.current) return
@@ -31,50 +31,11 @@ export function useOpenTables(restaurantId: string): {
 
   useEffect(() => {
     disposedRef.current = false
-    let stream: EventSource | null = null
-    let pollTimer: ReturnType<typeof setInterval> | undefined
-    let reconnectTimer: ReturnType<typeof setInterval> | undefined
-    let disposed = false
-
-    const stopPolling = () => {
-      if (pollTimer) clearInterval(pollTimer)
-      if (reconnectTimer) clearInterval(reconnectTimer)
-      pollTimer = undefined
-      reconnectTimer = undefined
-    }
-
-    const startPolling = () => {
-      if (pollTimer || disposed) return
-      setMode('polling')
-      pollTimer = setInterval(() => void load(), POLL_MS)
-      reconnectTimer = setInterval(connect, RECONNECT_MS)
-    }
-
-    function connect() {
-      if (disposed) return
-      stream?.close()
-      const es = new EventSource(`/api/stream/restaurant/${encodeURIComponent(restaurantId)}`)
-      stream = es
-      es.onopen = () => {
-        stopPolling()
-        setMode('live')
-      }
-      es.addEventListener('order_item.updated', () => void load())
-      es.onerror = () => {
-        es.close()
-        if (stream === es) stream = null
-        startPolling()
-      }
-    }
-
     void load()
-    connect()
-
+    const timer = setInterval(() => void load(), POLL_MS)
     return () => {
-      disposed = true
       disposedRef.current = true
-      stopPolling()
-      stream?.close()
+      clearInterval(timer)
     }
   }, [restaurantId, load])
 

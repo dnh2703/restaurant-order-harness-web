@@ -25,7 +25,7 @@ function mockStream(queue: KitchenQueueItem[], served: ServedItem[] = []) {
   vi.mocked(useKitchenStream).mockReturnValue({
     queue,
     served,
-    mode: 'live',
+    mode: 'polling',
     refetch: vi.fn(),
   })
 }

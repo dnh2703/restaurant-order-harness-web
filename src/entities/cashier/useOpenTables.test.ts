@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { renderHook, waitFor, act } from '@testing-library/react'
 import { useOpenTables } from './useOpenTables'
 
 const tables = [
@@ -19,21 +19,34 @@ vi.mock('@/shared/api/cashier', () => ({
   getOpenTables: vi.fn(() => Promise.resolve(tables)),
 }))
 
-class FakeEventSource {
-  onopen: (() => void) | null = null
-  onerror: (() => void) | null = null
-  addEventListener() {}
-  close() {}
-}
+import { getOpenTables } from '@/shared/api/cashier'
 
-beforeEach(() => {
-  ;(globalThis as unknown as { EventSource: unknown }).EventSource = FakeEventSource
-})
+beforeEach(() => vi.clearAllMocks())
+afterEach(() => vi.useRealTimers())
 
 describe('useOpenTables', () => {
   it('loads the open tables on mount', async () => {
     const { result } = renderHook(() => useOpenTables('r1'))
     await waitFor(() => expect(result.current.tables).toHaveLength(1))
     expect(result.current.tables[0]!.tableName).toBe('Bàn 5')
+    expect(result.current.mode).toBe('polling')
+  })
+
+  it('polls again every 2.5s and stops on unmount', async () => {
+    vi.useFakeTimers()
+    const { result, unmount } = renderHook(() => useOpenTables('r1'))
+    await vi.waitFor(() => expect(result.current.tables).toHaveLength(1))
+    vi.mocked(getOpenTables).mockClear()
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2500)
+    })
+    expect(getOpenTables).toHaveBeenCalledTimes(1)
+
+    unmount()
+    vi.mocked(getOpenTables).mockClear()
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5000)
+    })
+    expect(getOpenTables).not.toHaveBeenCalled()
   })
 })

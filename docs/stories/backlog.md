@@ -18,7 +18,7 @@ the work is selected or when a product decision needs a durable place to land.
 | E06 — Menu administration | US-6.1–6.3 implemented ✅ + dish image upload (PR #10, #13) | sliced |
 | E07 — Reports | US-7.1 implemented ✅ (revenue + top dishes) | sliced |
 | E08 — Auth & authorization | Thin slice done (kitchen login + guard); **staff mgmt (US-8.4) planned** | partially sliced |
-| E09 — Realtime (SSE) | Customer + kitchen streams implemented ✅ | partially sliced |
+| E09 — Realtime (polling) | Customer, kitchen, and cashier screens poll every ~2.5s (US-9.1 ✅); BE retired SSE | sliced |
 
 ## Next up
 

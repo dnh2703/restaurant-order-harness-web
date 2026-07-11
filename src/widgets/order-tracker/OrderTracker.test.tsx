@@ -42,7 +42,7 @@ function makeOrder(over: Partial<Order> = {}): Order {
 
 describe('OrderTracker', () => {
   it('renders each item with its status label, note and total', () => {
-    render(<OrderTracker order={makeOrder()} mode="live" />)
+    render(<OrderTracker order={makeOrder()} />)
     // Item name is rendered as "1× Phở bò" in a single node with aria-label="1 Phở bò"
     expect(screen.getByText((_, el) => el?.textContent === '1× Phở bò')).toBeInTheDocument()
     expect(screen.getByText('Đang nấu')).toBeInTheDocument()
@@ -53,12 +53,7 @@ describe('OrderTracker', () => {
   })
 
   it('always shows the subtotal row even when there is no discount', () => {
-    render(
-      <OrderTracker
-        order={makeOrder({ discountAmount: 0, subtotal: 95000, total: 95000 })}
-        mode="live"
-      />,
-    )
+    render(<OrderTracker order={makeOrder({ discountAmount: 0, subtotal: 95000, total: 95000 })} />)
     expect(screen.getByText('Tạm tính')).toBeInTheDocument()
     // Subtotal value appears in the subtotal row (not just the total row)
     const subtotalRow = screen.getByText('Tạm tính').closest('div')
@@ -69,10 +64,7 @@ describe('OrderTracker', () => {
 
   it('shows both subtotal and discount rows when a discount is applied', () => {
     render(
-      <OrderTracker
-        order={makeOrder({ subtotal: 95000, discountAmount: 10000, total: 85000 })}
-        mode="live"
-      />,
+      <OrderTracker order={makeOrder({ subtotal: 95000, discountAmount: 10000, total: 85000 })} />,
     )
     expect(screen.getByText('Tạm tính')).toBeInTheDocument()
     expect(screen.getByText('Giảm giá')).toBeInTheDocument()
@@ -80,22 +72,12 @@ describe('OrderTracker', () => {
   })
 
   it('exposes item quantity to assistive technology via aria-label', () => {
-    render(<OrderTracker order={makeOrder()} mode="live" />)
+    render(<OrderTracker order={makeOrder()} />)
     expect(screen.getByLabelText('1 Phở bò')).toBeInTheDocument()
   })
 
-  it('shows the live indicator in live mode', () => {
-    render(<OrderTracker order={makeOrder()} mode="live" />)
-    expect(screen.getByText('Đang cập nhật trực tiếp')).toBeInTheDocument()
-  })
-
-  it('shows the syncing indicator in polling mode', () => {
-    render(<OrderTracker order={makeOrder()} mode="polling" />)
-    expect(screen.getByText('Đang đồng bộ…')).toBeInTheDocument()
-  })
-
   it('renders the empty state when there are no items', () => {
-    render(<OrderTracker order={makeOrder({ items: [] })} mode="live" />)
+    render(<OrderTracker order={makeOrder({ items: [] })} />)
     expect(screen.getByText('Chưa có món nào')).toBeInTheDocument()
   })
 
@@ -117,7 +99,6 @@ describe('OrderTracker', () => {
             },
           ],
         })}
-        mode="live"
       />,
     )
     const item = screen.getByLabelText('2 Gỏi cuốn')
@@ -127,11 +108,7 @@ describe('OrderTracker', () => {
 
   it('renders the backLink in empty state', () => {
     render(
-      <OrderTracker
-        order={makeOrder({ items: [] })}
-        mode="live"
-        backLink={<a href="/menu">Xem thực đơn</a>}
-      />,
+      <OrderTracker order={makeOrder({ items: [] })} backLink={<a href="/menu">Xem thực đơn</a>} />,
     )
     expect(screen.getByRole('link', { name: 'Xem thực đơn' })).toBeInTheDocument()
   })
