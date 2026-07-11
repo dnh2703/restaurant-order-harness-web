@@ -14,9 +14,8 @@ interface Props {
 export function OrderTracker({ order, backLink }: Props) {
   return (
     <div className="flex h-full flex-col bg-white">
-      <div className="flex items-center justify-between border-b border-line px-6 py-5">
+      <div className="border-b border-line px-6 py-5">
         <div className="text-lg font-extrabold text-ink">Đơn của bạn</div>
-        <ConnectionDot />
       </div>
 
       {order.items.length === 0 ? (
@@ -83,14 +82,5 @@ export function OrderTracker({ order, backLink }: Props) {
         </>
       )}
     </div>
-  )
-}
-
-function ConnectionDot() {
-  return (
-    <span className="flex items-center gap-1.5 text-xs font-semibold text-muted">
-      <span className="size-2 rounded-full bg-amber-500" />
-      Đang đồng bộ…
-    </span>
   )
 }

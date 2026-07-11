@@ -25,9 +25,9 @@ must reflect item status changes within a few seconds, using polling only. No
   GET endpoints every ~2.5s while mounted, and stop polling on unmount.
 - The two FE proxy routes to the retired BE SSE endpoints
   (`/api/qr/$qrToken/stream`, `/api/stream/restaurant/$id`) are removed.
-- UI no longer shows a "Trực tiếp" (live) badge state — polling is the only
-  mode, so the status indicator reflects that (no dead `mode === 'live'`
-  branches).
+- No connection/status indicator ("Trực tiếp", "Đang dò", "Đang đồng bộ…")
+  remains in the UI — with polling as the only, unconditional mode, a
+  connection-status affordance is meaningless noise, not information.
 
 ## Design Notes
 
@@ -69,6 +69,10 @@ formal story for it.
   `bunx playwright test` (proven-working path in this environment; direct
   `import { chromium } from 'playwright'` in an ad-hoc script hangs on import
   under the harness sandbox — use the `@playwright/test` runner instead):
-  kitchen board and cashier screens show the "Đang dò" badge, never "Trực
-  tiếp", zero requests to the retired `/stream` endpoints, zero console
-  errors, over two ~2.5s poll cycles.
+  kitchen board and cashier screens loaded cleanly, zero requests to the
+  retired `/stream` endpoints, zero console errors, over two ~2.5s poll
+  cycles.
+- Follow-up: dropped the "Đang dò" kitchen/cashier badges and the order
+  tracker's "Đang đồng bộ…" connection dot entirely (`bun run validate` →
+  284/284 unit/component tests, `bun run lint` clean) — the badge only made
+  sense as a live/fallback distinction, which no longer exists.

@@ -76,11 +76,6 @@ describe('OrderTracker', () => {
     expect(screen.getByLabelText('1 Phở bò')).toBeInTheDocument()
   })
 
-  it('shows the syncing indicator', () => {
-    render(<OrderTracker order={makeOrder()} />)
-    expect(screen.getByText('Đang đồng bộ…')).toBeInTheDocument()
-  })
-
   it('renders the empty state when there are no items', () => {
     render(<OrderTracker order={makeOrder({ items: [] })} />)
     expect(screen.getByText('Chưa có món nào')).toBeInTheDocument()

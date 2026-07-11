@@ -6,7 +6,7 @@ import { SideNav } from '@/widgets/side-nav'
 import { useOpenTables } from '@/entities/cashier'
 import type { BillDetail, DiscountType, PaymentMethod } from '@/entities/cashier'
 import type { StaffUser } from '@/entities/staff'
-import { Badge, Button } from '@/shared/ui'
+import { Button } from '@/shared/ui'
 import { getBillDetail, applyOrderDiscount, payOrder } from '@/shared/api/cashier'
 
 interface Props {
@@ -99,9 +99,6 @@ export function CashierScreenPage({ user, onLogout }: Props) {
             <p className="text-sm text-muted">Chốt hóa đơn và thanh toán cho từng bàn.</p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" dot>
-              Đang dò
-            </Badge>
             <Button
               type="button"
               variant="ghost"
